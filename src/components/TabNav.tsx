@@ -1,9 +1,9 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Video, Hammer, Heart, Compass, Trophy, Library } from 'lucide-react';
+import { Home, BookOpen, Video, Hammer, Heart, Compass, Trophy, Library, Pencil } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-const tabs = [
+const desktopTabs = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/glossa', label: 'Glossa', icon: BookOpen },
   { path: '/delores', label: 'Delores', icon: Heart },
@@ -14,15 +14,21 @@ const tabs = [
   { path: '/library', label: 'Library', icon: Library },
 ];
 
+const mobileTabs = [
+  { path: '/', label: 'Home', icon: Home },
+  { path: '/forge', label: 'Forge', icon: Hammer },
+  { path: '/library', label: 'Library', icon: Library },
+];
+
 const TabNav = () => {
   const location = useLocation();
 
   return (
     <>
-      {/* Desktop tabs under header */}
+      {/* Desktop nav */}
       <nav className="hidden md:block fixed top-14 left-0 right-0 z-40 glass-surface border-b border-border/50">
         <div className="container mx-auto flex items-center gap-1 px-4 h-11">
-          {tabs.map((tab) => {
+          {desktopTabs.map((tab) => {
             const isActive = location.pathname === tab.path;
             return (
               <NavLink
@@ -48,17 +54,17 @@ const TabNav = () => {
         </div>
       </nav>
 
-      {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-surface border-t border-border/50 pb-safe">
-        <div className="flex items-center justify-around h-16 px-2">
-          {tabs.map((tab) => {
+      {/* Mobile bottom nav — minimal 3 icons */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-surface border-t border-border/50 pb-safe">
+        <div className="flex items-center justify-around h-16 px-4">
+          {mobileTabs.map((tab) => {
             const isActive = location.pathname === tab.path;
             return (
               <NavLink
                 key={tab.path}
                 to={tab.path}
                 className={cn(
-                  'relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors min-w-0',
+                  'relative flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-lg transition-colors',
                   isActive ? 'text-foreground' : 'text-muted-foreground'
                 )}
               >
@@ -70,7 +76,7 @@ const TabNav = () => {
                   />
                 )}
                 <tab.icon className="w-5 h-5 relative z-10" />
-                <span className="text-[10px] font-medium relative z-10 truncate">{tab.label}</span>
+                <span className="text-[10px] font-medium relative z-10">{tab.label}</span>
               </NavLink>
             );
           })}
