@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
+import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 
 const Delores = () => {
   const [activeTab, setActiveTab] = useState('checkin');
