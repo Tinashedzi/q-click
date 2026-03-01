@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        serif: ['"Fraunces"', 'Georgia', 'serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        journal: ['"IBM Plex Serif"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

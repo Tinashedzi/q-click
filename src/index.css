@@ -92,11 +92,15 @@
   }
 
   .text-serif {
-    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-family: 'Fraunces', 'Georgia', serif;
+  }
+
+  .text-journal {
+    font-family: 'IBM Plex Serif', 'Georgia', serif;
   }
 
   .universal-meaning {
-    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    font-family: 'Fraunces', 'Georgia', serif;
     font-style: italic;
     font-weight: 400;
   }
