@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getMoodEntries, clearMoodEntries, exportMoodEntries, moodLevels } from '@/data/deloresResponses';
+import { ACTION_CONFIG } from '@/types/delores-matrix';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Download, Trash2, Shield } from 'lucide-react';
 
