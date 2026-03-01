@@ -1,13 +1,13 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, BookOpen, MessageSquare, Upload, Video, Hammer } from 'lucide-react';
+import { Home, BookOpen, MessageSquare, Video, Hammer, Heart, Compass } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const tabs = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/glossa', label: 'Glossa', icon: BookOpen },
-  { path: '/sentences', label: 'Sentences', icon: MessageSquare },
-  { path: '/upload', label: 'Upload', icon: Upload },
+  { path: '/delores', label: 'Delores', icon: Heart },
+  { path: '/oasis', label: 'Oasis', icon: Compass },
   { path: '/video', label: 'Video', icon: Video },
   { path: '/forge', label: 'Forge', icon: Hammer },
 ];
