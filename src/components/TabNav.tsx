@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, BookOpen, MessageSquare, Video, Hammer, Heart, Compass } from 'lucide-react';
+import { Home, BookOpen, Video, Hammer, Heart, Compass, Trophy, Library } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -10,6 +10,8 @@ const tabs = [
   { path: '/oasis', label: 'Oasis', icon: Compass },
   { path: '/video', label: 'Video', icon: Video },
   { path: '/forge', label: 'Forge', icon: Hammer },
+  { path: '/gamification', label: 'Progress', icon: Trophy },
+  { path: '/library', label: 'Library', icon: Library },
 ];
 
 const TabNav = () => {
