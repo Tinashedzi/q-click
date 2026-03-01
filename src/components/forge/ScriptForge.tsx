@@ -15,7 +15,7 @@ interface ScriptSection {
 
 const defaultSections: ScriptSection[] = [
   { phase: 'Hook', emoji: '🎣', text: 'What if I told you this concept connects every culture on Earth?', visualStyle: 'Close-up, dramatic lighting' },
-  { phase: 'Split', emoji: '💥', text: 'Here's the surprising truth that changes everything...', visualStyle: 'Split screen, contrasting visuals' },
+  { phase: 'Split', emoji: '💥', text: "Here's the surprising truth that changes everything...", visualStyle: 'Split screen, contrasting visuals' },
   { phase: 'Radiation', emoji: '☢️', text: 'This knowledge spreads into every area of life: language, science, art...', visualStyle: 'Expanding circles, web-like connections' },
   { phase: 'Fallout', emoji: '🌟', text: 'Now you can never unsee this pattern. Use it wisely.', visualStyle: 'Slow zoom out, reflective tone' },
 ];

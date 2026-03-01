@@ -9,6 +9,9 @@ import Glossa from "./pages/Glossa";
 import Delores from "./pages/Delores";
 import Oasis from "./pages/Oasis";
 import VideoPage from "./pages/Video";
+import Forge from "./pages/Forge";
+import Gamification from "./pages/Gamification";
+import Library from "./pages/Library";
 import Placeholder from "./pages/Placeholder";
 import NotFound from "./pages/NotFound";
 
@@ -27,8 +30,10 @@ const App = () => (
             <Route path="/delores" element={<Delores />} />
             <Route path="/oasis" element={<Oasis />} />
             <Route path="/video" element={<VideoPage />} />
+            <Route path="/forge" element={<Forge />} />
+            <Route path="/gamification" element={<Gamification />} />
+            <Route path="/library" element={<Library />} />
             <Route path="/sentences" element={<Placeholder title="Sentences" description="Build and deconstruct sentences across languages. Coming soon." />} />
-            <Route path="/forge" element={<Placeholder title="Forge" description="Craft understanding through exercises and challenges. Coming soon." />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
