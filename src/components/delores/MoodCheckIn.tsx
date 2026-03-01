@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { moodLevels, contributingChips, saveMoodEntry, getDeloresResponse } from '@/data/deloresResponses';
+import { emotionalMatrix } from '@/engine/delores-matrix';
 import { cn } from '@/lib/utils';
 
 interface MoodCheckInProps {
@@ -29,6 +30,7 @@ const MoodCheckIn = ({ onComplete }: MoodCheckInProps) => {
 
   const handleSubmit = () => {
     if (selectedMood === null) return;
+    const snapshot = emotionalMatrix.createSnapshot(selectedMood, freeText || undefined);
     saveMoodEntry({
       id: crypto.randomUUID(),
       level: selectedMood,
@@ -37,6 +39,8 @@ const MoodCheckIn = ({ onComplete }: MoodCheckInProps) => {
       contributingFactors: selectedFactors,
       freeText: freeText || undefined,
       timestamp: new Date().toISOString(),
+      detected: snapshot.detected,
+      recommendation: snapshot.recommendation,
     });
     setStep('response');
   };

@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getMoodEntries, clearMoodEntries, exportMoodEntries, moodLevels } from '@/data/deloresResponses';
+import { ACTION_CONFIG } from '@/types/delores-matrix';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Download, Trash2, Shield } from 'lucide-react';
 
@@ -117,6 +119,22 @@ const EmotionalDashboard = () => {
               <p className="text-sm text-muted-foreground mt-1">{bestLearningMood}</p>
             </div>
           )}
+
+          {/* Latest recommendation from matrix */}
+          {entries.length > 0 && entries[entries.length - 1].recommendation && (() => {
+            const lastEntry = entries[entries.length - 1];
+            const cfg = ACTION_CONFIG[lastEntry.recommendation!.action];
+            return (
+              <div className="p-4 rounded-xl bg-accent/10 border border-accent/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <span>{cfg.emoji}</span>
+                  <Badge variant="secondary" className="text-xs">{cfg.label}</Badge>
+                  <span className="text-xs text-muted-foreground ml-auto">Latest recommendation</span>
+                </div>
+                <p className="text-sm text-muted-foreground italic">{lastEntry.recommendation!.message}</p>
+              </div>
+            );
+          })()}
 
           {topFactors.length > 0 && (
             <div className="p-4 rounded-xl bg-card border border-border/50">

@@ -1,3 +1,5 @@
+import type { DetectedSignals, EmotionalRecommendation } from '@/types/delores-matrix';
+
 export interface MoodEntry {
   id: string;
   level: number;
@@ -6,6 +8,8 @@ export interface MoodEntry {
   contributingFactors: string[];
   freeText?: string;
   timestamp: string;
+  detected?: DetectedSignals;
+  recommendation?: EmotionalRecommendation;
 }
 
 export const moodLevels = [

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
+import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 
 const Delores = () => {
   const [activeTab, setActiveTab] = useState('checkin');
@@ -16,15 +17,19 @@ const Delores = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="checkin">Check-in</TabsTrigger>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="matrix">Matrix</TabsTrigger>
           </TabsList>
           <TabsContent value="checkin">
             <MoodCheckIn onComplete={() => setActiveTab('dashboard')} />
           </TabsContent>
           <TabsContent value="dashboard">
             <EmotionalDashboard />
+          </TabsContent>
+          <TabsContent value="matrix">
+            <EmotionalMatrix />
           </TabsContent>
         </Tabs>
       </motion.div>
