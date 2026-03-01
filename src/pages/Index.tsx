@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BookOpen, MessageSquare, Sparkles, Globe } from 'lucide-react';
+import { BookOpen, Heart, Compass, Video, Sparkles, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const features = [
@@ -11,25 +11,39 @@ const features = [
     color: 'bg-jade/15 text-jade',
   },
   {
-    icon: MessageSquare,
-    title: 'Sentences',
-    desc: 'Build and break down sentences to understand structure.',
-    path: '/sentences',
+    icon: Heart,
+    title: 'Delores',
+    desc: 'Your emotional intelligence companion — check in, reflect, grow.',
+    path: '/delores',
+    color: 'bg-petal/15 text-petal',
+  },
+  {
+    icon: Compass,
+    title: 'Oasis',
+    desc: 'Wisdom, Socratic guidance, and focused learning sessions.',
+    path: '/oasis',
     color: 'bg-clay/15 text-clay',
   },
   {
-    icon: Globe,
-    title: 'Meaning Web',
-    desc: 'Visualize how concepts connect across cultures.',
-    path: '/glossa',
-    color: 'bg-petal/15 text-petal',
+    icon: Video,
+    title: 'Video Engine',
+    desc: 'Learn through immersive atomic reveals and interactive transcripts.',
+    path: '/video',
+    color: 'bg-gold/15 text-gold',
   },
   {
     icon: Sparkles,
     title: 'Forge',
     desc: 'Craft new understanding through interactive exercises.',
     path: '/forge',
-    color: 'bg-gold/15 text-gold',
+    color: 'bg-dew/15 text-dew',
+  },
+  {
+    icon: Globe,
+    title: 'Meaning Web',
+    desc: 'Visualize how concepts connect across cultures.',
+    path: '/glossa',
+    color: 'bg-jade/15 text-jade',
   },
 ];
 
@@ -53,7 +67,7 @@ const Index = () => {
       </motion.div>
 
       {/* Feature grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {features.map((f, i) => (
           <motion.div
             key={f.title}
