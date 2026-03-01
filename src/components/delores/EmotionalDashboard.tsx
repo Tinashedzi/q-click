@@ -120,6 +120,22 @@ const EmotionalDashboard = () => {
             </div>
           )}
 
+          {/* Latest recommendation from matrix */}
+          {entries.length > 0 && entries[entries.length - 1].recommendation && (() => {
+            const lastEntry = entries[entries.length - 1];
+            const cfg = ACTION_CONFIG[lastEntry.recommendation!.action];
+            return (
+              <div className="p-4 rounded-xl bg-accent/10 border border-accent/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <span>{cfg.emoji}</span>
+                  <Badge variant="secondary" className="text-xs">{cfg.label}</Badge>
+                  <span className="text-xs text-muted-foreground ml-auto">Latest recommendation</span>
+                </div>
+                <p className="text-sm text-muted-foreground italic">{lastEntry.recommendation!.message}</p>
+              </div>
+            );
+          })()}
+
           {topFactors.length > 0 && (
             <div className="p-4 rounded-xl bg-card border border-border/50">
               <p className="text-sm font-medium text-foreground mb-3">Top Contributing Factors</p>
