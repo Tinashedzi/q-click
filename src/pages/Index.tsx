@@ -3,48 +3,14 @@ import { BookOpen, Heart, Compass, Video, Sparkles, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const features = [
-  {
-    icon: BookOpen,
-    title: 'Glossa',
-    desc: 'Explore universal meanings across five African & global languages.',
-    path: '/glossa',
-    color: 'bg-jade/15 text-jade',
-  },
-  {
-    icon: Heart,
-    title: 'Delores',
-    desc: 'Your emotional intelligence companion — check in, reflect, grow.',
-    path: '/delores',
-    color: 'bg-petal/15 text-petal',
-  },
-  {
-    icon: Compass,
-    title: 'Oasis',
-    desc: 'Wisdom, Socratic guidance, and focused learning sessions.',
-    path: '/oasis',
-    color: 'bg-clay/15 text-clay',
-  },
-  {
-    icon: Video,
-    title: 'Video Engine',
-    desc: 'Learn through immersive atomic reveals and interactive transcripts.',
-    path: '/video',
-    color: 'bg-gold/15 text-gold',
-  },
-  {
-    icon: Sparkles,
-    title: 'Forge',
-    desc: 'Craft new understanding through interactive exercises.',
-    path: '/forge',
-    color: 'bg-dew/15 text-dew',
-  },
-  {
-    icon: Globe,
-    title: 'Meaning Web',
-    desc: 'Visualize how concepts connect across cultures.',
-    path: '/glossa',
-    color: 'bg-jade/15 text-jade',
-  },
+  { icon: BookOpen, title: 'Glossa', desc: 'Explore universal meanings across five African & global languages.', path: '/glossa', color: 'bg-jade/15 text-jade' },
+  { icon: Heart, title: 'Delores', desc: 'Your emotional intelligence companion — check in, reflect, grow.', path: '/delores', color: 'bg-petal/15 text-petal' },
+  { icon: Compass, title: 'Oasis', desc: 'Wisdom, Socratic guidance, and focused learning sessions.', path: '/oasis', color: 'bg-clay/15 text-clay' },
+  { icon: Video, title: 'Video Engine', desc: 'Learn through immersive atomic reveals and interactive transcripts.', path: '/video', color: 'bg-gold/15 text-gold' },
+  { icon: Sparkles, title: 'Forge', desc: 'Power tools for 10x creators — concepts, scripts, games, paths.', path: '/forge', color: 'bg-dew/15 text-dew' },
+  { icon: Trophy, title: 'Progress', desc: 'Streaks, belts, achievements, and tournaments.', path: '/gamification', color: 'bg-gold/15 text-gold' },
+  { icon: Library, title: 'Library', desc: 'Wikipedia, Gutenberg, arXiv — infinite knowledge aggregated.', path: '/library', color: 'bg-jade/15 text-jade' },
+  { icon: Globe, title: 'Meaning Web', desc: 'Visualize how concepts connect across cultures.', path: '/glossa', color: 'bg-jade/15 text-jade' },
 ];
 
 const Index = () => {
