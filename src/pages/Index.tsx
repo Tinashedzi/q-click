@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BookOpen, MessageSquare, Sparkles, Globe } from 'lucide-react';
+import { BookOpen, Heart, Compass, Video, Sparkles, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const features = [
