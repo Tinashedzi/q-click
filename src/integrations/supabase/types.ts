@@ -14,7 +14,149 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      journal_entries: {
+        Row: {
+          created_at: string
+          id: string
+          mood: number
+          mood_emoji: string
+          mood_label: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mood: number
+          mood_emoji: string
+          mood_label: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mood?: number
+          mood_emoji?: string
+          mood_label?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mood_entries: {
+        Row: {
+          contributing_factors: string[] | null
+          created_at: string
+          detected: Json | null
+          emoji: string
+          free_text: string | null
+          id: string
+          label: string
+          level: number
+          recommendation: Json | null
+          user_id: string
+        }
+        Insert: {
+          contributing_factors?: string[] | null
+          created_at?: string
+          detected?: Json | null
+          emoji: string
+          free_text?: string | null
+          id?: string
+          label: string
+          level: number
+          recommendation?: Json | null
+          user_id: string
+        }
+        Update: {
+          contributing_factors?: string[] | null
+          created_at?: string
+          detected?: Json | null
+          emoji?: string
+          free_text?: string | null
+          id?: string
+          label?: string
+          level?: number
+          recommendation?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          preferences: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          preferences?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          preferences?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          content: Json | null
+          created_at: string
+          id: string
+          project_type: string
+          source_entry_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          id?: string
+          project_type?: string
+          source_entry_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          id?: string
+          project_type?: string
+          source_entry_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_source_entry_id_fkey"
+            columns: ["source_entry_id"]
+            isOneToOne: false
+            referencedRelation: "journal_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

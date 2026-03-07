@@ -3,8 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import Glossa from "./pages/Glossa";
 import Delores from "./pages/Delores";
 import Oasis from "./pages/Oasis";
@@ -17,26 +19,48 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const AppRoutes = () => {
+  const { session, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <Auth />;
+  }
+
+  return (
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/glossa" element={<Glossa />} />
+        <Route path="/delores" element={<Delores />} />
+        <Route path="/oasis" element={<Oasis />} />
+        <Route path="/video" element={<VideoPage />} />
+        <Route path="/forge" element={<Forge />} />
+        <Route path="/gamification" element={<Gamification />} />
+        <Route path="/library" element={<Library />} />
+        <Route path="/sentences" element={<Placeholder title="Sentences" description="Build and deconstruct sentences across languages. Coming soon." />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Layout>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/glossa" element={<Glossa />} />
-            <Route path="/delores" element={<Delores />} />
-            <Route path="/oasis" element={<Oasis />} />
-            <Route path="/video" element={<VideoPage />} />
-            <Route path="/forge" element={<Forge />} />
-            <Route path="/gamification" element={<Gamification />} />
-            <Route path="/library" element={<Library />} />
-            <Route path="/sentences" element={<Placeholder title="Sentences" description="Build and deconstruct sentences across languages. Coming soon." />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

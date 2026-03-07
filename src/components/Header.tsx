@@ -1,9 +1,11 @@
-import { Sparkles, Flame, Zap } from 'lucide-react';
+import { Sparkles, Flame, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
-  const streak = parseInt(localStorage.getItem('sensage-gamification-streak') || '7');
+  const { profile, signOut } = useAuth();
+  const streak = 7; // TODO: persist to DB
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-wavey border-b border-white/10">
@@ -18,20 +20,28 @@ const Header = () => {
           <motion.div
             className="w-9 h-9 rounded-2xl flex items-center justify-center overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, hsl(260 30% 85% / 0.5), hsl(190 45% 65% / 0.3), hsl(330 25% 75% / 0.4))',
+              background: profile?.avatar_url
+                ? undefined
+                : 'linear-gradient(135deg, hsl(260 30% 85% / 0.5), hsl(190 45% 65% / 0.3), hsl(330 25% 75% / 0.4))',
               animation: 'morph 8s ease-in-out infinite',
             }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            <span className="text-sm font-grotesk font-semibold text-foreground">S</span>
+            {profile?.avatar_url ? (
+              <img src={profile.avatar_url} alt="" className="w-full h-full object-cover rounded-2xl" />
+            ) : (
+              <span className="text-sm font-grotesk font-semibold text-foreground">
+                {(profile?.display_name || 'S')[0].toUpperCase()}
+              </span>
+            )}
           </motion.div>
           <Link to="/" className="text-lg font-serif tracking-tight text-foreground hover:text-primary transition-colors">
             Sensage
           </Link>
         </motion.div>
 
-        {/* Right: Streak + WP */}
+        {/* Right: Streak + WP + Logout */}
         <div className="flex items-center gap-2">
           <motion.div
             initial={{ opacity: 0, x: 15 }}
@@ -56,6 +66,16 @@ const Header = () => {
               <span className="text-xs font-grotesk font-medium text-foreground">128 WP</span>
             </motion.div>
           </Link>
+          <motion.button
+            initial={{ opacity: 0, x: 15 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            onClick={signOut}
+            className="p-2 rounded-xl glass-deep hover:bg-destructive/10 transition-colors"
+            title="Sign out"
+          >
+            <LogOut className="w-3.5 h-3.5 text-muted-foreground" />
+          </motion.button>
         </div>
       </div>
     </header>

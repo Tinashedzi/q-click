@@ -4,15 +4,17 @@ import { X, Plus, Sparkles, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
 interface JournalEntry {
   id: string;
   mood: number;
-  moodLabel: string;
-  moodEmoji: string;
-  note: string;
-  createdAt: string;
+  mood_label: string;
+  mood_emoji: string;
+  note: string | null;
+  created_at: string;
 }
 
 const MOODS = [
@@ -34,29 +36,38 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
   const [note, setNote] = useState('');
   const [isWriting, setIsWriting] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const fetchEntries = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('journal_entries')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (data) setEntries(data);
+  };
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('sensage-journal') || '[]');
-    setEntries(saved);
-  }, [isOpen]);
+    if (isOpen) fetchEntries();
+  }, [isOpen, user]);
 
-  const saveEntry = () => {
-    if (!selectedMood) return;
+  const saveEntry = async () => {
+    if (!selectedMood || !user) return;
     const mood = MOODS.find(m => m.value === selectedMood)!;
-    const entry: JournalEntry = {
-      id: Date.now().toString(),
+    const { error } = await supabase.from('journal_entries').insert({
+      user_id: user.id,
       mood: selectedMood,
-      moodLabel: mood.label,
-      moodEmoji: mood.emoji,
-      note,
-      createdAt: new Date().toISOString(),
-    };
-    const updated = [entry, ...entries];
-    localStorage.setItem('sensage-journal', JSON.stringify(updated));
-    setEntries(updated);
-    setSelectedMood(null);
-    setNote('');
-    setIsWriting(false);
+      mood_label: mood.label,
+      mood_emoji: mood.emoji,
+      note: note || '',
+    });
+    if (!error) {
+      setSelectedMood(null);
+      setNote('');
+      setIsWriting(false);
+      fetchEntries();
+    }
   };
 
   const sendToForge = (entry: JournalEntry) => {
@@ -78,7 +89,6 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -86,7 +96,6 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
             className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50"
             onClick={onClose}
           />
-          {/* Overlay panel */}
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: '0%' }}
@@ -94,11 +103,9 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 z-50 bg-background rounded-t-3xl shadow-elevated max-h-[85vh] flex flex-col"
           >
-            {/* Handle */}
             <div className="flex justify-center pt-3 pb-1">
               <div className="w-10 h-1 rounded-full bg-border" />
             </div>
-            {/* Header */}
             <div className="flex items-center justify-between px-6 py-3 border-b border-border/50">
               <div className="flex items-center gap-2">
                 <Pencil className="w-4 h-4 text-petal" />
@@ -133,7 +140,6 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
                 </div>
               </div>
 
-              {/* Writing area */}
               <AnimatePresence>
                 {isWriting && (
                   <motion.div
@@ -155,11 +161,10 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
                 )}
               </AnimatePresence>
 
-              {/* Entry list */}
               {entries.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">Recent entries</p>
-                  {entries.slice(0, 20).map((entry, i) => (
+                  {entries.map((entry, i) => (
                     <motion.div
                       key={entry.id}
                       initial={{ opacity: 0, x: -10 }}
@@ -168,11 +173,11 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
                       className="group relative p-3 rounded-xl bg-card border border-border/50 hover:shadow-soft transition-all"
                     >
                       <div className="flex items-start gap-3">
-                        <span className="text-xl">{entry.moodEmoji}</span>
+                        <span className="text-xl">{entry.mood_emoji}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-muted-foreground">{formatDate(entry.createdAt)}</p>
+                          <p className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</p>
                           <p className="text-sm text-foreground truncate mt-0.5">
-                            {entry.note || `Feeling ${entry.moodLabel.toLowerCase()}`}
+                            {entry.note || `Feeling ${entry.mood_label.toLowerCase()}`}
                           </p>
                         </div>
                         <button
@@ -189,7 +194,6 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
               )}
             </div>
 
-            {/* New entry FAB */}
             {!isWriting && (
               <div className="absolute bottom-6 right-6">
                 <motion.button
