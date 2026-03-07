@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Heart, Bookmark, Share2, ChevronUp, ChevronDown, Sparkles, Flame, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useProgress } from '@/contexts/ProgressContext';
 
 interface FeedCard {
   id: string;
@@ -62,7 +63,22 @@ const ExplorerFeed = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [liked, setLiked] = useState<Set<string>>(new Set());
   const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [awarded, setAwarded] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
+  const { addPoints, incrementConcepts, updateStreak } = useProgress();
+
+  // Update streak on mount
+  useEffect(() => { updateStreak(); }, [updateStreak]);
+
+  // Award XP when viewing a card for the first time
+  useEffect(() => {
+    const card = feedCards[currentIndex];
+    if (card && !awarded.has(card.id)) {
+      setAwarded(prev => new Set(prev).add(card.id));
+      addPoints(card.xp);
+      incrementConcepts();
+    }
+  }, [currentIndex]);
 
   const goNext = useCallback(() => {
     setCurrentIndex(prev => Math.min(prev + 1, feedCards.length - 1));

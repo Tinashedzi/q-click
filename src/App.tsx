@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ProgressProvider } from "@/contexts/ProgressContext";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -35,6 +36,7 @@ const AppRoutes = () => {
   }
 
   return (
+    <ProgressProvider>
     <Layout>
       <Routes>
         <Route path="/" element={<Index />} />
@@ -49,6 +51,7 @@ const AppRoutes = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
+    </ProgressProvider>
   );
 };
 

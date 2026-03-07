@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Pencil, Flame, Sparkles, LogOut } from 'lucide-react';
 import { OasisSvg, GlossaSvg, DeloresSvg, ForgeSvg } from '@/components/icons/TotemSvgs';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProgress } from '@/contexts/ProgressContext';
 
 const totems = [
   { icon: <OasisSvg className="w-5 h-5 sm:w-6 sm:h-6" />, label: 'Oasis', path: '/oasis', accent: 'bg-clay/20 hover:bg-clay/30 text-clay' },
@@ -17,7 +18,8 @@ interface CitadelNavProps {
 
 const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
   const { signOut } = useAuth();
-  const streak = 7;
+  const { progress } = useProgress();
+  const streak = progress.streak_days;
 
   return (
     <motion.div
@@ -74,7 +76,7 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl hover:bg-gold/10 transition-colors cursor-pointer"
         >
           <Sparkles className="w-3.5 h-3.5 text-gold" />
-          <span className="text-xs font-grotesk font-medium text-foreground">128</span>
+          <span className="text-xs font-grotesk font-medium text-foreground">{progress.wisdom_points}</span>
         </motion.div>
       </Link>
 
