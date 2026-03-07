@@ -18,7 +18,8 @@ interface CitadelNavProps {
 
 const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
   const { signOut } = useAuth();
-  const streak = 7;
+  const { progress } = useProgress();
+  const streak = progress.streak_days;
 
   return (
     <motion.div
