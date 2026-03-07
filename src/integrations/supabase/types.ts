@@ -320,6 +320,42 @@ export type Database = {
           },
         ]
       }
+      user_progress: {
+        Row: {
+          achievements: string[]
+          concepts_explored: number
+          created_at: string
+          id: string
+          last_active_date: string | null
+          streak_days: number
+          updated_at: string
+          user_id: string
+          wisdom_points: number
+        }
+        Insert: {
+          achievements?: string[]
+          concepts_explored?: number
+          created_at?: string
+          id?: string
+          last_active_date?: string | null
+          streak_days?: number
+          updated_at?: string
+          user_id: string
+          wisdom_points?: number
+        }
+        Update: {
+          achievements?: string[]
+          concepts_explored?: number
+          created_at?: string
+          id?: string
+          last_active_date?: string | null
+          streak_days?: number
+          updated_at?: string
+          user_id?: string
+          wisdom_points?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
