@@ -52,7 +52,7 @@ const Header = () => {
             <Flame className="w-3.5 h-3.5 text-destructive" />
             <span className="text-xs font-grotesk font-medium text-foreground">{streak}</span>
           </motion.div>
-          <Link to="/gamification">
+          <Link to="/gamification" id="wp-counter">
             <motion.div
               initial={{ opacity: 0, x: 15 }}
               animate={{ opacity: 1, x: 0 }}
