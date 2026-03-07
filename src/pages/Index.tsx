@@ -7,6 +7,7 @@ import TotemIcon from '@/components/TotemIcon';
 import JournalOverlay from '@/components/JournalOverlay';
 import FloatingParticles from '@/components/FloatingParticles';
 import DeloresGreeting from '@/components/DeloresGreeting';
+import OnboardingTour from '@/components/OnboardingTour';
 
 const totems = [
   {
@@ -16,6 +17,7 @@ const totems = [
     path: '/oasis',
     colorClass: 'bg-clay/20 text-clay glass-deep',
     glowClass: 'bg-clay/30',
+    id: 'totem-oasis',
   },
   {
     icon: <BookOpen className="w-7 h-7 sm:w-8 sm:h-8" />,
@@ -24,6 +26,7 @@ const totems = [
     path: '/glossa',
     colorClass: 'bg-jade/20 text-jade glass-deep',
     glowClass: 'bg-jade/30',
+    id: 'totem-glossa',
   },
   {
     icon: <Heart className="w-7 h-7 sm:w-8 sm:h-8" />,
@@ -32,6 +35,7 @@ const totems = [
     path: '/delores',
     colorClass: 'bg-petal/20 text-petal glass-deep',
     glowClass: 'bg-petal/30',
+    id: 'totem-delores',
   },
   {
     icon: <Hammer className="w-7 h-7 sm:w-8 sm:h-8" />,
@@ -40,6 +44,7 @@ const totems = [
     path: '/forge',
     colorClass: 'bg-gold/20 text-gold glass-deep',
     glowClass: 'bg-gold/30',
+    id: 'totem-forge',
   },
 ];
 
@@ -55,9 +60,11 @@ const Index = () => {
   return (
     <div className="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
       <FloatingParticles />
+      <OnboardingTour />
 
       {/* Ambient Circle Logo */}
       <motion.div
+        id="ambient-orb"
         initial={{ opacity: 0, scale: 0.85 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
@@ -113,6 +120,7 @@ const Index = () => {
 
       {/* Journal Nub */}
       <motion.button
+        id="journal-nub"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
