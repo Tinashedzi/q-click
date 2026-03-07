@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Heart, Compass, Hammer, Sparkles, Pencil, Library, Trophy, ArrowRight } from 'lucide-react';
+import { Sparkles, Pencil, Library, Trophy, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import AmbientCircle from '@/components/AmbientCircle';
 import TotemIcon from '@/components/TotemIcon';
@@ -8,6 +8,7 @@ import JournalOverlay from '@/components/JournalOverlay';
 import FloatingParticles from '@/components/FloatingParticles';
 import DeloresGreeting from '@/components/DeloresGreeting';
 import OnboardingTour from '@/components/OnboardingTour';
+import { OasisSvg, GlossaSvg, DeloresSvg, ForgeSvg } from '@/components/icons/TotemSvgs';
 
 const totems = [
   {
