@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,27 +6,27 @@
 
 @layer base {
   :root {
-    /* Silicon Porcelain Theme */
-    --background: 34 33% 93%;          /* #F5F0E8 matte ceramic white */
-    --foreground: 220 20% 20%;
+    /* Silicon Porcelain + Wavey Theme */
+    --background: 34 33% 93%;
+    --foreground: 240 20% 12%;
 
     --card: 34 33% 96%;
-    --card-foreground: 220 20% 20%;
+    --card-foreground: 240 20% 12%;
 
     --popover: 34 33% 96%;
-    --popover-foreground: 220 20% 20%;
+    --popover-foreground: 240 20% 12%;
 
-    --primary: 108 18% 69%;            /* Celadon Jade #A8C3A0 */
-    --primary-foreground: 220 20% 15%;
+    --primary: 108 18% 69%;
+    --primary-foreground: 240 20% 10%;
 
-    --secondary: 22 30% 74%;           /* Sun-baked Clay #D9B9A3 */
-    --secondary-foreground: 220 20% 15%;
+    --secondary: 22 30% 74%;
+    --secondary-foreground: 240 20% 10%;
 
     --muted: 34 20% 88%;
-    --muted-foreground: 220 10% 50%;
+    --muted-foreground: 240 10% 46%;
 
-    --accent: 330 25% 75%;             /* Lotus Petal #D9A5B8 */
-    --accent-foreground: 220 20% 15%;
+    --accent: 330 25% 75%;
+    --accent-foreground: 240 20% 10%;
 
     --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 98%;
@@ -37,7 +37,7 @@
 
     --radius: 0.75rem;
 
-    /* Custom Sensage tokens */
+    /* Sensage custom tokens */
     --celadon-jade: 108 18% 69%;
     --sun-baked-clay: 22 30% 74%;
     --lotus-petal: 330 25% 75%;
@@ -46,16 +46,29 @@
     --ceramic-white: 34 33% 93%;
     --frosted-glass: 34 33% 97%;
 
+    /* Wavey palette additions */
+    --deep-sea: 230 35% 25%;
+    --lavender-mist: 260 30% 85%;
+    --cloud-white: 220 20% 96%;
+    --silk-blue: 220 40% 70%;
+    --wave-cyan: 190 45% 65%;
+
     /* Gradients */
     --gradient-jade: linear-gradient(135deg, hsl(108 18% 69%), hsl(108 25% 78%));
     --gradient-clay: linear-gradient(135deg, hsl(22 30% 74%), hsl(22 35% 82%));
     --gradient-gold: linear-gradient(135deg, hsl(43 47% 54%), hsl(43 55% 65%));
     --gradient-petal: linear-gradient(135deg, hsl(330 25% 75%), hsl(330 30% 83%));
+    --gradient-wavey: linear-gradient(135deg, hsl(230 35% 25% / 0.05), hsl(260 30% 85% / 0.3), hsl(190 45% 65% / 0.1));
+    --gradient-silk: linear-gradient(170deg, hsl(260 30% 92%), hsl(220 40% 94%), hsl(34 33% 93%));
 
     /* Shadows */
     --shadow-soft: 0 2px 20px -4px hsl(220 20% 20% / 0.08);
     --shadow-card: 0 4px 30px -8px hsl(220 20% 20% / 0.1);
-    --shadow-elevated: 0 8px 40px -12px hsl(220 20% 20% / 0.15);
+    --shadow-elevated: 0 12px 50px -12px hsl(220 20% 20% / 0.18);
+    --shadow-glow-jade: 0 0 30px -5px hsl(108 18% 69% / 0.3);
+    --shadow-glow-petal: 0 0 30px -5px hsl(330 25% 75% / 0.3);
+    --shadow-glow-gold: 0 0 30px -5px hsl(43 47% 54% / 0.3);
+    --shadow-glow-clay: 0 0 30px -5px hsl(22 30% 74% / 0.3);
 
     --sidebar-background: 34 33% 95%;
     --sidebar-foreground: 220 20% 30%;
@@ -76,6 +89,7 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -83,12 +97,53 @@
     font-weight: 400;
     letter-spacing: -0.02em;
   }
+
+  /* Smooth scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.35);
+  }
 }
 
 @layer utilities {
   .glass-surface {
-    @apply bg-frosted/80 backdrop-blur-md border border-border/50;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+    @apply backdrop-blur-xl border border-border/40;
+    background: hsl(var(--frosted-glass) / 0.72);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
+  }
+
+  .glass-deep {
+    @apply backdrop-blur-2xl border border-white/20;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--frosted-glass) / 0.6),
+      hsl(var(--cloud-white) / 0.4)
+    );
+    box-shadow: 
+      inset 0 1px 0 hsl(0 0% 100% / 0.3),
+      0 8px 32px hsl(var(--deep-sea) / 0.08);
+  }
+
+  .glass-wavey {
+    @apply backdrop-blur-2xl border border-white/25;
+    background: linear-gradient(
+      170deg,
+      hsl(var(--lavender-mist) / 0.25),
+      hsl(var(--cloud-white) / 0.4),
+      hsl(var(--wave-cyan) / 0.1)
+    );
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.4),
+      0 12px 40px hsl(var(--deep-sea) / 0.06);
   }
 
   .text-serif {
@@ -99,9 +154,156 @@
     font-family: 'IBM Plex Serif', 'Georgia', serif;
   }
 
+  .text-grotesk {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  }
+
   .universal-meaning {
     font-family: 'Fraunces', 'Georgia', serif;
     font-style: italic;
     font-weight: 400;
   }
+
+  /* Wavey liquid button */
+  .btn-liquid {
+    @apply relative overflow-hidden rounded-2xl font-medium transition-all duration-500;
+    background: linear-gradient(135deg, hsl(var(--lavender-mist) / 0.5), hsl(var(--cloud-white) / 0.6));
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(0 0% 100% / 0.3);
+    box-shadow: 
+      0 4px 20px hsl(var(--deep-sea) / 0.08),
+      inset 0 1px 0 hsl(0 0% 100% / 0.4);
+  }
+  .btn-liquid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, hsl(var(--wave-cyan) / 0.15), hsl(var(--lavender-mist) / 0.2));
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .btn-liquid:hover::before {
+    opacity: 1;
+  }
+  .btn-liquid:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 30px hsl(var(--deep-sea) / 0.12),
+      inset 0 1px 0 hsl(0 0% 100% / 0.5);
+  }
+  .btn-liquid:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Ripple effect */
+  .ripple-effect {
+    position: relative;
+    overflow: hidden;
+  }
+  .ripple-effect::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), hsl(0 0% 100% / 0.3) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .ripple-effect:active::after {
+    opacity: 1;
+  }
+
+  /* Floating particle background */
+  .particle-field {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  /* Silk flow text */
+  .silk-text {
+    background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--muted-foreground)), hsl(var(--foreground)));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: silk-shift 8s ease-in-out infinite;
+  }
+
+  /* Wavey card hover */
+  .card-wavey {
+    @apply glass-deep rounded-3xl p-6 transition-all duration-500;
+  }
+  .card-wavey:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 
+      0 20px 60px hsl(var(--deep-sea) / 0.12),
+      inset 0 1px 0 hsl(0 0% 100% / 0.4);
+  }
+
+  /* Glow effects per module */
+  .glow-jade { box-shadow: var(--shadow-glow-jade); }
+  .glow-petal { box-shadow: var(--shadow-glow-petal); }
+  .glow-gold { box-shadow: var(--shadow-glow-gold); }
+  .glow-clay { box-shadow: var(--shadow-glow-clay); }
+}
+
+/* Keyframe animations */
+@keyframes silk-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(4px) rotate(-0.5deg); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-12px) translateX(4px); }
+  50% { transform: translateY(-6px) translateX(-3px); }
+  75% { transform: translateY(-14px) translateX(2px); }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  25% { transform: translate(10px, -20px) scale(1.1); opacity: 0.6; }
+  50% { transform: translate(-5px, -40px) scale(0.9); opacity: 0.3; }
+  75% { transform: translate(15px, -25px) scale(1.05); opacity: 0.5; }
+}
+
+@keyframes morph {
+  0%, 100% { border-radius: 42% 58% 60% 40% / 45% 55% 45% 55%; }
+  25% { border-radius: 55% 45% 40% 60% / 60% 40% 55% 45%; }
+  50% { border-radius: 45% 55% 55% 45% / 40% 60% 45% 55%; }
+  75% { border-radius: 60% 40% 45% 55% / 55% 45% 60% 40%; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.15); opacity: 0; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+@keyframes wave-x {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-25%); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.03); filter: brightness(1.05); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

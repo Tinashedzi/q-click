@@ -9,48 +9,60 @@ interface TotemIconProps {
   description: string;
   path: string;
   colorClass: string;
+  glowClass?: string;
   delay?: number;
 }
 
-const TotemIcon = ({ icon, label, description, path, colorClass, delay = 0 }: TotemIconProps) => {
+const TotemIcon = ({ icon, label, description, path, colorClass, glowClass, delay = 0 }: TotemIconProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
+      initial={{ opacity: 0, y: 30, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="relative flex flex-col items-center"
     >
       {/* Tooltip */}
       <motion.div
         initial={false}
-        animate={{ opacity: showTooltip ? 1 : 0, y: showTooltip ? 0 : 8, scale: showTooltip ? 1 : 0.95 }}
-        className="absolute -top-12 whitespace-nowrap px-3 py-1.5 rounded-lg bg-foreground/90 text-background text-xs font-medium pointer-events-none z-10"
+        animate={{
+          opacity: showTooltip ? 1 : 0,
+          y: showTooltip ? 0 : 8,
+          scale: showTooltip ? 1 : 0.9,
+        }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute -top-14 whitespace-nowrap px-4 py-2 rounded-2xl glass-wavey text-xs font-medium text-foreground pointer-events-none z-10 shadow-elevated"
       >
         {description}
-        <div className="absolute left-1/2 -translate-x-1/2 top-full w-2 h-2 bg-foreground/90 rotate-45 -mt-1" />
+        <div className="absolute left-1/2 -translate-x-1/2 top-full w-3 h-3 glass-wavey rotate-45 -mt-1.5 border-t-0 border-l-0" />
       </motion.div>
 
       <Link
         to={path}
-        className="group flex flex-col items-center gap-2"
+        className="group flex flex-col items-center gap-2.5"
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         onTouchStart={() => { setShowTooltip(true); setTimeout(() => setShowTooltip(false), 2000); }}
       >
         <motion.div
           className={cn(
-            'w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center transition-all duration-300',
-            'group-hover:scale-105 group-hover:shadow-elevated group-active:scale-95',
+            'relative w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center transition-all duration-500',
+            'group-hover:shadow-elevated group-active:scale-95',
             colorClass
           )}
-          animate={{ scale: [1, 1.03, 1] }}
-          transition={{ delay: delay + 1, duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          whileHover={{ y: -6, scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          style={{ animation: `breathe ${5 + delay}s ease-in-out infinite` }}
         >
+          {/* Liquid glow behind on hover */}
+          <div className={cn(
+            'absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10 scale-125',
+            glowClass
+          )} />
           {icon}
         </motion.div>
-        <span className="text-sm font-medium text-foreground/70 group-hover:text-foreground transition-colors">
+        <span className="text-sm font-grotesk font-medium text-muted-foreground group-hover:text-foreground transition-colors duration-300">
           {label}
         </span>
       </Link>
