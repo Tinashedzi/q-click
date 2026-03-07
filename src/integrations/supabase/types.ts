@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      evidence_entries: {
+        Row: {
+          content: string | null
+          created_at: string
+          evidence_type: string
+          goal_id: string | null
+          id: string
+          score: number | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          evidence_type?: string
+          goal_id?: string | null
+          id?: string
+          score?: number | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          evidence_type?: string
+          goal_id?: string | null
+          id?: string
+          score?: number | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_entries_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "learning_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       journal_entries: {
         Row: {
           created_at: string
@@ -40,6 +81,45 @@ export type Database = {
           mood_emoji?: string
           mood_label?: string
           note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      learning_goals: {
+        Row: {
+          created_at: string
+          description: string | null
+          domain: string
+          id: string
+          progress: number
+          status: string
+          target_date: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          domain?: string
+          id?: string
+          progress?: number
+          status?: string
+          target_date?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          domain?: string
+          id?: string
+          progress?: number
+          status?: string
+          target_date?: string | null
+          title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -201,6 +281,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      rubrics: {
+        Row: {
+          created_at: string
+          criteria: Json
+          generated_by_ai: boolean
+          goal_id: string | null
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          criteria?: Json
+          generated_by_ai?: boolean
+          goal_id?: string | null
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          criteria?: Json
+          generated_by_ai?: boolean
+          goal_id?: string | null
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rubrics_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "learning_goals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
