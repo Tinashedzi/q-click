@@ -36,6 +36,7 @@ const AppRoutes = () => {
   }
 
   return (
+    <ProgressProvider>
     <Layout>
       <Routes>
         <Route path="/" element={<Index />} />
