@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Heart, Bookmark, Share2, ChevronUp, ChevronDown, Sparkles, Flame, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useProgress } from '@/contexts/ProgressContext';
 
 interface FeedCard {
   id: string;
