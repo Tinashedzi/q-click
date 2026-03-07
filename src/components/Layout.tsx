@@ -16,6 +16,7 @@ const pageVariants = {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
+  const isHome = location.pathname === '/';
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -31,9 +32,9 @@ const Layout = ({ children }: LayoutProps) => {
         }}
       />
 
-      <Header />
-      <TabNav />
-      <main className={`${location.pathname === '/' ? 'pt-14 md:pt-14' : 'pt-14 md:pt-[6.25rem] pb-20 md:pb-8'} relative z-10`}>
+      {!isHome && <Header />}
+      {!isHome && <TabNav />}
+      <main className={`${isHome ? '' : 'pt-14 md:pt-[6.25rem] pb-20 md:pb-8'} relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}

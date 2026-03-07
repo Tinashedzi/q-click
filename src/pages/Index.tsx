@@ -15,7 +15,7 @@ const Index = () => {
   const [cognitiveMode, setCognitiveMode] = useState<'explorer' | 'deep-focus'>('explorer');
 
   return (
-    <div className="relative w-full" style={{ height: 'calc(100vh - 3.5rem)' }}>
+    <div className="relative w-full h-screen">
       <OnboardingTour />
 
       {/* Wavey transition background layer */}
