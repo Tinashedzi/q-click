@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Heart, Compass, Hammer, Sparkles, Pencil, Library, Trophy, ArrowRight } from 'lucide-react';
+import { Sparkles, Pencil, Library, Trophy, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import AmbientCircle from '@/components/AmbientCircle';
 import TotemIcon from '@/components/TotemIcon';
@@ -8,10 +8,11 @@ import JournalOverlay from '@/components/JournalOverlay';
 import FloatingParticles from '@/components/FloatingParticles';
 import DeloresGreeting from '@/components/DeloresGreeting';
 import OnboardingTour from '@/components/OnboardingTour';
+import { OasisSvg, GlossaSvg, DeloresSvg, ForgeSvg } from '@/components/icons/TotemSvgs';
 
 const totems = [
   {
-    icon: <Compass className="w-7 h-7 sm:w-8 sm:h-8" />,
+    icon: <OasisSvg className="w-8 h-8 sm:w-10 sm:h-10" />,
     label: 'Oasis',
     description: 'Wisdom and guidance',
     path: '/oasis',
@@ -20,7 +21,7 @@ const totems = [
     id: 'totem-oasis',
   },
   {
-    icon: <BookOpen className="w-7 h-7 sm:w-8 sm:h-8" />,
+    icon: <GlossaSvg className="w-8 h-8 sm:w-10 sm:h-10" />,
     label: 'Glossa',
     description: 'Explore universal meanings',
     path: '/glossa',
@@ -29,7 +30,7 @@ const totems = [
     id: 'totem-glossa',
   },
   {
-    icon: <Heart className="w-7 h-7 sm:w-8 sm:h-8" />,
+    icon: <DeloresSvg className="w-8 h-8 sm:w-10 sm:h-10" />,
     label: 'Delores',
     description: 'Emotional intelligence',
     path: '/delores',
@@ -38,7 +39,7 @@ const totems = [
     id: 'totem-delores',
   },
   {
-    icon: <Hammer className="w-7 h-7 sm:w-8 sm:h-8" />,
+    icon: <ForgeSvg className="w-8 h-8 sm:w-10 sm:h-10" />,
     label: 'Forge',
     description: 'Create and build',
     path: '/forge',
