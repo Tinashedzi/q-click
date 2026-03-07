@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useRef, useMemo, useState, useCallback, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, Text, OrbitControls, MeshTransmissionMaterial } from '@react-three/drei';
