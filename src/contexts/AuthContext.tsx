@@ -8,7 +8,7 @@ interface Profile {
   display_name: string | null;
   avatar_url: string | null;
   bio: string | null;
-  preferences: Record<string, unknown>;
+  preferences: unknown;
 }
 
 interface AuthContextType {
