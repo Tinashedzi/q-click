@@ -45,7 +45,7 @@ serve(async (req) => {
             { role: "system", content: SYSTEM_PROMPT },
             {
               role: "user",
-              content: \`Generate a PBL quest about: "\${topic || "the future of sustainable cities"}". Belt level: \${belt_level || "white"} (beginner). Return the quest using the suggest_quest tool.\`,
+              content: `Generate a PBL quest about: "${topic || "the future of sustainable cities"}". Belt level: ${belt_level || "white"} (beginner). Return the quest using the suggest_quest tool.`,
             },
           ],
           tools: [
