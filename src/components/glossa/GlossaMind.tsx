@@ -208,25 +208,27 @@ function Edges({ edges, nodeMap, activeNode }: EdgesProps) {
     });
   }, [edges, nodeMap]);
 
+  const lines = useMemo(() => {
+    return lineData.map(({ key, a, b, points }) => {
+      const isActive = activeNode === a || activeNode === b;
+      const curve = new THREE.QuadraticBezierCurve3(points[0], points[1], points[2]);
+      const curvePoints = curve.getPoints(20);
+      const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
+      const material = new THREE.LineBasicMaterial({
+        color: isActive ? '#c9baa8' : '#6b6560',
+        transparent: true,
+        opacity: isActive ? 0.6 : 0.15,
+      });
+      const line = new THREE.Line(geometry, material);
+      return { key, line };
+    });
+  }, [lineData, activeNode]);
+
   return (
     <group ref={linesRef}>
-      {lineData.map(({ key, a, b, points }) => {
-        const isActive = activeNode === a || activeNode === b;
-        const curve = new THREE.QuadraticBezierCurve3(points[0], points[1], points[2]);
-        const curvePoints = curve.getPoints(20);
-        const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
-
-        return (
-          <line key={key} geometry={geometry}>
-            <lineBasicMaterial
-              color={isActive ? '#c9baa8' : '#6b6560'}
-              transparent
-              opacity={isActive ? 0.6 : 0.15}
-              linewidth={1}
-            />
-          </line>
-        );
-      })}
+      {lines.map(({ key, line }) => (
+        <primitive key={key} object={line} />
+      ))}
     </group>
   );
 }
