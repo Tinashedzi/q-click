@@ -36,7 +36,7 @@ serve(async (req) => {
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: \`Bearer \${LOVABLE_API_KEY}\`,
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -45,7 +45,7 @@ serve(async (req) => {
             { role: "system", content: SYSTEM_PROMPT },
             {
               role: "user",
-              content: \`Generate a PBL quest about: "\${topic || "the future of sustainable cities"}". Belt level: \${belt_level || "white"} (beginner). Return the quest using the suggest_quest tool.\`,
+              content: `Generate a PBL quest about: "${topic || "the future of sustainable cities"}". Belt level: ${belt_level || "white"} (beginner). Return the quest using the suggest_quest tool.`,
             },
           ],
           tools: [
@@ -141,7 +141,7 @@ serve(async (req) => {
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: \`Bearer \${LOVABLE_API_KEY}\`,
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -149,7 +149,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: \`You are Oasis, the Socratic Gatekeeper of Swell: The Great Archive. You guide learners through project-based quests with wisdom drawn from African proverbs, Socratic questioning, and modern pedagogy. You are warm, wise, and challenge learners to think deeply. Keep responses concise (2-4 sentences) and always end with a thought-provoking question. Use relevant African proverbs when natural.\`,
+            content: `You are Oasis, the Socratic Gatekeeper of Swell: The Great Archive. You guide learners through project-based quests with wisdom drawn from African proverbs, Socratic questioning, and modern pedagogy. You are warm, wise, and challenge learners to think deeply. Keep responses concise (2-4 sentences) and always end with a thought-provoking question. Use relevant African proverbs when natural.`,
           },
           ...(Array.isArray(topic) ? topic : [{ role: "user", content: topic }]),
         ],
