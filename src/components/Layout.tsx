@@ -33,7 +33,7 @@ const Layout = ({ children }: LayoutProps) => {
 
       <Header />
       <TabNav />
-      <main className="pt-14 md:pt-[6.25rem] pb-20 md:pb-8 relative z-10">
+      <main className={`${location.pathname === '/' ? 'pt-14 md:pt-14' : 'pt-14 md:pt-[6.25rem] pb-20 md:pb-8'} relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
