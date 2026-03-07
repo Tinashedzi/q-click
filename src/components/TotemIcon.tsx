@@ -11,13 +11,15 @@ interface TotemIconProps {
   colorClass: string;
   glowClass?: string;
   delay?: number;
+  id?: string;
 }
 
-const TotemIcon = ({ icon, label, description, path, colorClass, glowClass, delay = 0 }: TotemIconProps) => {
+const TotemIcon = ({ icon, label, description, path, colorClass, glowClass, delay = 0, id }: TotemIconProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <motion.div
+      id={id}
       initial={{ opacity: 0, y: 30, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
