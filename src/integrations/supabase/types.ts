@@ -157,6 +157,51 @@ export type Database = {
           },
         ]
       }
+      quests: {
+        Row: {
+          created_at: string
+          essential_question: string
+          estimated_hours: number
+          id: string
+          integrated_domains: string[]
+          real_world_connection: string | null
+          stages: Json
+          status: string
+          target_belt_level: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          essential_question: string
+          estimated_hours?: number
+          id?: string
+          integrated_domains?: string[]
+          real_world_connection?: string | null
+          stages?: Json
+          status?: string
+          target_belt_level?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          essential_question?: string
+          estimated_hours?: number
+          id?: string
+          integrated_domains?: string[]
+          real_world_connection?: string | null
+          stages?: Json
+          status?: string
+          target_belt_level?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
