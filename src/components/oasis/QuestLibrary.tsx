@@ -45,7 +45,7 @@ const QuestLibrary = () => {
     if (error) {
       console.error(error);
     } else {
-      setQuests(data || []);
+      setQuests((data || []) as unknown as QuestRow[]);
     }
     setLoading(false);
   };
