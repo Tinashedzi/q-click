@@ -77,7 +77,7 @@ const Index = () => {
 
       {/* Top-left: Aura Level */}
       <div className="absolute top-4 left-4 z-20">
-        <AuraLevel points={128} conceptsExplored={8} />
+        <AuraLevel />
       </div>
 
       {/* Top-center: Cognitive Mode Toggle */}

@@ -2,12 +2,12 @@ import { motion } from 'framer-motion';
 import { Award } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { belts } from '@/data/gamificationData';
+import { useProgress } from '@/contexts/ProgressContext';
 
 const BeltEngine = () => {
-  const totalPoints = parseInt(localStorage.getItem('sensage-gamification-points') || '128');
-  const currentBelt = [...belts].reverse().find(b => totalPoints >= b.pointsRequired) || belts[0];
-  const nextBelt = belts.find(b => b.pointsRequired > totalPoints);
-  const progress = nextBelt
+  const { progress, currentBelt, nextBelt } = useProgress();
+  const totalPoints = progress.wisdom_points;
+  const progressPct = nextBelt
     ? ((totalPoints - currentBelt.pointsRequired) / (nextBelt.pointsRequired - currentBelt.pointsRequired)) * 100
     : 100;
 
@@ -28,7 +28,7 @@ const BeltEngine = () => {
               strokeLinecap="round"
               strokeDasharray={`${2 * Math.PI * 42}`}
               initial={{ strokeDashoffset: 2 * Math.PI * 42 }}
-              animate={{ strokeDashoffset: 2 * Math.PI * 42 * (1 - progress / 100) }}
+              animate={{ strokeDashoffset: 2 * Math.PI * 42 * (1 - progressPct / 100) }}
               transition={{ duration: 1.5, ease: 'easeOut' }}
             />
           </svg>

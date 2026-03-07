@@ -2,16 +2,17 @@ import { motion } from 'framer-motion';
 import { Coins } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { pointRules } from '@/data/gamificationData';
+import { useProgress } from '@/contexts/ProgressContext';
 
 const PointsEngine = () => {
-  const totalPoints = parseInt(localStorage.getItem('sensage-gamification-points') || '128');
+  const { progress } = useProgress();
 
   return (
     <div className="space-y-6">
       <div className="text-center">
         <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gold/15 border border-gold/30">
           <Coins className="w-6 h-6 text-gold" />
-          <span className="text-3xl font-serif text-foreground">{totalPoints}</span>
+          <span className="text-3xl font-serif text-foreground">{progress.wisdom_points}</span>
           <span className="text-sm text-muted-foreground">WP</span>
         </motion.div>
       </div>

@@ -76,7 +76,7 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl hover:bg-gold/10 transition-colors cursor-pointer"
         >
           <Sparkles className="w-3.5 h-3.5 text-gold" />
-          <span className="text-xs font-grotesk font-medium text-foreground">128</span>
+          <span className="text-xs font-grotesk font-medium text-foreground">{progress.wisdom_points}</span>
         </motion.div>
       </Link>
 

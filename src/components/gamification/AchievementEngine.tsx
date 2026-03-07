@@ -2,9 +2,11 @@ import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { achievements } from '@/data/gamificationData';
+import { useProgress } from '@/contexts/ProgressContext';
 
 const AchievementEngine = () => {
-  const unlocked = JSON.parse(localStorage.getItem('sensage-gamification-achievements') || '[]') as string[];
+  const { progress } = useProgress();
+  const unlocked = progress.achievements;
 
   return (
     <div className="space-y-6">
