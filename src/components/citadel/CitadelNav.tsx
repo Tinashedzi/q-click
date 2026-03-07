@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Pencil, Flame, Sparkles, LogOut } from 'lucide-react';
 import { OasisSvg, GlossaSvg, DeloresSvg, ForgeSvg } from '@/components/icons/TotemSvgs';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProgress } from '@/contexts/ProgressContext';
 
 const totems = [
   { icon: <OasisSvg className="w-5 h-5 sm:w-6 sm:h-6" />, label: 'Oasis', path: '/oasis', accent: 'bg-clay/20 hover:bg-clay/30 text-clay' },
