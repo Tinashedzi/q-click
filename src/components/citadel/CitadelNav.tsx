@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Pencil } from 'lucide-react';
+import { Pencil, Flame, Sparkles, LogOut } from 'lucide-react';
 import { OasisSvg, GlossaSvg, DeloresSvg, ForgeSvg } from '@/components/icons/TotemSvgs';
+import { useAuth } from '@/contexts/AuthContext';
 
 const totems = [
   { icon: <OasisSvg className="w-5 h-5 sm:w-6 sm:h-6" />, label: 'Oasis', path: '/oasis', accent: 'bg-clay/20 hover:bg-clay/30 text-clay' },
@@ -15,13 +16,24 @@ interface CitadelNavProps {
 }
 
 const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
+  const { signOut } = useAuth();
+  const streak = 7;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.8, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="flex items-center gap-2"
+      className="flex items-center gap-1.5 px-3 py-2 rounded-2xl glass-deep"
     >
+      {/* Streak */}
+      <div className="flex items-center gap-1 px-2 py-1.5 rounded-xl">
+        <Flame className="w-3.5 h-3.5 text-destructive" />
+        <span className="text-xs font-grotesk font-medium text-foreground">{streak}</span>
+      </div>
+
+      <div className="w-px h-5 bg-white/10" />
+
       {totems.map((t, i) => (
         <motion.div
           key={t.label}
@@ -31,7 +43,7 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
         >
           <Link
             to={t.path}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl ${t.accent} transition-all duration-300 group`}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl ${t.accent} transition-all duration-300 group`}
           >
             {t.icon}
             <span className="text-xs font-grotesk opacity-70 group-hover:opacity-100 transition-opacity hidden sm:inline">
@@ -41,23 +53,42 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
         </motion.div>
       ))}
 
+      <div className="w-px h-5 bg-white/10" />
+
       {/* Journal nub */}
       <motion.button
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.2, duration: 0.4 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onJournalOpen}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-petal/15 hover:bg-petal/25 text-petal transition-all duration-300 ml-1"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-petal/15 hover:bg-petal/25 text-petal transition-all duration-300"
       >
-        <Pencil className="w-4 h-4" />
+        <Pencil className="w-3.5 h-3.5" />
         <span className="text-xs font-grotesk opacity-70 hidden sm:inline">Journal</span>
+      </motion.button>
+
+      {/* WP counter */}
+      <Link to="/gamification">
         <motion.div
-          className="w-1.5 h-1.5 rounded-full bg-petal"
-          animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl hover:bg-gold/10 transition-colors cursor-pointer"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-gold" />
+          <span className="text-xs font-grotesk font-medium text-foreground">128</span>
+        </motion.div>
+      </Link>
+
+      <div className="w-px h-5 bg-white/10" />
+
+      {/* Logout */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={signOut}
+        className="p-1.5 rounded-xl hover:bg-destructive/10 transition-colors"
+        title="Sign out"
+      >
+        <LogOut className="w-3.5 h-3.5 text-muted-foreground" />
       </motion.button>
     </motion.div>
   );
