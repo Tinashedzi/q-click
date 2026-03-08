@@ -71,7 +71,7 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
       </motion.button>
 
       {/* WP counter */}
-      <Link to="/gamification">
+      <Link to="/gamification" id="wp-counter">
         <motion.div
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.95 }}
