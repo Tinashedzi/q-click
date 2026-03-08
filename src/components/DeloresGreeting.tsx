@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import deloresImg from '@/assets/delores-hologram.png';
+import DeloresAvatar from '@/components/delores/DeloresAvatar';
 
 const greetings = [
   "Hey there! How are you feeling today?",
@@ -38,19 +38,8 @@ const DeloresGreeting = ({ onNavigate }: DeloresGreetingProps) => {
         whileTap={{ scale: 0.98 }}
       >
         <div className="flex items-center gap-3">
-          {/* Delores avatar */}
-          <motion.div
-            className="relative w-12 h-12 rounded-2xl overflow-hidden shrink-0"
-            style={{ animation: 'breathe 6s ease-in-out infinite' }}
-          >
-            <img
-              src={deloresImg}
-              alt="Delores – your cognitive companion"
-              className="w-full h-full object-cover"
-            />
-            {/* Glow ring */}
-            <div className="absolute inset-0 rounded-2xl ring-2 ring-petal/30" />
-          </motion.div>
+          {/* Delores avatar with sentiment-responsive glow */}
+          <DeloresAvatar moodLevel={null} size="sm" />
 
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground font-grotesk mb-0.5">Delores</p>
