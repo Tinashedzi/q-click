@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Scroll, BookOpen, Users, Hammer, Heart, Clock, Trash2, ChevronDown } from 'lucide-react';
+import { Scroll, BookOpen, Users, Hammer, Heart, Clock, Trash2, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useProgress } from '@/contexts/ProgressContext';
+import QuestReflection from './QuestReflection';
 
 interface QuestRow {
   id: string;
@@ -31,8 +33,10 @@ const QuestLibrary = () => {
   const [quests, setQuests] = useState<QuestRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [reflectingQuest, setReflectingQuest] = useState<QuestRow | null>(null);
   const { session } = useAuth();
   const { toast } = useToast();
+  const { addPoints } = useProgress();
 
   const fetchQuests = async () => {
     if (!session?.user) return;
@@ -53,6 +57,34 @@ const QuestLibrary = () => {
   useEffect(() => {
     fetchQuests();
   }, [session]);
+
+  const completeQuest = async (quest: QuestRow) => {
+    // Show reflection overlay first
+    setReflectingQuest(quest);
+  };
+
+  const handleReflectionSubmit = async (reflection: string) => {
+    if (!reflectingQuest || !session?.user) return;
+
+    // Update quest status to completed
+    const { error } = await supabase
+      .from('quests')
+      .update({ status: 'completed' })
+      .eq('id', reflectingQuest.id);
+
+    if (!error) {
+      setQuests(prev =>
+        prev.map(q => q.id === reflectingQuest.id ? { ...q, status: 'completed' } : q)
+      );
+      // Award WP for completing a quest
+      addPoints(50);
+      toast({ title: '🎉 Quest completed!', description: '+50 Wisdom Points earned' });
+    }
+  };
+
+  const handleReflectionClose = () => {
+    setReflectingQuest(null);
+  };
 
   const deleteQuest = async (id: string) => {
     const { error } = await supabase.from('quests').delete().eq('id', id);
@@ -82,63 +114,100 @@ const QuestLibrary = () => {
   }
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-grotesk font-medium text-muted-foreground uppercase tracking-wider">Your Quests ({quests.length})</h3>
-      {quests.map(quest => {
-        const expanded = expandedId === quest.id;
-        return (
-          <motion.div key={quest.id} layout className="rounded-xl border border-border/50 bg-card overflow-hidden">
-            <button
-              onClick={() => setExpandedId(expanded ? null : quest.id)}
-              className="w-full p-4 flex items-start gap-3 text-left hover:bg-muted/20 transition-colors"
-            >
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium text-foreground">{quest.title}</h4>
-                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{quest.essential_question}</p>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary/20 text-secondary-foreground">{quest.target_belt_level}</span>
-                  <span className="text-[10px] text-muted-foreground flex items-center gap-0.5"><Clock className="w-3 h-3" /> {quest.estimated_hours}h</span>
-                </div>
-              </div>
-              <ChevronDown className={cn('w-4 h-4 text-muted-foreground transition-transform', expanded && 'rotate-180')} />
-            </button>
-
-            <AnimatePresence>
-              {expanded && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                  className="border-t border-border/30">
-                  <div className="p-4 space-y-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {quest.integrated_domains?.map((d: string) => (
-                        <span key={d} className="px-2 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary-foreground border border-primary/20">{d}</span>
-                      ))}
-                    </div>
-                    {quest.real_world_connection && (
-                      <p className="text-xs text-muted-foreground">{quest.real_world_connection}</p>
+    <>
+      <div className="space-y-3">
+        <h3 className="text-sm font-grotesk font-medium text-muted-foreground uppercase tracking-wider">Your Quests ({quests.length})</h3>
+        {quests.map(quest => {
+          const expanded = expandedId === quest.id;
+          const isCompleted = quest.status === 'completed';
+          return (
+            <motion.div key={quest.id} layout className={cn(
+              'rounded-xl border bg-card overflow-hidden',
+              isCompleted ? 'border-primary/30 bg-primary/5' : 'border-border/50'
+            )}>
+              <button
+                onClick={() => setExpandedId(expanded ? null : quest.id)}
+                className="w-full p-4 flex items-start gap-3 text-left hover:bg-muted/20 transition-colors"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-medium text-foreground">{quest.title}</h4>
+                    {isCompleted && (
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
                     )}
-                    {Array.isArray(quest.stages) && (
-                      <div className="flex gap-2">
-                        {quest.stages.map((s: any, i: number) => {
-                          const Icon = stageIcons[s.name] || BookOpen;
-                          return (
-                            <div key={i} className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                              <Icon className="w-3 h-3" /> {s.name}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                    <Button variant="ghost" size="sm" onClick={() => deleteQuest(quest.id)} className="text-destructive hover:text-destructive">
-                      <Trash2 className="w-3.5 h-3.5 mr-1" /> Remove
-                    </Button>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        );
-      })}
-    </div>
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{quest.essential_question}</p>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <span className={cn(
+                      'text-[10px] px-2 py-0.5 rounded-full',
+                      isCompleted ? 'bg-primary/20 text-primary-foreground' : 'bg-secondary/20 text-secondary-foreground'
+                    )}>
+                      {isCompleted ? '✓ Completed' : quest.target_belt_level}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground flex items-center gap-0.5"><Clock className="w-3 h-3" /> {quest.estimated_hours}h</span>
+                  </div>
+                </div>
+                <ChevronDown className={cn('w-4 h-4 text-muted-foreground transition-transform', expanded && 'rotate-180')} />
+              </button>
+
+              <AnimatePresence>
+                {expanded && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                    className="border-t border-border/30">
+                    <div className="p-4 space-y-3">
+                      <div className="flex flex-wrap gap-1.5">
+                        {quest.integrated_domains?.map((d: string) => (
+                          <span key={d} className="px-2 py-0.5 rounded-full text-[10px] bg-primary/10 text-primary-foreground border border-primary/20">{d}</span>
+                        ))}
+                      </div>
+                      {quest.real_world_connection && (
+                        <p className="text-xs text-muted-foreground">{quest.real_world_connection}</p>
+                      )}
+                      {Array.isArray(quest.stages) && (
+                        <div className="flex gap-2">
+                          {quest.stages.map((s: any, i: number) => {
+                            const Icon = stageIcons[s.name] || BookOpen;
+                            return (
+                              <div key={i} className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                <Icon className="w-3 h-3" /> {s.name}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        {!isCompleted && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => completeQuest(quest)}
+                            className="text-primary hover:text-primary gap-1.5"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Complete Quest
+                          </Button>
+                        )}
+                        <Button variant="ghost" size="sm" onClick={() => deleteQuest(quest.id)} className="text-destructive hover:text-destructive">
+                          <Trash2 className="w-3.5 h-3.5 mr-1" /> Remove
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Reflection overlay */}
+      {reflectingQuest && (
+        <QuestReflection
+          questTitle={reflectingQuest.title}
+          onClose={handleReflectionClose}
+          onSubmit={handleReflectionSubmit}
+        />
+      )}
+    </>
   );
 };
 
