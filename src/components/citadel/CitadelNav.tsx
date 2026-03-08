@@ -45,6 +45,7 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
         >
           <Link
             to={t.path}
+            id={`totem-${t.label.toLowerCase()}`}
             className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl ${t.accent} transition-all duration-300 group`}
           >
             {t.icon}
