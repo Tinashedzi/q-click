@@ -67,10 +67,6 @@ const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
       <AnimatePresence mode="wait">
         {step === 'mood' && (
           <motion.div key="mood" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="text-center space-y-6">
-            {/* Delores avatar centered */}
-            <div className="flex justify-center">
-              <DeloresAvatar moodLevel={selectedMood} size="lg" />
-            </div>
             <h3 className="text-2xl font-serif text-foreground">How are you feeling today?</h3>
             <p className="text-sm text-muted-foreground">Delores is here to listen</p>
             <div className="flex justify-center gap-3">
