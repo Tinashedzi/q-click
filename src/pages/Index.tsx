@@ -9,6 +9,7 @@ import OnboardingTour from '@/components/OnboardingTour';
 import CognitiveModeToggle from '@/components/cognitive/CognitiveModeToggle';
 import ExplorerFeed from '@/components/cognitive/ExplorerFeed';
 import DeepFocusMode from '@/components/cognitive/DeepFocusMode';
+import DeloresFloatingWidget from '@/components/DeloresFloatingWidget';
 
 const Index = () => {
   const [journalOpen, setJournalOpen] = useState(false);
