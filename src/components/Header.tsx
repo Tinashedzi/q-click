@@ -1,4 +1,4 @@
-import { Sparkles, Flame, LogOut } from 'lucide-react';
+import { Sparkles, Flame, LogOut, Home } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
