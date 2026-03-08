@@ -185,7 +185,9 @@ const GoalSetting = () => {
                 </button>
               </div>
               <div className="flex items-center gap-3">
-                <Progress value={goal.progress} className="flex-1 h-2" />
+                <div className="flex-1 h-2">
+                  <Progress value={goal.progress} />
+                </div>
                 <span className="text-xs text-muted-foreground font-mono w-8 text-right">{goal.progress}%</span>
               </div>
               <div className="flex gap-1 mt-2">
