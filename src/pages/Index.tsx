@@ -147,6 +147,9 @@ const Index = () => {
 
       {/* Journal Overlay */}
       <JournalOverlay isOpen={journalOpen} onClose={() => setJournalOpen(false)} />
+
+      {/* Floating Delores widget */}
+      <DeloresFloatingWidget />
     </div>
   );
 };

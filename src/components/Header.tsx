@@ -41,8 +41,21 @@ const Header = () => {
           </Link>
         </motion.div>
 
-        {/* Right: Streak + WP + Logout */}
+        {/* Right: Home + Streak + WP + Logout */}
         <div className="flex items-center gap-2">
+          <Link to="/">
+            <motion.div
+              initial={{ opacity: 0, x: 15 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.05 }}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-2 rounded-xl glass-deep hover:bg-accent/10 transition-colors"
+              title="Home"
+            >
+              <Home className="w-3.5 h-3.5 text-muted-foreground" />
+            </motion.div>
+          </Link>
           <motion.div
             initial={{ opacity: 0, x: 15 }}
             animate={{ opacity: 1, x: 0 }}
