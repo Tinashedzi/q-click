@@ -180,8 +180,8 @@ const DeepFocusMode = () => {
         </div>
       )}
 
-      {/* Input */}
-      <div className="p-4 sm:px-8 border-t border-border/30">
+      {/* Input — lifted above bottom nav */}
+      <div className="p-4 sm:px-8 border-t border-border/30 mb-2">
         <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2">
           <Input
             value={input}
