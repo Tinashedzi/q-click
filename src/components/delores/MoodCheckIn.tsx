@@ -67,10 +67,6 @@ const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
       <AnimatePresence mode="wait">
         {step === 'mood' && (
           <motion.div key="mood" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="text-center space-y-6">
-            {/* Delores avatar centered */}
-            <div className="flex justify-center">
-              <DeloresAvatar moodLevel={selectedMood} size="lg" />
-            </div>
             <h3 className="text-2xl font-serif text-foreground">How are you feeling today?</h3>
             <p className="text-sm text-muted-foreground">Delores is here to listen</p>
             <div className="flex justify-center gap-3">
@@ -97,9 +93,6 @@ const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
         {step === 'factors' && selectedMood && (
           <motion.div key="factors" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="space-y-5">
             <div className="text-center space-y-3">
-              <div className="flex justify-center">
-                <DeloresAvatar moodLevel={selectedMood} size="md" />
-              </div>
               <span className="text-4xl">{moodLevels[selectedMood - 1].emoji}</span>
               <h3 className="text-xl font-serif text-foreground">What's contributing to this feeling?</h3>
             </div>
