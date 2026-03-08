@@ -5,12 +5,24 @@ import { Textarea } from '@/components/ui/textarea';
 import { moodLevels, contributingChips, saveMoodEntry, getDeloresResponse } from '@/data/deloresResponses';
 import { emotionalMatrix } from '@/engine/delores-matrix';
 import { cn } from '@/lib/utils';
+import DeloresAvatar from './DeloresAvatar';
+import ResponseArchetype, { getArchetype } from './ResponseArchetype';
 
 interface MoodCheckInProps {
   onComplete?: () => void;
+  onMoodChange?: (level: number | null) => void;
 }
 
-const MoodCheckIn = ({ onComplete }: MoodCheckInProps) => {
+/** Mood-specific ring colors for the emoji buttons */
+const moodRingColors: Record<number, string> = {
+  1: 'border-[hsl(260_30%_72%)] bg-[hsl(260_30%_85%/0.2)]',
+  2: 'border-[hsl(220_40%_70%)] bg-[hsl(220_40%_80%/0.2)]',
+  3: 'border-[hsl(108_18%_65%)] bg-[hsl(108_18%_75%/0.2)]',
+  4: 'border-[hsl(330_25%_70%)] bg-[hsl(330_25%_80%/0.2)]',
+  5: 'border-[hsl(43_47%_54%)] bg-[hsl(43_47%_65%/0.2)]',
+};
+
+const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
   const [step, setStep] = useState<'mood' | 'factors' | 'response'>('mood');
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [selectedFactors, setSelectedFactors] = useState<string[]>([]);
@@ -19,6 +31,7 @@ const MoodCheckIn = ({ onComplete }: MoodCheckInProps) => {
 
   const handleMoodSelect = (level: number) => {
     setSelectedMood(level);
+    onMoodChange?.(level);
     setStep('factors');
   };
 
@@ -54,24 +67,41 @@ const MoodCheckIn = ({ onComplete }: MoodCheckInProps) => {
       <AnimatePresence mode="wait">
         {step === 'mood' && (
           <motion.div key="mood" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="text-center space-y-6">
+            {/* Delores avatar centered */}
+            <div className="flex justify-center">
+              <DeloresAvatar moodLevel={selectedMood} size="lg" />
+            </div>
             <h3 className="text-2xl font-serif text-foreground">How are you feeling today?</h3>
             <p className="text-sm text-muted-foreground">Delores is here to listen</p>
             <div className="flex justify-center gap-3">
               {moodLevels.map(m => (
-                <button key={m.level} onClick={() => handleMoodSelect(m.level)} className="flex flex-col items-center gap-1 p-3 rounded-xl border border-border/50 bg-card hover:bg-accent/10 hover:border-accent transition-all">
+                <motion.button
+                  key={m.level}
+                  onClick={() => handleMoodSelect(m.level)}
+                  whileHover={{ scale: 1.1, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={cn(
+                    'flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all duration-300',
+                    moodRingColors[m.level],
+                    'hover:shadow-lg'
+                  )}
+                >
                   <span className="text-3xl">{m.emoji}</span>
                   <span className="text-[10px] text-muted-foreground font-medium">{m.label}</span>
-                </button>
+                </motion.button>
               ))}
             </div>
           </motion.div>
         )}
 
-        {step === 'factors' && (
+        {step === 'factors' && selectedMood && (
           <motion.div key="factors" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="space-y-5">
-            <div className="text-center">
-              <span className="text-4xl">{selectedMood && moodLevels[selectedMood - 1].emoji}</span>
-              <h3 className="text-xl font-serif text-foreground mt-2">What's contributing to this feeling?</h3>
+            <div className="text-center space-y-3">
+              <div className="flex justify-center">
+                <DeloresAvatar moodLevel={selectedMood} size="md" />
+              </div>
+              <span className="text-4xl">{moodLevels[selectedMood - 1].emoji}</span>
+              <h3 className="text-xl font-serif text-foreground">What's contributing to this feeling?</h3>
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
               {contributingChips.map(chip => (
@@ -90,17 +120,14 @@ const MoodCheckIn = ({ onComplete }: MoodCheckInProps) => {
           </motion.div>
         )}
 
-        {step === 'response' && deloresResponse && (
+        {step === 'response' && deloresResponse && selectedMood && (
           <motion.div key="response" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-            <div className="p-5 rounded-xl bg-accent/10 border border-accent/20 space-y-3">
-              <p className="text-foreground font-serif text-lg italic">"{randomMsg}"</p>
-              {randomWisdom && (
-                <div className="pt-3 border-t border-accent/20">
-                  <p className="text-sm text-muted-foreground italic">"{randomWisdom.proverb}"</p>
-                  {randomWisdom.translation && <p className="text-xs text-muted-foreground mt-1">— {randomWisdom.culture}: {randomWisdom.translation}</p>}
-                </div>
-              )}
-            </div>
+            {/* Archetype-styled response */}
+            <ResponseArchetype
+              type={getArchetype(selectedMood)}
+              message={randomMsg}
+              wisdom={randomWisdom}
+            />
 
             {!showAdvice ? (
               <Button variant="outline" onClick={() => setShowAdvice(true)} className="w-full">Ask Delores for advice</Button>
@@ -118,7 +145,7 @@ const MoodCheckIn = ({ onComplete }: MoodCheckInProps) => {
             )}
 
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => { setStep('mood'); setSelectedMood(null); setSelectedFactors([]); setFreeText(''); setShowAdvice(false); }} className="flex-1">Check in again</Button>
+              <Button variant="outline" onClick={() => { setStep('mood'); setSelectedMood(null); onMoodChange?.(null); setSelectedFactors([]); setFreeText(''); setShowAdvice(false); }} className="flex-1">Check in again</Button>
               <Button onClick={onComplete} className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90">Continue learning</Button>
             </div>
           </motion.div>
