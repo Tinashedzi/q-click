@@ -60,6 +60,7 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
 
       {/* Journal nub */}
       <motion.button
+        id="journal-nub"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onJournalOpen}
