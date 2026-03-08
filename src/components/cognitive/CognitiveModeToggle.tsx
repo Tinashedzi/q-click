@@ -12,6 +12,7 @@ const CognitiveModeToggle = ({ mode, onChange }: CognitiveModeToggleProps) => {
 
   return (
     <motion.div
+      id="cognitive-toggle"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       className="relative flex items-center gap-1 p-1 rounded-2xl glass-deep"

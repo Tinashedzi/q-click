@@ -113,8 +113,8 @@ const DeepFocusMode = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Scroll area */}
+    <div className="flex flex-col h-full pt-16 pb-20">
+      {/* Scroll area — padded to clear fixed top controls and bottom nav */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 space-y-6">
         <AnimatePresence>
           {exchanges.map((ex) => (
@@ -180,8 +180,8 @@ const DeepFocusMode = () => {
         </div>
       )}
 
-      {/* Input */}
-      <div className="p-4 sm:px-8 border-t border-border/30">
+      {/* Input — lifted above bottom nav */}
+      <div className="p-4 sm:px-8 border-t border-border/30 mb-2">
         <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2">
           <Input
             value={input}

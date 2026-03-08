@@ -12,9 +12,9 @@ interface TourStep {
 
 const TOUR_STEPS: TourStep[] = [
   {
-    targetId: 'ambient-orb',
+    targetId: 'cognitive-toggle',
     title: 'Welcome to Sensage',
-    body: 'This is your Sanctuary — the heart of your cognitive journey. The orb breathes with you.',
+    body: 'Switch between Explorer mode — a swipeable knowledge feed — and Deep Focus, your Socratic thinking space.',
     emoji: '✨',
     position: 'bottom',
   },
@@ -23,28 +23,28 @@ const TOUR_STEPS: TourStep[] = [
     title: 'Oasis',
     body: 'Your wisdom & guidance module. Ask questions, get masterclasses, and find your focus here.',
     emoji: '🌿',
-    position: 'bottom',
+    position: 'top',
   },
   {
     targetId: 'totem-glossa',
     title: 'Glossa',
     body: 'Explore the universal meaning of words across languages, cultures, and time.',
     emoji: '📚',
-    position: 'bottom',
+    position: 'top',
   },
   {
     targetId: 'totem-delores',
     title: 'Delores',
     body: 'Your emotional intelligence companion. She senses how you feel and adapts your learning.',
     emoji: '💜',
-    position: 'bottom',
+    position: 'top',
   },
   {
     targetId: 'totem-forge',
     title: 'The Forge',
     body: 'Turn ideas into creations — concept maps, scripts, games. This is your maker space.',
     emoji: '🔨',
-    position: 'bottom',
+    position: 'top',
   },
   {
     targetId: 'journal-nub',
@@ -56,9 +56,9 @@ const TOUR_STEPS: TourStep[] = [
   {
     targetId: 'wp-counter',
     title: 'Wisdom Points',
-    body: 'Every action earns you WP. Track your progress, streaks, and achievements here.',
+    body: 'Every action earns you WP. Swipe through Explorer cards, complete quests, and level up your belt.',
     emoji: '⭐',
-    position: 'bottom',
+    position: 'top',
   },
 ];
 
