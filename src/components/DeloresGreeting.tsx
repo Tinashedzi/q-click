@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import deloresImg from '@/assets/delores-hologram.png';
+import DeloresAvatar from '@/components/delores/DeloresAvatar';
 
 const greetings = [
   "Hey there! How are you feeling today?",
