@@ -1,10 +1,8 @@
-import { useState, Suspense, lazy } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import AuraLevel from '@/components/citadel/AuraLevel';
 import BeltRing from '@/components/citadel/BeltRing';
-import CitadelNav from '@/components/citadel/CitadelNav';
-import JournalOverlay from '@/components/JournalOverlay';
 import OnboardingTour from '@/components/OnboardingTour';
 import CognitiveModeToggle from '@/components/cognitive/CognitiveModeToggle';
 import ExplorerFeed from '@/components/cognitive/ExplorerFeed';
@@ -12,14 +10,13 @@ import DeepFocusMode from '@/components/cognitive/DeepFocusMode';
 import DeloresFloatingWidget from '@/components/DeloresFloatingWidget';
 
 const Index = () => {
-  const [journalOpen, setJournalOpen] = useState(false);
   const [cognitiveMode, setCognitiveMode] = useState<'explorer' | 'deep-focus'>('explorer');
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <OnboardingTour />
 
-      {/* Ambient background — light Silicon Porcelain gradients */}
+      {/* Ambient background */}
       <div className="absolute inset-0 z-0">
         <div
           className="absolute inset-0"
@@ -32,7 +29,6 @@ const Index = () => {
             `,
           }}
         />
-        {/* Subtle morphing blob */}
         <motion.div
           className="absolute w-[400px] h-[400px] top-[10%] right-[5%] opacity-[0.07]"
           style={{
@@ -67,9 +63,8 @@ const Index = () => {
 
       {/* Content layer */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Top bar - stacked on mobile, row on desktop */}
+        {/* Top bar */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between px-4 sm:px-6 pt-3 gap-2 sm:gap-0">
-        {/* Row 1: Belt + Brand */}
           <div className="flex items-center justify-between w-full">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -85,7 +80,6 @@ const Index = () => {
               </div>
             </motion.div>
 
-            {/* Brand - always visible, pinned right */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -101,7 +95,6 @@ const Index = () => {
             </motion.div>
           </div>
 
-          {/* Row 2 on mobile: Cognitive Toggle centered */}
           <div className="flex justify-center sm:absolute sm:top-4 sm:left-1/2 sm:-translate-x-1/2 z-30">
             <CognitiveModeToggle mode={cognitiveMode} onChange={setCognitiveMode} />
           </div>
@@ -142,15 +135,7 @@ const Index = () => {
             </motion.div>
           </AnimatePresence>
         </div>
-
-        {/* Bottom: Totem Navigation */}
-        <div className="pb-4 px-4 flex justify-center">
-          <CitadelNav onJournalOpen={() => setJournalOpen(true)} />
-        </div>
       </div>
-
-      {/* Journal Overlay */}
-      <JournalOverlay isOpen={journalOpen} onClose={() => setJournalOpen(false)} />
 
       {/* Floating Delores widget */}
       <DeloresFloatingWidget />
