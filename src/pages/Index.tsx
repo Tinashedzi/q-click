@@ -16,48 +16,26 @@ const Index = () => {
     <div className="relative w-full h-screen overflow-hidden">
       <OnboardingTour />
 
-      {/* Ambient background */}
-      <div className="absolute inset-0 z-0">
+      {/* Video background */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          src="/videos/ambient-bg.mp4"
+        />
+        {/* Blend overlay to match Silicon Porcelain palette */}
         <div
           className="absolute inset-0"
           style={{
             background: `
-              radial-gradient(ellipse 90% 70% at 20% 20%, hsl(var(--lavender-mist) / 0.3), transparent),
-              radial-gradient(ellipse 60% 50% at 80% 80%, hsl(var(--wave-cyan) / 0.12), transparent),
-              radial-gradient(ellipse 80% 60% at 50% 50%, hsl(var(--celadon-jade) / 0.06), transparent),
-              hsl(var(--background))
+              radial-gradient(ellipse 90% 70% at 20% 20%, hsl(var(--lavender-mist) / 0.35), transparent),
+              radial-gradient(ellipse 60% 50% at 80% 80%, hsl(var(--wave-cyan) / 0.15), transparent),
+              hsl(var(--background) / 0.55)
             `,
           }}
-        />
-        <motion.div
-          className="absolute w-[400px] h-[400px] top-[10%] right-[5%] opacity-[0.07]"
-          style={{
-            background: 'linear-gradient(135deg, hsl(var(--lavender-mist)), hsl(var(--wave-cyan)))',
-          }}
-          animate={{
-            borderRadius: [
-              '42% 58% 60% 40% / 45% 55% 45% 55%',
-              '55% 45% 40% 60% / 60% 40% 55% 45%',
-              '45% 55% 55% 45% / 40% 60% 45% 55%',
-              '42% 58% 60% 40% / 45% 55% 45% 55%',
-            ],
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute w-[300px] h-[300px] bottom-[15%] left-[10%] opacity-[0.05]"
-          style={{
-            background: 'linear-gradient(135deg, hsl(var(--ochre-gold)), hsl(var(--sun-baked-clay)))',
-          }}
-          animate={{
-            borderRadius: [
-              '55% 45% 40% 60% / 60% 40% 55% 45%',
-              '42% 58% 60% 40% / 45% 55% 45% 55%',
-              '60% 40% 45% 55% / 55% 45% 60% 40%',
-              '55% 45% 40% 60% / 60% 40% 55% 45%',
-            ],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
