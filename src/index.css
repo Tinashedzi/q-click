@@ -38,20 +38,20 @@
     --radius: 0.75rem;
 
     /* Sensage custom tokens */
-    --celadon-jade: 108 18% 69%;
-    --sun-baked-clay: 22 30% 74%;
-    --lotus-petal: 330 25% 75%;
-    --ochre-gold: 43 47% 54%;
+    --celadon-jade: 108 22% 55%;
+    --sun-baked-clay: 22 35% 60%;
+    --lotus-petal: 330 30% 62%;
+    --ochre-gold: 43 55% 48%;
     --celadon-dew: 18 22% 78%;
-    --ceramic-white: 34 33% 93%;
-    --frosted-glass: 34 33% 97%;
+    --ceramic-white: 34 30% 94%;
+    --frosted-glass: 34 28% 97%;
 
     /* Wavey palette additions */
-    --deep-sea: 230 35% 25%;
-    --lavender-mist: 260 30% 85%;
+    --deep-sea: 230 40% 20%;
+    --lavender-mist: 260 35% 78%;
     --cloud-white: 220 20% 96%;
-    --silk-blue: 220 40% 70%;
-    --wave-cyan: 190 45% 65%;
+    --silk-blue: 220 45% 58%;
+    --wave-cyan: 190 50% 50%;
 
     /* Gradients */
     --gradient-jade: linear-gradient(135deg, hsl(108 18% 69%), hsl(108 25% 78%));
