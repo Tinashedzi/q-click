@@ -67,40 +67,44 @@ const Index = () => {
 
       {/* Content layer */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Top bar */}
-        <div className="flex items-start justify-between px-4 sm:px-6 pt-4">
-          {/* Left: Aura + Belt Ring */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-center gap-3"
-          >
-            <Link to="/gamification">
-              <BeltRing />
-            </Link>
-            <AuraLevel />
-          </motion.div>
+        {/* Top bar - stacked on mobile, row on desktop */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between px-4 sm:px-6 pt-3 gap-2 sm:gap-0">
+          {/* Row 1 on mobile: Belt + Brand */}
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-2"
+            >
+              <Link to="/gamification">
+                <BeltRing />
+              </Link>
+              <div className="hidden sm:block">
+                <AuraLevel />
+              </div>
+            </motion.div>
 
-          {/* Center: Cognitive Toggle */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30">
-            <CognitiveModeToggle mode={cognitiveMode} onChange={setCognitiveMode} />
+            {/* Brand - always visible */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="text-right"
+            >
+              <h1 className="text-xl sm:text-3xl font-serif text-foreground tracking-tight">
+                Sensage
+              </h1>
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground/70 italic font-serif tracking-wide">
+                the architecture of thought
+              </p>
+            </motion.div>
           </div>
 
-          {/* Right: Brand */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-right pt-1"
-          >
-            <h1 className="text-2xl sm:text-3xl font-serif text-foreground/80 tracking-tight">
-              Sensage
-            </h1>
-            <p className="text-[10px] text-muted-foreground/50 italic font-serif tracking-wide mt-0.5">
-              the architecture of thought
-            </p>
-          </motion.div>
+          {/* Row 2 on mobile: Cognitive Toggle centered */}
+          <div className="flex justify-center sm:absolute sm:top-4 sm:left-1/2 sm:-translate-x-1/2 z-30">
+            <CognitiveModeToggle mode={cognitiveMode} onChange={setCognitiveMode} />
+          </div>
         </div>
 
         {/* Main content area */}
