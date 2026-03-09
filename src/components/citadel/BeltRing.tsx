@@ -88,7 +88,7 @@ const BeltRing = () => {
         )}
       </AnimatePresence>
 
-      {/* Belt ring */}
+      {/* Belt ring with video */}
       <motion.div
         className="relative w-16 h-16 cursor-pointer"
         whileHover={{ scale: 1.08 }}
@@ -96,7 +96,20 @@ const BeltRing = () => {
         animate={justEarned ? { scale: [1, 1.15, 1] } : {}}
         transition={justEarned ? { duration: 0.6, ease: 'easeOut' } : {}}
       >
-        <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
+        {/* Circular video background */}
+        <div className="absolute inset-[3px] rounded-full overflow-hidden z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            src="/videos/belt-animation.mp4"
+          />
+        </div>
+
+        {/* SVG progress ring overlay */}
+        <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90 relative z-10">
           {/* Background track */}
           <circle
             cx="32" cy="32" r="28"
@@ -132,10 +145,9 @@ const BeltRing = () => {
           />
         </svg>
 
-        {/* Center icon */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <Award className="w-4 h-4 text-gold mb-0.5" />
-          <span className="text-[8px] font-grotesk font-medium text-foreground/70 leading-none">
+        {/* Level badge overlay */}
+        <div className="absolute bottom-0 right-0 z-20 bg-background/80 backdrop-blur-sm rounded-full px-1 py-0.5 border border-border/50">
+          <span className="text-[7px] font-grotesk font-semibold text-foreground/80 leading-none">
             Lv{currentBelt.level}
           </span>
         </div>
