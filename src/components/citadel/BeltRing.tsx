@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award } from 'lucide-react';
 import { useProgress } from '@/contexts/ProgressContext';
 import { useState, useEffect, useRef } from 'react';
 
@@ -14,7 +13,6 @@ const BeltRing = () => {
     ? ((totalPoints - currentBelt.pointsRequired) / (nextBelt.pointsRequired - currentBelt.pointsRequired)) * 100
     : 100;
 
-  // Detect belt level-up
   useEffect(() => {
     if (currentBelt.level > prevBeltRef.current) {
       setShowLevelUp(true);
@@ -25,7 +23,6 @@ const BeltRing = () => {
     prevBeltRef.current = currentBelt.level;
   }, [currentBelt.level]);
 
-  // Detect points change for pulse
   const [justEarned, setJustEarned] = useState(false);
   useEffect(() => {
     if (totalPoints > prevPointsRef.current) {
@@ -41,7 +38,6 @@ const BeltRing = () => {
 
   return (
     <div className="relative">
-      {/* Level-up celebration overlay */}
       <AnimatePresence>
         {showLevelUp && (
           <motion.div
@@ -51,7 +47,6 @@ const BeltRing = () => {
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
             className="absolute -inset-8 z-50 flex items-center justify-center pointer-events-none"
           >
-            {/* Burst rings */}
             {[0, 1, 2].map(i => (
               <motion.div
                 key={i}
@@ -61,7 +56,6 @@ const BeltRing = () => {
                 transition={{ duration: 1.2, delay: i * 0.15, ease: 'easeOut' }}
               />
             ))}
-            {/* Sparkle particles */}
             {Array.from({ length: 8 }).map((_, i) => (
               <motion.div
                 key={`spark-${i}`}
@@ -88,29 +82,14 @@ const BeltRing = () => {
         )}
       </AnimatePresence>
 
-      {/* Belt ring with video */}
       <motion.div
-        className="relative w-16 h-16 cursor-pointer"
+        className="relative w-14 h-14 cursor-pointer"
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         animate={justEarned ? { scale: [1, 1.15, 1] } : {}}
         transition={justEarned ? { duration: 0.6, ease: 'easeOut' } : {}}
       >
-        {/* Circular video background */}
-        <div className="absolute inset-[3px] rounded-full overflow-hidden z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-            src="/videos/belt-animation.mp4"
-          />
-        </div>
-
-        {/* SVG progress ring overlay */}
-        <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90 relative z-10">
-          {/* Background track */}
+        <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
           <circle
             cx="32" cy="32" r="28"
             fill="none"
@@ -118,7 +97,6 @@ const BeltRing = () => {
             strokeWidth="3"
             opacity={0.4}
           />
-          {/* Progress arc */}
           <motion.circle
             cx="32" cy="32" r="28"
             fill="none"
@@ -130,7 +108,6 @@ const BeltRing = () => {
             animate={{ strokeDashoffset: circumference * (1 - progressPct / 100) }}
             transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
           />
-          {/* Glow on the tip */}
           <motion.circle
             cx="32" cy="32" r="28"
             fill="none"
@@ -145,10 +122,10 @@ const BeltRing = () => {
           />
         </svg>
 
-        {/* Level badge overlay */}
-        <div className="absolute bottom-0 right-0 z-20 bg-background/80 backdrop-blur-sm rounded-full px-1 py-0.5 border border-border/50">
-          <span className="text-[7px] font-grotesk font-semibold text-foreground/80 leading-none">
-            Lv{currentBelt.level}
+        {/* Center icon */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-xs font-grotesk font-bold text-foreground">
+            {currentBelt.level}
           </span>
         </div>
 
