@@ -27,55 +27,61 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.8, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="relative"
     >
-      {/* Main bar */}
-      <div className="flex items-center bg-[hsl(var(--deep-sea))] rounded-2xl px-2 py-2 shadow-elevated relative">
+      <div className="flex items-end bg-[hsl(var(--deep-sea))] rounded-2xl px-2 py-2 shadow-elevated relative overflow-visible">
         {/* Streak */}
-        <div className="flex items-center gap-1 px-2.5 py-1.5">
+        <div className="flex items-center gap-1 px-2.5 py-1.5 self-center">
           <Flame className="w-4 h-4 text-destructive" />
           <span className="text-xs font-grotesk font-semibold text-white/90">{streak}</span>
         </div>
 
-        <div className="w-px h-6 bg-white/15 mx-1" />
+        <div className="w-px h-6 bg-white/15 mx-1 self-center" />
 
         {/* Nav items */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-end gap-0.5 relative">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
-              <Link key={item.path} to={item.path} className="relative">
+              <Link
+                key={item.path}
+                to={item.path}
+                className="relative flex flex-col items-center"
+              >
                 {isActive ? (
-                  <motion.div
-                    layoutId="citadel-active"
-                    className="relative flex flex-col items-center"
-                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                  >
-                    {/* Raised circle */}
+                  <div className="relative flex flex-col items-center w-12">
+                    {/* Raised circle with layoutId for sliding */}
                     <motion.div
-                      className="w-12 h-12 -mt-7 rounded-full bg-[hsl(var(--celadon-jade))] flex items-center justify-center shadow-lg border-[3px] border-[hsl(var(--deep-sea))]"
-                      initial={{ y: 10, scale: 0.8 }}
-                      animate={{ y: 0, scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      layoutId="citadel-bubble"
+                      className="w-12 h-12 -mb-1 rounded-full bg-[hsl(var(--celadon-jade))] flex items-center justify-center shadow-lg border-[3px] border-[hsl(var(--deep-sea))]"
+                      transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+                      style={{ marginTop: -20 }}
                     >
-                      <div className="text-white">{item.icon}</div>
+                      <motion.div
+                        className="text-white"
+                        initial={{ scale: 0.5, rotate: -30 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.05 }}
+                      >
+                        {item.icon}
+                      </motion.div>
                     </motion.div>
                     <motion.span
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      layoutId="citadel-label"
                       className="text-[9px] font-grotesk font-semibold text-white mt-0.5"
+                      transition={{ type: 'spring', stiffness: 300, damping: 28 }}
                     >
                       {item.label}
                     </motion.span>
-                  </motion.div>
+                  </div>
                 ) : (
                   <motion.div
                     className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/10 transition-colors"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.15 }}
+                    whileTap={{ scale: 0.85 }}
                   >
-                    <div className="text-white/60">{item.icon}</div>
+                    <div className="text-white/50">{item.icon}</div>
                   </motion.div>
                 )}
               </Link>
@@ -83,20 +89,20 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
           })}
         </div>
 
-        <div className="w-px h-6 bg-white/15 mx-1" />
+        <div className="w-px h-6 bg-white/15 mx-1 self-center" />
 
         {/* Journal */}
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={onJournalOpen}
-          className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/10 transition-colors"
+          className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/10 transition-colors self-center"
         >
           <Pencil className="w-4 h-4 text-accent" />
         </motion.button>
 
         {/* WP */}
-        <Link to="/gamification">
+        <Link to="/gamification" className="self-center">
           <motion.div
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.95 }}
@@ -112,7 +118,7 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={signOut}
-          className="p-2 rounded-xl hover:bg-destructive/20 transition-colors"
+          className="p-2 rounded-xl hover:bg-destructive/20 transition-colors self-center"
           title="Sign out"
         >
           <LogOut className="w-4 h-4 text-white/50" />

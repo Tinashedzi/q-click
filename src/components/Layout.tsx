@@ -1,8 +1,10 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import TabNav from './TabNav';
+import CitadelNav from './citadel/CitadelNav';
+import JournalOverlay from './JournalOverlay';
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,6 +19,7 @@ const pageVariants = {
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const [journalOpen, setJournalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -34,7 +37,7 @@ const Layout = ({ children }: LayoutProps) => {
 
       {!isHome && <Header />}
       {!isHome && <TabNav />}
-      <main className={`${isHome ? '' : 'pt-14 md:pt-[6.25rem] pb-20 md:pb-8'} relative z-10`}>
+      <main className={`${isHome ? '' : 'pt-14 md:pt-[6.25rem]'} pb-24 relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -48,6 +51,13 @@ const Layout = ({ children }: LayoutProps) => {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Global bottom CitadelNav */}
+      <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4">
+        <CitadelNav onJournalOpen={() => setJournalOpen(true)} />
+      </div>
+
+      <JournalOverlay isOpen={journalOpen} onClose={() => setJournalOpen(false)} />
     </div>
   );
 };
