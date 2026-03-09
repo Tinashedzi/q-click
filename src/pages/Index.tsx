@@ -69,28 +69,28 @@ const Index = () => {
       <div className="relative z-10 flex flex-col h-full">
         {/* Top bar - stacked on mobile, row on desktop */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between px-4 sm:px-6 pt-3 gap-2 sm:gap-0">
-          {/* Row 1 on mobile: Belt + Brand */}
-          <div className="flex items-center justify-between w-full sm:w-auto">
+        {/* Row 1: Belt + Brand */}
+          <div className="flex items-center justify-between w-full">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-3 min-w-0 flex-1"
             >
-              <Link to="/gamification">
+              <Link to="/gamification" className="shrink-0">
                 <BeltRing />
               </Link>
-              <div className="hidden sm:block">
+              <div className="hidden md:block min-w-0">
                 <AuraLevel />
               </div>
             </motion.div>
 
-            {/* Brand - always visible */}
+            {/* Brand - always visible, pinned right */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-right"
+              className="text-right shrink-0 ml-4"
             >
               <h1 className="text-xl sm:text-3xl font-serif text-foreground tracking-tight">
                 Sensage
