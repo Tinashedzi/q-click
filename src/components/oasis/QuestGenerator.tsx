@@ -251,6 +251,13 @@ const QuestGenerator = () => {
                     ))}
                   </div>
 
+                  {/* Show Forge link on Creation stage */}
+                  {quest.stages[activeStage]?.name === 'Creation' && (
+                    <div className="mt-4">
+                      <QuestToForge topic={topic} />
+                    </div>
+                  )}
+
                   {activeStage < quest.stages.length - 1 && (
                     <Button variant="outline" size="sm" className="mt-4" onClick={() => setActiveStage(activeStage + 1)}>
                       Next: {quest.stages[activeStage + 1].name} <ChevronRight className="w-3.5 h-3.5 ml-1" />
