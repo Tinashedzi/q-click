@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import CreditExhaustedFallback from './CreditExhaustedFallback';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
