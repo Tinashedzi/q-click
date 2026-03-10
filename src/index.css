@@ -6,78 +6,80 @@
 
 @layer base {
   :root {
-    /* Silicon Porcelain + Wavey Theme */
-    --background: 34 30% 94%;
-    --foreground: 240 25% 10%;
+    /* ═══════════════════════════════════════════
+       2026 Bioluminescent Deep Tech — "Liquid Glass"
+       ═══════════════════════════════════════════ */
 
-    --card: 34 28% 96%;
-    --card-foreground: 240 25% 10%;
+    /* Foundation: Midnight Teal — deep, near-black with organic depth */
+    --background: 160 55% 7%;
+    --foreground: 184 85% 93%;
 
-    --popover: 34 28% 96%;
-    --popover-foreground: 240 25% 10%;
+    --card: 160 40% 9%;
+    --card-foreground: 184 85% 93%;
 
-    --primary: 108 22% 55%;
-    --primary-foreground: 0 0% 100%;
+    --popover: 160 45% 8%;
+    --popover-foreground: 184 85% 93%;
 
-    --secondary: 22 35% 60%;
-    --secondary-foreground: 0 0% 100%;
+    /* Electric Cyan — active / primary glow */
+    --primary: 183 100% 50%;
+    --primary-foreground: 160 55% 7%;
 
-    --muted: 34 18% 86%;
-    --muted-foreground: 240 12% 38%;
+    /* Sunset Coral — warm pop accent (replaces gold) */
+    --secondary: 5 100% 69%;
+    --secondary-foreground: 160 55% 7%;
 
-    --accent: 330 30% 62%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 160 25% 14%;
+    --muted-foreground: 184 40% 60%;
 
-    --destructive: 0 60% 50%;
-    --destructive-foreground: 0 0% 98%;
+    /* Accent = Coral glow */
+    --accent: 5 100% 69%;
+    --accent-foreground: 160 55% 7%;
 
-    --border: 34 20% 85%;
-    --input: 34 20% 85%;
-    --ring: 108 18% 69%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 184 85% 93%;
+
+    --border: 160 20% 16%;
+    --input: 160 20% 16%;
+    --ring: 183 100% 50%;
 
     --radius: 0.75rem;
 
-    /* Sensage custom tokens */
-    --celadon-jade: 108 22% 55%;
-    --sun-baked-clay: 22 35% 60%;
-    --lotus-petal: 330 30% 62%;
-    --ochre-gold: 43 55% 48%;
-    --celadon-dew: 18 22% 78%;
-    --ceramic-white: 34 30% 94%;
-    --frosted-glass: 34 28% 97%;
+    /* Bioluminescent tokens */
+    --midnight-teal: 160 55% 7%;
+    --electric-cyan: 183 100% 50%;
+    --sunset-coral: 5 100% 69%;
+    --pearl-mist: 184 85% 93%;
+    --deep-lagoon: 170 45% 12%;
+    --abyss: 160 60% 4%;
 
-    /* Wavey palette additions */
-    --deep-sea: 230 40% 20%;
-    --lavender-mist: 260 35% 78%;
-    --cloud-white: 220 20% 96%;
-    --silk-blue: 220 45% 58%;
-    --wave-cyan: 190 50% 50%;
+    /* Glass material tokens */
+    --glass-surface: 0 0% 100% / 0.05;
+    --glass-border: 0 0% 100% / 0.1;
+    --glass-highlight: 0 0% 100% / 0.15;
+
+    /* Glow shadows */
+    --shadow-cyan-glow: 0 0 40px hsl(183 100% 50% / 0.1);
+    --shadow-coral-glow: 0 0 40px hsl(5 100% 69% / 0.1);
+    --shadow-deep: 0 12px 50px -12px hsl(160 60% 4% / 0.6);
+    --shadow-float: 0 8px 32px hsl(160 60% 4% / 0.4);
+    --shadow-card: 0 4px 30px -8px hsl(160 60% 4% / 0.5);
+    --shadow-soft: 0 2px 20px -4px hsl(160 60% 4% / 0.3);
 
     /* Gradients */
-    --gradient-jade: linear-gradient(135deg, hsl(108 18% 69%), hsl(108 25% 78%));
-    --gradient-clay: linear-gradient(135deg, hsl(22 30% 74%), hsl(22 35% 82%));
-    --gradient-gold: linear-gradient(135deg, hsl(43 47% 54%), hsl(43 55% 65%));
-    --gradient-petal: linear-gradient(135deg, hsl(330 25% 75%), hsl(330 30% 83%));
-    --gradient-wavey: linear-gradient(135deg, hsl(230 35% 25% / 0.05), hsl(260 30% 85% / 0.3), hsl(190 45% 65% / 0.1));
-    --gradient-silk: linear-gradient(170deg, hsl(260 30% 92%), hsl(220 40% 94%), hsl(34 33% 93%));
+    --gradient-cyan: linear-gradient(135deg, hsl(183 100% 50%), hsl(183 80% 40%));
+    --gradient-coral: linear-gradient(135deg, hsl(5 100% 69%), hsl(15 90% 55%));
+    --gradient-lagoon: linear-gradient(170deg, hsl(160 55% 7%), hsl(170 45% 12%), hsl(183 60% 15%));
+    --gradient-bioluminescent: radial-gradient(ellipse at 30% 20%, hsl(183 100% 50% / 0.08), transparent 50%),
+                                radial-gradient(ellipse at 70% 80%, hsl(5 100% 69% / 0.05), transparent 50%);
 
-    /* Shadows */
-    --shadow-soft: 0 2px 20px -4px hsl(220 20% 20% / 0.08);
-    --shadow-card: 0 4px 30px -8px hsl(220 20% 20% / 0.1);
-    --shadow-elevated: 0 12px 50px -12px hsl(220 20% 20% / 0.18);
-    --shadow-glow-jade: 0 0 30px -5px hsl(108 18% 69% / 0.3);
-    --shadow-glow-petal: 0 0 30px -5px hsl(330 25% 75% / 0.3);
-    --shadow-glow-gold: 0 0 30px -5px hsl(43 47% 54% / 0.3);
-    --shadow-glow-clay: 0 0 30px -5px hsl(22 30% 74% / 0.3);
-
-    --sidebar-background: 34 33% 95%;
-    --sidebar-foreground: 220 20% 30%;
-    --sidebar-primary: 108 18% 69%;
-    --sidebar-primary-foreground: 220 20% 15%;
-    --sidebar-accent: 34 20% 90%;
-    --sidebar-accent-foreground: 220 20% 20%;
-    --sidebar-border: 34 20% 85%;
-    --sidebar-ring: 108 18% 69%;
+    --sidebar-background: 160 45% 8%;
+    --sidebar-foreground: 184 85% 93%;
+    --sidebar-primary: 183 100% 50%;
+    --sidebar-primary-foreground: 160 55% 7%;
+    --sidebar-accent: 160 25% 14%;
+    --sidebar-accent-foreground: 184 85% 93%;
+    --sidebar-border: 160 20% 16%;
+    --sidebar-ring: 183 100% 50%;
   }
 }
 
@@ -96,9 +98,10 @@
     font-family: 'Fraunces', 'Georgia', serif;
     font-weight: 400;
     letter-spacing: -0.02em;
+    color: hsl(var(--pearl-mist));
   }
 
-  /* Smooth scrollbar */
+  /* Sleek scrollbar for the deep-sea theme */
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -106,45 +109,85 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.2);
+    background: hsl(var(--electric-cyan) / 0.2);
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.35);
+    background: hsl(var(--electric-cyan) / 0.4);
   }
 }
 
 @layer utilities {
+  /* ═══════════════════════════════════════
+     Liquid Glass Materials
+     ═══════════════════════════════════════ */
+
   .glass-surface {
-    @apply backdrop-blur-xl border border-border/40;
-    background: hsl(var(--frosted-glass) / 0.72);
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.015'/%3E%3C/svg%3E");
+    @apply backdrop-blur-xl saturate-150;
+    background: hsl(var(--glass-surface));
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--shadow-cyan-glow);
   }
 
   .glass-deep {
-    @apply backdrop-blur-2xl border border-white/20;
+    @apply backdrop-blur-2xl saturate-150;
     background: linear-gradient(
       135deg,
-      hsl(var(--frosted-glass) / 0.6),
-      hsl(var(--cloud-white) / 0.4)
+      hsl(0 0% 100% / 0.06),
+      hsl(0 0% 100% / 0.02)
     );
-    box-shadow: 
-      inset 0 1px 0 hsl(0 0% 100% / 0.3),
-      0 8px 32px hsl(var(--deep-sea) / 0.08);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.1),
+      var(--shadow-float);
   }
 
   .glass-wavey {
-    @apply backdrop-blur-2xl border border-white/25;
+    @apply backdrop-blur-3xl saturate-150;
     background: linear-gradient(
       170deg,
-      hsl(var(--lavender-mist) / 0.25),
-      hsl(var(--cloud-white) / 0.4),
-      hsl(var(--wave-cyan) / 0.1)
+      hsl(var(--electric-cyan) / 0.06),
+      hsl(0 0% 100% / 0.04),
+      hsl(var(--sunset-coral) / 0.03)
     );
+    border: 1px solid hsl(var(--glass-border));
     box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.4),
-      0 12px 40px hsl(var(--deep-sea) / 0.06);
+      inset 0 1px 0 hsl(0 0% 100% / 0.08),
+      var(--shadow-deep);
   }
+
+  /* Refraction card — sharpens on hover like focusing underwater */
+  .glass-refract {
+    @apply glass-deep rounded-3xl transition-all duration-700;
+    filter: blur(0.3px);
+  }
+  .glass-refract:hover {
+    filter: blur(0px);
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.15),
+      var(--shadow-cyan-glow),
+      var(--shadow-deep);
+  }
+
+  /* Z-depth layers */
+  .depth-0 {
+    transform: translateZ(0);
+    z-index: 30;
+  }
+  .depth-1 {
+    transform: translateZ(0);
+    z-index: 20;
+    opacity: 0.95;
+  }
+  .depth-2 {
+    transform: translateZ(0);
+    z-index: 10;
+    opacity: 0.85;
+  }
+
+  /* ═══════════════════════════════════════
+     Typography
+     ═══════════════════════════════════════ */
 
   .text-serif {
     font-family: 'Fraunces', 'Georgia', serif;
@@ -164,21 +207,33 @@
     font-weight: 400;
   }
 
-  /* Wavey liquid button */
+  /* Bioluminescent text shimmer */
+  .text-glow {
+    text-shadow: 0 0 20px hsl(var(--electric-cyan) / 0.4),
+                 0 0 60px hsl(var(--electric-cyan) / 0.1);
+  }
+
+  .text-coral-glow {
+    text-shadow: 0 0 20px hsl(var(--sunset-coral) / 0.4),
+                 0 0 60px hsl(var(--sunset-coral) / 0.1);
+  }
+
+  /* ═══════════════════════════════════════
+     Buttons — Liquid / Jelly
+     ═══════════════════════════════════════ */
+
   .btn-liquid {
     @apply relative overflow-hidden rounded-2xl font-medium transition-all duration-500;
-    background: linear-gradient(135deg, hsl(var(--lavender-mist) / 0.5), hsl(var(--cloud-white) / 0.6));
-    backdrop-filter: blur(20px);
-    border: 1px solid hsl(0 0% 100% / 0.3);
-    box-shadow: 
-      0 4px 20px hsl(var(--deep-sea) / 0.08),
-      inset 0 1px 0 hsl(0 0% 100% / 0.4);
+    background: linear-gradient(135deg, hsl(var(--electric-cyan) / 0.15), hsl(0 0% 100% / 0.05));
+    backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--shadow-cyan-glow);
   }
   .btn-liquid::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, hsl(var(--wave-cyan) / 0.15), hsl(var(--lavender-mist) / 0.2));
+    background: linear-gradient(135deg, hsl(var(--electric-cyan) / 0.2), hsl(var(--sunset-coral) / 0.1));
     opacity: 0;
     transition: opacity 0.5s ease;
   }
@@ -187,13 +242,43 @@
   }
   .btn-liquid:hover {
     transform: translateY(-2px);
-    box-shadow: 
-      0 8px 30px hsl(var(--deep-sea) / 0.12),
-      inset 0 1px 0 hsl(0 0% 100% / 0.5);
+    box-shadow:
+      0 0 50px hsl(var(--electric-cyan) / 0.2),
+      var(--shadow-float);
   }
   .btn-liquid:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(0) scale(0.96);
   }
+
+  /* Jelly click (squash & stretch via framer-motion, but CSS fallback) */
+  .btn-jelly {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .btn-jelly:active {
+    transform: scale(0.92);
+  }
+
+  /* ═══════════════════════════════════════
+     Cards & Surfaces
+     ═══════════════════════════════════════ */
+
+  .card-wavey {
+    @apply glass-refract p-6;
+  }
+  .card-wavey:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  /* ═══════════════════════════════════════
+     Glow Effects
+     ═══════════════════════════════════════ */
+
+  .glow-cyan { box-shadow: var(--shadow-cyan-glow); }
+  .glow-coral { box-shadow: var(--shadow-coral-glow); }
+  .glow-jade { box-shadow: var(--shadow-cyan-glow); }
+  .glow-petal { box-shadow: var(--shadow-coral-glow); }
+  .glow-gold { box-shadow: var(--shadow-cyan-glow); }
+  .glow-clay { box-shadow: var(--shadow-coral-glow); }
 
   /* Ripple effect */
   .ripple-effect {
@@ -204,7 +289,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), hsl(0 0% 100% / 0.3) 0%, transparent 60%);
+    background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), hsl(var(--electric-cyan) / 0.2) 0%, transparent 60%);
     opacity: 0;
     transition: opacity 0.6s ease;
   }
@@ -223,33 +308,19 @@
 
   /* Silk flow text */
   .silk-text {
-    background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--muted-foreground)), hsl(var(--foreground)));
+    background: linear-gradient(135deg, hsl(var(--pearl-mist)), hsl(var(--electric-cyan)), hsl(var(--pearl-mist)));
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: silk-shift 8s ease-in-out infinite;
   }
-
-  /* Wavey card hover */
-  .card-wavey {
-    @apply glass-deep rounded-3xl p-6 transition-all duration-500;
-  }
-  .card-wavey:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 
-      0 20px 60px hsl(var(--deep-sea) / 0.12),
-      inset 0 1px 0 hsl(0 0% 100% / 0.4);
-  }
-
-  /* Glow effects per module */
-  .glow-jade { box-shadow: var(--shadow-glow-jade); }
-  .glow-petal { box-shadow: var(--shadow-glow-petal); }
-  .glow-gold { box-shadow: var(--shadow-glow-gold); }
-  .glow-clay { box-shadow: var(--shadow-glow-clay); }
 }
 
-/* Keyframe animations */
+/* ═══════════════════════════════════════
+   Keyframe Animations
+   ═══════════════════════════════════════ */
+
 @keyframes silk-shift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -306,4 +377,14 @@
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes refract-in {
+  0% { filter: blur(4px); opacity: 0; transform: translateY(20px) scale(0.97); }
+  100% { filter: blur(0px); opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes bioluminescent-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }

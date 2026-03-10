@@ -88,11 +88,16 @@ export default {
       boxShadow: {
         soft: "var(--shadow-soft)",
         card: "var(--shadow-card)",
-        elevated: "var(--shadow-elevated)",
-        "glow-jade": "var(--shadow-glow-jade)",
-        "glow-petal": "var(--shadow-glow-petal)",
-        "glow-gold": "var(--shadow-glow-gold)",
-        "glow-clay": "var(--shadow-glow-clay)",
+        float: "var(--shadow-float)",
+        deep: "var(--shadow-deep)",
+        "glow-cyan": "var(--shadow-cyan-glow)",
+        "glow-coral": "var(--shadow-coral-glow)",
+        // Legacy aliases
+        elevated: "var(--shadow-deep)",
+        "glow-jade": "var(--shadow-cyan-glow)",
+        "glow-petal": "var(--shadow-coral-glow)",
+        "glow-gold": "var(--shadow-cyan-glow)",
+        "glow-clay": "var(--shadow-coral-glow)",
       },
       keyframes: {
         "accordion-down": {
