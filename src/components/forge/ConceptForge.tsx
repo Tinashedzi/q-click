@@ -26,6 +26,7 @@ const ConceptForge = () => {
     if (!topic.trim()) return;
     setGenerating(true);
     setResult(null);
+    setErrorType(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('concept-forge', {
@@ -33,7 +34,11 @@ const ConceptForge = () => {
       });
 
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        if (data.error.includes('credits') || data.error.includes('Payment')) { setErrorType('credits'); return; }
+        if (data.error.includes('Rate limit')) { setErrorType('rate-limit'); return; }
+        throw new Error(data.error);
+      }
 
       setResult({ topic, ...data });
 
@@ -41,8 +46,10 @@ const ConceptForge = () => {
       saved.push({ topic, createdAt: new Date().toISOString() });
       localStorage.setItem('sensage-forge-concepts', JSON.stringify(saved));
     } catch (err: any) {
-      console.error('Concept forge error:', err);
-      toast.error(err.message || 'Failed to forge concept. Try again.');
+      const msg = err.message || '';
+      if (msg.includes('402') || msg.includes('credits')) { setErrorType('credits'); }
+      else if (msg.includes('429') || msg.includes('Rate')) { setErrorType('rate-limit'); }
+      else { toast.error(msg || 'Failed to forge concept. Try again.'); }
     } finally {
       setGenerating(false);
     }
