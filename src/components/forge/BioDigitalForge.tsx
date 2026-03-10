@@ -126,6 +126,8 @@ const BioDigitalForge = ({ onAddToCanvas, prefillTopic }: BioDigitalForgeProps) 
         </div>
       </div>
 
+      {errorType && <CreditExhaustedFallback type={errorType} onRetry={explore} />}
+
       {/* BioDigital Human 3D Viewer */}
       {bioDigitalUrl && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
