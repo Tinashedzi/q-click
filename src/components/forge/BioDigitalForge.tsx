@@ -45,6 +45,7 @@ const BioDigitalForge = ({ onAddToCanvas, prefillTopic }: BioDigitalForgeProps) 
   const [result, setResult] = useState<BioResult | null>(null);
   const [bioDigitalUrl, setBioDigitalUrl] = useState<string | null>(null);
   const [showViewer, setShowViewer] = useState(false);
+  const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
 
   const explore = async () => {
     if (!query.trim()) return;
