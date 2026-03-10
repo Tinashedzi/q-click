@@ -21,12 +21,14 @@ const Delores = () => {
 
       <div className="container relative z-10 mx-auto px-4 py-8 max-w-2xl">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="text-center mb-8 space-y-3">
-            <div className="flex justify-center">
+          <div className="mb-8 space-y-3">
+            <div className="flex items-center gap-4">
               <DeloresAvatar moodLevel={currentMood} size="lg" isListening={isListening} />
+              <div>
+                <h1 className="text-4xl font-serif text-foreground">Delores</h1>
+                <p className="text-muted-foreground">Your emotional intelligence companion</p>
+              </div>
             </div>
-            <h1 className="text-4xl font-serif text-foreground">Delores</h1>
-            <p className="text-muted-foreground">Your emotional intelligence companion</p>
             <VoiceInput
               onTranscript={(text) => {
                 setIsListening(false);
