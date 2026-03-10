@@ -76,6 +76,8 @@ const SpatialForge = () => {
 
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+          <SpatialScene title={result.title} dimensions={result.spatialDimensions} />
+
           <div className="rounded-2xl border border-border/30 bg-card p-5">
             <h3 className="text-lg font-serif text-foreground mb-2">{result.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">{result.description}</p>
