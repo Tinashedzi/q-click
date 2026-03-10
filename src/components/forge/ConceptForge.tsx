@@ -20,6 +20,7 @@ const ConceptForge = () => {
   const [topic, setTopic] = useState('');
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<GeneratedConcept | null>(null);
+  const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
 
   const generateConcept = async () => {
     if (!topic.trim()) return;
