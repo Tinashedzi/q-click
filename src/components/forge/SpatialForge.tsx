@@ -31,13 +31,22 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
     if (!query.trim()) return;
     setLoading(true);
     setResult(null);
+    setErrorType(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('concept-collision', {
         body: { conceptA: query.trim(), conceptB: 'Spatial Intelligence & 3D Visualization' },
       });
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        if (data.error.includes('credits') || data.error.includes('Payment')) {
+          setErrorType('credits'); return;
+        }
+        if (data.error.includes('Rate limit')) {
+          setErrorType('rate-limit'); return;
+        }
+        throw new Error(data.error);
+      }
 
       setResult({
         title: data.theme,
@@ -47,7 +56,10 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
         arPossibilities: data.questions || [],
       });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to explore. Try again.');
+      const msg = err.message || '';
+      if (msg.includes('402') || msg.includes('credits')) { setErrorType('credits'); }
+      else if (msg.includes('429') || msg.includes('Rate')) { setErrorType('rate-limit'); }
+      else { toast.error(msg || 'Failed to explore. Try again.'); }
     } finally {
       setLoading(false);
     }
