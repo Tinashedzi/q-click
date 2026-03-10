@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hammer, Zap, FlaskConical, Gamepad2, Route, FileText, BarChart3, Sparkles, LayoutGrid } from 'lucide-react';
+import { Hammer, Zap, FlaskConical, Gamepad2, Route, FileText, BarChart3, Sparkles, LayoutGrid, Brain, Box } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ConceptCollision from '@/components/forge/ConceptCollision';
-import ConceptCanvas, { type CanvasNode } from '@/components/forge/ConceptCanvas';
+import ConceptCanvas, { type CanvasNode, type CanvasEdge } from '@/components/forge/ConceptCanvas';
 import ConceptForge from '@/components/forge/ConceptForge';
 import ScriptForge from '@/components/forge/ScriptForge';
 import VideoForge from '@/components/forge/VideoForge';
@@ -12,6 +12,8 @@ import PathForge from '@/components/forge/PathForge';
 import ExperimentLab from '@/components/forge/ExperimentLab';
 import ForgeDashboard from '@/components/forge/ForgeDashboard';
 import ForgeToQuest from '@/components/forge/ForgeToQuest';
+import BioDigitalForge from '@/components/forge/BioDigitalForge';
+import SpatialForge from '@/components/forge/SpatialForge';
 
 const COLORS = [
   'hsl(var(--primary))',
@@ -27,6 +29,8 @@ const tabs = [
   { id: 'canvas', label: 'Canvas', icon: LayoutGrid },
   { id: 'experiment', label: 'Lab', icon: FlaskConical },
   { id: 'concept', label: 'Concept', icon: Sparkles },
+  { id: 'bio', label: 'Bio', icon: Brain },
+  { id: 'spatial', label: 'Spatial', icon: Box },
   { id: 'script', label: 'Script', icon: FileText },
   { id: 'game', label: 'Game', icon: Gamepad2 },
   { id: 'path', label: 'Path', icon: Route },
@@ -37,6 +41,7 @@ const Forge = () => {
   const [activeTab, setActiveTab] = useState('collision');
   const [currentTopic, setCurrentTopic] = useState('');
   const [canvasNodes, setCanvasNodes] = useState<CanvasNode[]>([]);
+  const [canvasEdges, setCanvasEdges] = useState<CanvasEdge[]>([]);
 
   const handleExperimentSelect = (topic: string) => {
     setCurrentTopic(topic);
@@ -115,7 +120,7 @@ const Forge = () => {
               {currentTopic && <ForgeToQuest topic={currentTopic} />}
             </>
           )}
-          {activeTab === 'canvas' && <ConceptCanvas nodes={canvasNodes} onNodesChange={setCanvasNodes} />}
+          {activeTab === 'canvas' && <ConceptCanvas nodes={canvasNodes} onNodesChange={setCanvasNodes} edges={canvasEdges} onEdgesChange={setCanvasEdges} />}
           {activeTab === 'experiment' && <ExperimentLab prefilledTopic={currentTopic} />}
           {activeTab === 'concept' && (
             <>
@@ -123,6 +128,8 @@ const Forge = () => {
               <ForgeToQuest topic={currentTopic || undefined} />
             </>
           )}
+          {activeTab === 'bio' && <BioDigitalForge />}
+          {activeTab === 'spatial' && <SpatialForge />}
           {activeTab === 'script' && <ScriptForge />}
           {activeTab === 'game' && <GameForge />}
           {activeTab === 'path' && <PathForge />}
