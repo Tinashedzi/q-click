@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Zap, Globe } from 'lucide-react';
+import { Sparkles, Globe, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface GeneratedConcept {
   topic: string;
@@ -18,44 +20,34 @@ const ConceptForge = () => {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<GeneratedConcept | null>(null);
 
-  const generateConcept = () => {
+  const generateConcept = async () => {
     if (!topic.trim()) return;
     setGenerating(true);
-    setTimeout(() => {
-      setResult({
-        topic: topic,
-        universalMeaning: `the essence of ${topic.toLowerCase()} as understood across cultures`,
-        translations: [
-          { lang: 'English', word: topic, pronunciation: `/${topic.toLowerCase()}/` },
-          { lang: 'Shona', word: `chi${topic.toLowerCase().slice(0, 4)}a`, pronunciation: `/chi${topic.toLowerCase().slice(0, 4)}a/` },
-          { lang: 'Xhosa', word: `u${topic.toLowerCase().slice(0, 4)}o`, pronunciation: `/u${topic.toLowerCase().slice(0, 4)}o/` },
-          { lang: 'Afrikaans', word: `${topic.toLowerCase().slice(0, 5)}heid`, pronunciation: `/${topic.toLowerCase().slice(0, 5)}heit/` },
-          { lang: 'Tswana', word: `bo${topic.toLowerCase().slice(0, 4)}i`, pronunciation: `/bo${topic.toLowerCase().slice(0, 4)}i/` },
-        ],
-        examples: [
-          `The ${topic.toLowerCase()} connects all living things.`,
-          `In Shona culture, ${topic.toLowerCase()} is deeply revered.`,
-          `Understanding ${topic.toLowerCase()} requires patience and reflection.`,
-        ],
-        related: ['wisdom', 'nature', 'culture', 'spirit'],
+    setResult(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('concept-forge', {
+        body: { topic: topic.trim() },
       });
-      setGenerating(false);
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setResult({ topic, ...data });
 
       const saved = JSON.parse(localStorage.getItem('sensage-forge-concepts') || '[]');
       saved.push({ topic, createdAt: new Date().toISOString() });
       localStorage.setItem('sensage-forge-concepts', JSON.stringify(saved));
-    }, 1500);
+    } catch (err: any) {
+      console.error('Concept forge error:', err);
+      toast.error(err.message || 'Failed to forge concept. Try again.');
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3 p-4 rounded-xl border border-gold/30 bg-gold/5">
-        <Zap className="w-5 h-5 text-gold" />
-        <p className="text-sm text-muted-foreground">
-          Template mode active. <span className="text-foreground font-medium">Enable Lovable Cloud + AI</span> for intelligent concept generation.
-        </p>
-      </div>
-
       <div className="flex gap-3">
         <Input
           value={topic}
@@ -66,9 +58,7 @@ const ConceptForge = () => {
         />
         <Button onClick={generateConcept} disabled={generating || !topic.trim()}>
           {generating ? (
-            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
-              <Sparkles className="w-4 h-4" />
-            </motion.div>
+            <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
             <Sparkles className="w-4 h-4" />
           )}
@@ -81,7 +71,7 @@ const ConceptForge = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Globe className="w-5 h-5 text-jade" />
+                <Globe className="w-5 h-5 text-primary" />
                 ⟦{result.universalMeaning}⟧
               </CardTitle>
             </CardHeader>
@@ -110,7 +100,7 @@ const ConceptForge = () => {
                 <h4 className="text-sm font-medium text-muted-foreground mb-2">Related Concepts</h4>
                 <div className="flex flex-wrap gap-2">
                   {result.related.map((r) => (
-                    <span key={r} className="px-3 py-1 rounded-full text-xs bg-jade/10 text-foreground border border-jade/20">{r}</span>
+                    <span key={r} className="px-3 py-1 rounded-full text-xs bg-primary/10 text-foreground border border-primary/20">{r}</span>
                   ))}
                 </div>
               </div>
