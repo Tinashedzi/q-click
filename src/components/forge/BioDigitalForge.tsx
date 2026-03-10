@@ -53,13 +53,18 @@ const BioDigitalForge = ({ onAddToCanvas, prefillTopic }: BioDigitalForgeProps) 
     setResult(null);
     setBioDigitalUrl(null);
     setShowViewer(false);
+    setErrorType(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('concept-collision', {
         body: { conceptA: query.trim(), conceptB: 'Human Biology' },
       });
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        if (data.error.includes('credits') || data.error.includes('Payment')) { setErrorType('credits'); return; }
+        if (data.error.includes('Rate limit')) { setErrorType('rate-limit'); return; }
+        throw new Error(data.error);
+      }
 
       setResult({
         system: data.theme,
@@ -72,7 +77,10 @@ const BioDigitalForge = ({ onAddToCanvas, prefillTopic }: BioDigitalForgeProps) 
       const modelUrl = findBioDigitalModel(query);
       if (modelUrl) setBioDigitalUrl(modelUrl);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to explore. Try again.');
+      const msg = err.message || '';
+      if (msg.includes('402') || msg.includes('credits')) { setErrorType('credits'); }
+      else if (msg.includes('429') || msg.includes('Rate')) { setErrorType('rate-limit'); }
+      else { toast.error(msg || 'Failed to explore. Try again.'); }
     } finally {
       setLoading(false);
     }
