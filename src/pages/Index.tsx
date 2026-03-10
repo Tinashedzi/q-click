@@ -12,6 +12,7 @@ import DeloresFloatingWidget from '@/components/DeloresFloatingWidget';
 
 const Index = () => {
   const [cognitiveMode, setCognitiveMode] = useState<'explorer' | 'deep-focus'>('explorer');
+  const navigate = useNavigate();
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
