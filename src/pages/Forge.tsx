@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hammer, Zap, FlaskConical, Gamepad2, Route, FileText, BarChart3, Sparkles } from 'lucide-react';
+import { Hammer, Zap, FlaskConical, Gamepad2, Route, FileText, BarChart3, Sparkles, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ConceptCollision from '@/components/forge/ConceptCollision';
+import ConceptCanvas from '@/components/forge/ConceptCanvas';
 import ConceptForge from '@/components/forge/ConceptForge';
 import ScriptForge from '@/components/forge/ScriptForge';
 import VideoForge from '@/components/forge/VideoForge';
@@ -14,6 +15,7 @@ import ForgeToQuest from '@/components/forge/ForgeToQuest';
 
 const tabs = [
   { id: 'collision', label: 'Collide', icon: Zap, description: 'Merge two concepts' },
+  { id: 'canvas', label: 'Canvas', icon: LayoutGrid, description: 'Visual concept map' },
   { id: 'experiment', label: 'Lab', icon: FlaskConical, description: 'Interactive sims' },
   { id: 'concept', label: 'Concept', icon: Sparkles, description: 'Single concept forge' },
   { id: 'script', label: 'Script', icon: FileText, description: 'Video scripts' },
@@ -25,10 +27,18 @@ const tabs = [
 const Forge = () => {
   const [activeTab, setActiveTab] = useState('collision');
   const [currentTopic, setCurrentTopic] = useState('');
+  const canvasRef = useRef<{ addNode: (theme: string, description: string) => void } | null>(null);
 
   const handleExperimentSelect = (topic: string) => {
     setCurrentTopic(topic);
     setActiveTab('experiment');
+  };
+
+  const handleAddToCanvas = (result: { theme: string; description: string }) => {
+    if (canvasRef.current) {
+      canvasRef.current.addNode(result.theme, result.description);
+    }
+    setActiveTab('canvas');
   };
 
   return (
@@ -46,7 +56,7 @@ const Forge = () => {
         </div>
       </motion.div>
 
-      {/* Tab pills — horizontal scroll on mobile */}
+      {/* Tab pills */}
       <div className="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-hide">
         <div className="flex gap-1.5 min-w-max">
           {tabs.map((tab) => {
@@ -91,10 +101,11 @@ const Forge = () => {
         >
           {activeTab === 'collision' && (
             <>
-              <ConceptCollision onExperimentSelect={handleExperimentSelect} />
+              <ConceptCollision onExperimentSelect={handleExperimentSelect} onAddToCanvas={handleAddToCanvas} />
               {currentTopic && <ForgeToQuest topic={currentTopic} />}
             </>
           )}
+          {activeTab === 'canvas' && <ConceptCanvasWrapper ref={canvasRef} />}
           {activeTab === 'experiment' && <ExperimentLab prefilledTopic={currentTopic} />}
           {activeTab === 'concept' && (
             <>
@@ -111,5 +122,22 @@ const Forge = () => {
     </div>
   );
 };
+
+import { forwardRef, useImperativeHandle, useCallback } from 'react';
+
+const ConceptCanvasWrapper = forwardRef<{ addNode: (theme: string, description: string) => void }>((_, ref) => {
+  const [key, setKey] = useState(0);
+  const addNodeRef = useRef<((theme: string, desc: string) => void) | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    addNode: (theme: string, description: string) => {
+      addNodeRef.current?.(theme, description);
+    },
+  }));
+
+  return <ConceptCanvas key={key} ref={addNodeRef as any} />;
+});
+
+ConceptCanvasWrapper.displayName = 'ConceptCanvasWrapper';
 
 export default Forge;
