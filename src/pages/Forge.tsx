@@ -14,6 +14,7 @@ import ForgeDashboard from '@/components/forge/ForgeDashboard';
 import ForgeToQuest from '@/components/forge/ForgeToQuest';
 import BioDigitalForge from '@/components/forge/BioDigitalForge';
 import SpatialForge from '@/components/forge/SpatialForge';
+import ForgeInstructions from '@/components/forge/ForgeInstructions';
 
 const COLORS = [
   'hsl(var(--primary))',
