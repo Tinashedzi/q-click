@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hammer, Zap, FlaskConical, Gamepad2, Route, FileText, BarChart3, Sparkles } from 'lucide-react';
+import { Hammer, Zap, FlaskConical, Gamepad2, Route, FileText, BarChart3, Sparkles, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ConceptCollision from '@/components/forge/ConceptCollision';
+import ConceptCanvas, { type CanvasNode } from '@/components/forge/ConceptCanvas';
 import ConceptForge from '@/components/forge/ConceptForge';
 import ScriptForge from '@/components/forge/ScriptForge';
 import VideoForge from '@/components/forge/VideoForge';
@@ -12,28 +13,52 @@ import ExperimentLab from '@/components/forge/ExperimentLab';
 import ForgeDashboard from '@/components/forge/ForgeDashboard';
 import ForgeToQuest from '@/components/forge/ForgeToQuest';
 
+const COLORS = [
+  'hsl(var(--primary))',
+  'hsl(var(--accent))',
+  'hsl(142 40% 50%)',
+  'hsl(280 60% 55%)',
+  'hsl(30 80% 55%)',
+  'hsl(200 70% 50%)',
+];
+
 const tabs = [
-  { id: 'collision', label: 'Collide', icon: Zap, description: 'Merge two concepts' },
-  { id: 'experiment', label: 'Lab', icon: FlaskConical, description: 'Interactive sims' },
-  { id: 'concept', label: 'Concept', icon: Sparkles, description: 'Single concept forge' },
-  { id: 'script', label: 'Script', icon: FileText, description: 'Video scripts' },
-  { id: 'game', label: 'Game', icon: Gamepad2, description: 'Learning games' },
-  { id: 'path', label: 'Path', icon: Route, description: 'Learning journeys' },
-  { id: 'dashboard', label: 'Stats', icon: BarChart3, description: 'Your creations' },
+  { id: 'collision', label: 'Collide', icon: Zap },
+  { id: 'canvas', label: 'Canvas', icon: LayoutGrid },
+  { id: 'experiment', label: 'Lab', icon: FlaskConical },
+  { id: 'concept', label: 'Concept', icon: Sparkles },
+  { id: 'script', label: 'Script', icon: FileText },
+  { id: 'game', label: 'Game', icon: Gamepad2 },
+  { id: 'path', label: 'Path', icon: Route },
+  { id: 'dashboard', label: 'Stats', icon: BarChart3 },
 ];
 
 const Forge = () => {
   const [activeTab, setActiveTab] = useState('collision');
   const [currentTopic, setCurrentTopic] = useState('');
+  const [canvasNodes, setCanvasNodes] = useState<CanvasNode[]>([]);
 
   const handleExperimentSelect = (topic: string) => {
     setCurrentTopic(topic);
     setActiveTab('experiment');
   };
 
+  const handleAddToCanvas = (result: { theme: string; description: string }) => {
+    const id = `node-${Date.now()}`;
+    const color = COLORS[canvasNodes.length % COLORS.length];
+    setCanvasNodes(prev => [...prev, {
+      id,
+      x: 80 + Math.random() * 200,
+      y: 60 + Math.random() * 150,
+      theme: result.theme,
+      description: result.description,
+      color,
+    }]);
+    setActiveTab('canvas');
+  };
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl pb-28">
-      {/* Header */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
         <div className="flex items-center gap-3 mb-1">
           <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center">
@@ -46,7 +71,6 @@ const Forge = () => {
         </div>
       </motion.div>
 
-      {/* Tab pills — horizontal scroll on mobile */}
       <div className="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-hide">
         <div className="flex gap-1.5 min-w-max">
           {tabs.map((tab) => {
@@ -57,21 +81,18 @@ const Forge = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
                   'relative flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap',
-                  isActive
-                    ? 'text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                  isActive ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
                 )}
               >
                 {isActive && (
-                  <motion.div
-                    layoutId="forge-tab-bg"
-                    className="absolute inset-0 rounded-full bg-primary"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                  />
+                  <motion.div layoutId="forge-tab-bg" className="absolute inset-0 rounded-full bg-primary" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
                 )}
                 <span className="relative flex items-center gap-2">
                   <tab.icon className="w-4 h-4" />
                   {tab.label}
+                  {tab.id === 'canvas' && canvasNodes.length > 0 && (
+                    <span className="w-4 h-4 rounded-full bg-accent/20 text-accent text-[10px] flex items-center justify-center">{canvasNodes.length}</span>
+                  )}
                 </span>
               </button>
             );
@@ -79,7 +100,6 @@ const Forge = () => {
         </div>
       </div>
 
-      {/* Content */}
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
@@ -91,10 +111,11 @@ const Forge = () => {
         >
           {activeTab === 'collision' && (
             <>
-              <ConceptCollision onExperimentSelect={handleExperimentSelect} />
+              <ConceptCollision onExperimentSelect={handleExperimentSelect} onAddToCanvas={handleAddToCanvas} />
               {currentTopic && <ForgeToQuest topic={currentTopic} />}
             </>
           )}
+          {activeTab === 'canvas' && <ConceptCanvas nodes={canvasNodes} onNodesChange={setCanvasNodes} />}
           {activeTab === 'experiment' && <ExperimentLab prefilledTopic={currentTopic} />}
           {activeTab === 'concept' && (
             <>

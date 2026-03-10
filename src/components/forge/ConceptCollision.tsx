@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface CollisionResult {
   theme: string;
@@ -11,35 +13,35 @@ interface CollisionResult {
   questions: string[];
 }
 
-const ConceptCollision = ({ onExperimentSelect }: { onExperimentSelect?: (topic: string) => void }) => {
+const ConceptCollision = ({ onExperimentSelect, onAddToCanvas }: { 
+  onExperimentSelect?: (topic: string) => void;
+  onAddToCanvas?: (result: CollisionResult) => void;
+}) => {
   const [conceptA, setConceptA] = useState('');
   const [conceptB, setConceptB] = useState('');
   const [colliding, setColliding] = useState(false);
   const [result, setResult] = useState<CollisionResult | null>(null);
 
-  const collide = () => {
+  const collide = async () => {
     if (!conceptA.trim() || !conceptB.trim()) return;
     setColliding(true);
     setResult(null);
 
-    setTimeout(() => {
-      setResult({
-        theme: `${conceptA} × ${conceptB}`,
-        description: `When ${conceptA.toLowerCase()} meets ${conceptB.toLowerCase()}, unexpected patterns emerge — bridging ${conceptA.toLowerCase()}'s structure with ${conceptB.toLowerCase()}'s dynamics creates a new lens for understanding both.`,
-        experiments: [
-          `Map how ${conceptA.toLowerCase()} principles appear in ${conceptB.toLowerCase()} systems`,
-          `Build a simulation showing ${conceptB.toLowerCase()} through the rules of ${conceptA.toLowerCase()}`,
-          `Find 3 real-world examples where ${conceptA.toLowerCase()} and ${conceptB.toLowerCase()} intersect`,
-          `Design a game that teaches ${conceptA.toLowerCase()} using ${conceptB.toLowerCase()} mechanics`,
-        ],
-        questions: [
-          `What would ${conceptA.toLowerCase()} look like if it followed ${conceptB.toLowerCase()}'s logic?`,
-          `How does understanding ${conceptB.toLowerCase()} change your view of ${conceptA.toLowerCase()}?`,
-          `Where in nature do ${conceptA.toLowerCase()} and ${conceptB.toLowerCase()} already coexist?`,
-        ],
+    try {
+      const { data, error } = await supabase.functions.invoke('concept-collision', {
+        body: { conceptA: conceptA.trim(), conceptB: conceptB.trim() },
       });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      setResult(data as CollisionResult);
+    } catch (err: any) {
+      console.error('Collision error:', err);
+      toast.error(err.message || 'Failed to collide concepts. Try again.');
+    } finally {
       setColliding(false);
-    }, 1800);
+    }
   };
 
   return (
@@ -53,6 +55,7 @@ const ConceptCollision = ({ onExperimentSelect }: { onExperimentSelect?: (topic:
             onChange={e => setConceptA(e.target.value)}
             placeholder="e.g., Fractals"
             className="bg-background/60 border-border/40 h-11"
+            onKeyDown={e => e.key === 'Enter' && collide()}
           />
         </div>
 
@@ -71,6 +74,7 @@ const ConceptCollision = ({ onExperimentSelect }: { onExperimentSelect?: (topic:
             onChange={e => setConceptB(e.target.value)}
             placeholder="e.g., Music Theory"
             className="bg-background/60 border-border/40 h-11"
+            onKeyDown={e => e.key === 'Enter' && collide()}
           />
         </div>
       </div>
@@ -81,7 +85,7 @@ const ConceptCollision = ({ onExperimentSelect }: { onExperimentSelect?: (topic:
         className="w-full h-11 bg-accent text-accent-foreground hover:bg-accent/90 font-grotesk tracking-wide"
       >
         {colliding ? (
-          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Colliding concepts…</>
+          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Colliding with AI…</>
         ) : (
           <><Zap className="w-4 h-4 mr-2" /> Collide</>
         )}
@@ -98,7 +102,19 @@ const ConceptCollision = ({ onExperimentSelect }: { onExperimentSelect?: (topic:
           >
             {/* Theme card */}
             <div className="rounded-2xl bg-gradient-to-br from-accent/8 via-primary/5 to-secondary/8 border border-border/30 p-5">
-              <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-grotesk mb-2">Collision Result</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-grotesk">AI Collision Result</p>
+                {onAddToCanvas && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onAddToCanvas(result)}
+                    className="text-xs text-primary hover:text-primary/80"
+                  >
+                    <Sparkles className="w-3 h-3 mr-1" /> Add to Canvas
+                  </Button>
+                )}
+              </div>
               <h3 className="text-xl font-serif text-foreground mb-2">{result.theme}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{result.description}</p>
             </div>
