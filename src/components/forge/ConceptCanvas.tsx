@@ -1,7 +1,9 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { GripVertical, X, Link2, Trash2, ZoomIn, ZoomOut } from 'lucide-react';
+import { GripVertical, X, Link2, Trash2, ZoomIn, ZoomOut, Save, Loader2, Cloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface CanvasNode {
   id: string;
@@ -12,7 +14,7 @@ export interface CanvasNode {
   color: string;
 }
 
-interface CanvasEdge {
+export interface CanvasEdge {
   from: string;
   to: string;
 }
@@ -29,25 +31,73 @@ const COLORS = [
 interface ConceptCanvasProps {
   nodes: CanvasNode[];
   onNodesChange: (nodes: CanvasNode[]) => void;
+  edges: CanvasEdge[];
+  onEdgesChange: (edges: CanvasEdge[]) => void;
 }
 
-const ConceptCanvas = ({ nodes, onNodesChange }: ConceptCanvasProps) => {
-  const [edges, setEdges] = useState<CanvasEdge[]>([]);
+const ConceptCanvas = ({ nodes, onNodesChange, edges, onEdgesChange }: ConceptCanvasProps) => {
   const [linking, setLinking] = useState<string | null>(null);
   const [dragNode, setDragNode] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
+
+  // Load canvas from DB on mount
+  useEffect(() => {
+    const load = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoaded(true); return; }
+
+      const { data } = await supabase
+        .from('forge_canvases' as any)
+        .select('nodes, edges')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (data) {
+        const d = data as any;
+        if (d.nodes && Array.isArray(d.nodes) && d.nodes.length > 0) onNodesChange(d.nodes);
+        if (d.edges && Array.isArray(d.edges)) onEdgesChange(d.edges);
+      }
+      setLoaded(true);
+    };
+    load();
+  }, []);
+
+  const saveCanvas = async () => {
+    setSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { toast.error('Sign in to save your canvas'); return; }
+
+      const { error } = await (supabase.from('forge_canvases' as any) as any)
+        .upsert({
+          user_id: user.id,
+          nodes: nodes,
+          edges: edges,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+
+      if (error) throw error;
+      toast.success('Canvas saved');
+    } catch (err: any) {
+      toast.error('Failed to save canvas');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const removeNode = (id: string) => {
     onNodesChange(nodes.filter(n => n.id !== id));
-    setEdges(prev => prev.filter(e => e.from !== id && e.to !== id));
+    onEdgesChange(edges.filter(e => e.from !== id && e.to !== id));
   };
 
   const handlePointerDown = (e: React.PointerEvent, nodeId: string) => {
     if (linking) {
       if (linking !== nodeId && !edges.find(ed => (ed.from === linking && ed.to === nodeId) || (ed.from === nodeId && ed.to === linking))) {
-        setEdges(prev => [...prev, { from: linking, to: nodeId }]);
+        onEdgesChange([...edges, { from: linking, to: nodeId }]);
       }
       setLinking(null);
       return;
@@ -72,7 +122,6 @@ const ConceptCanvas = ({ nodes, onNodesChange }: ConceptCanvasProps) => {
   };
 
   const handlePointerUp = () => setDragNode(null);
-
   const getNodeCenter = (node: CanvasNode) => ({ x: node.x + 80, y: node.y + 30 });
 
   return (
@@ -89,8 +138,12 @@ const ConceptCanvas = ({ nodes, onNodesChange }: ConceptCanvasProps) => {
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom(z => Math.max(0.5, z - 0.1))}>
             <ZoomOut className="w-3.5 h-3.5" />
           </Button>
+          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={saveCanvas} disabled={saving}>
+            {saving ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Cloud className="w-3 h-3 mr-1" />}
+            Save
+          </Button>
           {nodes.length > 0 && (
-            <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive" onClick={() => { onNodesChange([]); setEdges([]); }}>
+            <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive" onClick={() => { onNodesChange([]); onEdgesChange([]); }}>
               <Trash2 className="w-3 h-3 mr-1" /> Clear
             </Button>
           )}
@@ -106,7 +159,7 @@ const ConceptCanvas = ({ nodes, onNodesChange }: ConceptCanvasProps) => {
       >
         {nodes.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-sm text-muted-foreground/50">Collide concepts — then "Add to Canvas"</p>
+            <p className="text-sm text-muted-foreground/50">{loaded ? 'Collide concepts — then "Add to Canvas"' : 'Loading canvas…'}</p>
           </div>
         )}
 
