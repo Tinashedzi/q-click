@@ -75,6 +75,8 @@ const ConceptForge = () => {
         </Button>
       </div>
 
+      {errorType && <CreditExhaustedFallback type={errorType} onRetry={generateConcept} />}
+
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <Card>
