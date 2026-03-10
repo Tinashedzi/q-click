@@ -59,6 +59,15 @@ const QuestGenerator = () => {
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   const { session } = useAuth();
+  const location = useLocation();
+
+  // Accept prefilled topic from Forge navigation
+  useEffect(() => {
+    const state = location.state as { prefillTopic?: string } | null;
+    if (state?.prefillTopic) {
+      setTopic(state.prefillTopic);
+    }
+  }, [location.state]);
 
   const generateQuest = async () => {
     if (!topic.trim()) return;
