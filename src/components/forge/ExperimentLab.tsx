@@ -6,12 +6,12 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 const SIMULATION_CATALOG = [
-  { id: 'gravity', name: 'Gravity & Orbits', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits_en.html', icon: Atom },
-  { id: 'waves', name: 'Wave Interference', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_en.html', icon: Atom },
-  { id: 'natural-selection', name: 'Natural Selection', category: 'Biology', url: 'https://phet.colorado.edu/sims/html/natural-selection/latest/natural-selection_en.html', icon: Microscope },
-  { id: 'molecules', name: 'Build a Molecule', category: 'Chemistry', url: 'https://phet.colorado.edu/sims/html/build-a-molecule/latest/build-a-molecule_en.html', icon: FlaskConical },
-  { id: 'fractions', name: 'Fractions', category: 'Math', url: 'https://phet.colorado.edu/sims/html/fractions-intro/latest/fractions-intro_en.html', icon: BarChart3 },
-  { id: 'energy', name: 'Energy Forms', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes_en.html', icon: Atom },
+  { id: 'gravity', name: 'Gravity & Orbits', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits_en.html', icon: Atom, thumbnail: 'https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits-600.png' },
+  { id: 'waves', name: 'Wave Interference', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_en.html', icon: Atom, thumbnail: 'https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference-600.png' },
+  { id: 'natural-selection', name: 'Natural Selection', category: 'Biology', url: 'https://phet.colorado.edu/sims/html/natural-selection/latest/natural-selection_en.html', icon: Microscope, thumbnail: 'https://phet.colorado.edu/sims/html/natural-selection/latest/natural-selection-600.png' },
+  { id: 'molecules', name: 'Build a Molecule', category: 'Chemistry', url: 'https://phet.colorado.edu/sims/html/build-a-molecule/latest/build-a-molecule_en.html', icon: FlaskConical, thumbnail: 'https://phet.colorado.edu/sims/html/build-a-molecule/latest/build-a-molecule-600.png' },
+  { id: 'fractions', name: 'Fractions', category: 'Math', url: 'https://phet.colorado.edu/sims/html/fractions-intro/latest/fractions-intro_en.html', icon: BarChart3, thumbnail: 'https://phet.colorado.edu/sims/html/fractions-intro/latest/fractions-intro-600.png' },
+  { id: 'energy', name: 'Energy Forms', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes_en.html', icon: Atom, thumbnail: 'https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes-600.png' },
 ];
 
 interface ExperimentLabProps {
