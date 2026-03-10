@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Hammer, Zap, FlaskConical, Gamepad2, Route, FileText, BarChart3, Sparkles, LayoutGrid, Brain, Box } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -43,6 +44,18 @@ const Forge = () => {
   const [currentTopic, setCurrentTopic] = useState('');
   const [canvasNodes, setCanvasNodes] = useState<CanvasNode[]>([]);
   const [canvasEdges, setCanvasEdges] = useState<CanvasEdge[]>([]);
+  const location = useLocation();
+
+  // Accept prefilled topic and target tab from Oasis quest navigation
+  useEffect(() => {
+    const state = location.state as { prefillTopic?: string; targetTab?: string } | null;
+    if (state?.prefillTopic) {
+      setCurrentTopic(state.prefillTopic);
+    }
+    if (state?.targetTab && tabs.some(t => t.id === state.targetTab)) {
+      setActiveTab(state.targetTab!);
+    }
+  }, [location.state]);
 
   const handleExperimentSelect = (topic: string) => {
     setCurrentTopic(topic);
@@ -132,8 +145,8 @@ const Forge = () => {
               <ForgeToQuest topic={currentTopic || undefined} />
             </>
           )}
-          {activeTab === 'bio' && <BioDigitalForge />}
-          {activeTab === 'spatial' && <SpatialForge />}
+          {activeTab === 'bio' && <BioDigitalForge onAddToCanvas={handleAddToCanvas} prefillTopic={currentTopic || undefined} />}
+          {activeTab === 'spatial' && <SpatialForge onAddToCanvas={handleAddToCanvas} prefillTopic={currentTopic || undefined} />}
           {activeTab === 'script' && <ScriptForge />}
           {activeTab === 'game' && <GameForge />}
           {activeTab === 'path' && <PathForge />}
