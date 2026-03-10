@@ -3,6 +3,9 @@ project_id = "antjeroxyiwzfpuskzmk"
 [functions.concept-collision]
 verify_jwt = false
 
+[functions.concept-forge]
+verify_jwt = false
+
 [functions.generate-rubric]
 verify_jwt = false
 
