@@ -28,6 +28,7 @@ const ConceptCollision = ({ onExperimentSelect, onAddToCanvas }: {
     if (!conceptA.trim() || !conceptB.trim()) return;
     setColliding(true);
     setResult(null);
+    setErrorType(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('concept-collision', {
@@ -35,12 +36,18 @@ const ConceptCollision = ({ onExperimentSelect, onAddToCanvas }: {
       });
 
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        if (data.error.includes('credits') || data.error.includes('Payment')) { setErrorType('credits'); return; }
+        if (data.error.includes('Rate limit')) { setErrorType('rate-limit'); return; }
+        throw new Error(data.error);
+      }
 
       setResult(data as CollisionResult);
     } catch (err: any) {
-      console.error('Collision error:', err);
-      toast.error(err.message || 'Failed to collide concepts. Try again.');
+      const msg = err.message || '';
+      if (msg.includes('402') || msg.includes('credits')) { setErrorType('credits'); }
+      else if (msg.includes('429') || msg.includes('Rate')) { setErrorType('rate-limit'); }
+      else { toast.error(msg || 'Failed to collide concepts. Try again.'); }
     } finally {
       setColliding(false);
     }
