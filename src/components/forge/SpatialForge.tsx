@@ -25,6 +25,7 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
   const [query, setQuery] = useState(prefillTopic || '');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SpatialResult | null>(null);
+  const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
 
   const explore = async () => {
     if (!query.trim()) return;
