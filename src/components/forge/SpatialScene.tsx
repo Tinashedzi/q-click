@@ -1,23 +1,27 @@
 import { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Text, Float } from '@react-three/drei';
+import { OrbitControls, Text, Float, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Lightbulb } from 'lucide-react';
 
 interface SpatialNode {
   label: string;
+  fullText: string;
   position: [number, number, number];
   color: string;
 }
 
 interface ConceptSphereProps {
   label: string;
+  fullText: string;
   position: [number, number, number];
   color: string;
   onClick: () => void;
   isSelected: boolean;
 }
 
-const ConceptSphere = ({ label, position, color, onClick, isSelected }: ConceptSphereProps) => {
+const ConceptSphere = ({ label, fullText, position, color, onClick, isSelected }: ConceptSphereProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
 
@@ -59,6 +63,14 @@ const ConceptSphere = ({ label, position, color, onClick, isSelected }: ConceptS
         >
           {label}
         </Text>
+        {isSelected && (
+          <Html position={[0, -0.8, 0]} center distanceFactor={5} style={{ pointerEvents: 'none' }}>
+            <div className="w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-sm p-3 shadow-lg pointer-events-auto">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-grotesk mb-1">Detail</p>
+              <p className="text-xs text-foreground leading-relaxed">{fullText}</p>
+            </div>
+          </Html>
+        )}
       </group>
     </Float>
   );
@@ -120,7 +132,7 @@ const SpatialScene = ({ dimensions, title }: SpatialSceneProps) => {
 
   const nodes: SpatialNode[] = useMemo(() => {
     const all: SpatialNode[] = [
-      { label: title, position: [0, 0, 0], color: '#f472b6' },
+      { label: title.length > 30 ? title.slice(0, 28) + '…' : title, fullText: `Central concept: ${title}. Click surrounding nodes to explore spatial dimensions.`, position: [0, 0, 0], color: '#f472b6' },
     ];
     const count = dimensions.length;
     dimensions.forEach((dim, i) => {
@@ -129,6 +141,7 @@ const SpatialScene = ({ dimensions, title }: SpatialSceneProps) => {
       const y = (Math.random() - 0.5) * 1.5;
       all.push({
         label: dim.length > 40 ? dim.slice(0, 38) + '…' : dim,
+        fullText: dim,
         position: [Math.cos(angle) * r, y, Math.sin(angle) * r],
         color: PALETTE[i % PALETTE.length],
       });
@@ -136,44 +149,88 @@ const SpatialScene = ({ dimensions, title }: SpatialSceneProps) => {
     return all;
   }, [dimensions, title]);
 
+  const selectedNode = selected !== null ? nodes[selected] : null;
+
   return (
-    <div className="w-full h-[420px] rounded-2xl overflow-hidden border border-border/30 bg-background/50">
-      <Canvas camera={{ position: [0, 2, 5.5], fov: 50 }}>
-        <ambientLight intensity={0.35} />
-        <pointLight position={[5, 5, 5]} intensity={0.8} />
-        <pointLight position={[-5, -3, -5]} intensity={0.3} color="#a78bfa" />
+    <div className="space-y-3">
+      <div className="w-full h-[420px] rounded-2xl overflow-hidden border border-border/30 bg-background/50 relative">
+        <Canvas camera={{ position: [0, 2, 5.5], fov: 50 }}>
+          <ambientLight intensity={0.35} />
+          <pointLight position={[5, 5, 5]} intensity={0.8} />
+          <pointLight position={[-5, -3, -5]} intensity={0.3} color="#a78bfa" />
 
-        <ParticleField />
+          <ParticleField />
 
-        {nodes.map((node, i) => (
-          <ConceptSphere
-            key={i}
-            label={node.label}
-            position={node.position}
-            color={node.color}
-            isSelected={selected === i}
-            onClick={() => setSelected(selected === i ? null : i)}
+          {nodes.map((node, i) => (
+            <ConceptSphere
+              key={i}
+              label={node.label}
+              fullText={node.fullText}
+              position={node.position}
+              color={node.color}
+              isSelected={selected === i}
+              onClick={() => setSelected(selected === i ? null : i)}
+            />
+          ))}
+
+          {nodes.slice(1).map((node, i) => (
+            <ConnectionLine
+              key={`line-${i}`}
+              start={nodes[0].position}
+              end={node.position}
+              color={node.color}
+            />
+          ))}
+
+          <OrbitControls
+            enablePan={false}
+            enableZoom={true}
+            minDistance={3}
+            maxDistance={10}
+            autoRotate
+            autoRotateSpeed={0.5}
           />
-        ))}
+        </Canvas>
 
-        {nodes.slice(1).map((node, i) => (
-          <ConnectionLine
-            key={`line-${i}`}
-            start={nodes[0].position}
-            end={node.position}
-            color={node.color}
-          />
-        ))}
+        {/* Overlay detail panel */}
+        <AnimatePresence>
+          {selectedNode && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="absolute bottom-4 left-4 right-4 rounded-xl border border-border/50 bg-card/95 backdrop-blur-md p-4 shadow-lg"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2 flex-1">
+                  <Lightbulb className="w-4 h-4 mt-0.5 shrink-0" style={{ color: selectedNode.color }} />
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-1">{selectedNode.label}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{selectedNode.fullText}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelected(null)}
+                  className="p-1 rounded-lg hover:bg-muted/50 text-muted-foreground"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-        <OrbitControls
-          enablePan={false}
-          enableZoom={true}
-          minDistance={3}
-          maxDistance={10}
-          autoRotate
-          autoRotateSpeed={0.5}
-        />
-      </Canvas>
+      {/* Instructions */}
+      <div className="rounded-xl bg-muted/20 border border-border/20 px-4 py-3">
+        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-grotesk mb-1.5">How to use</p>
+        <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+          <li>Click any node to see its full description in a detail panel</li>
+          <li>Drag to rotate the 3D scene, scroll to zoom in/out</li>
+          <li>Nodes auto-rotate — click again to deselect</li>
+          <li>Enter a new concept above and click "Map" to generate a new spatial map</li>
+        </ul>
+      </div>
     </div>
   );
 };

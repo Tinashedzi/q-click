@@ -14,6 +14,7 @@ import ForgeDashboard from '@/components/forge/ForgeDashboard';
 import ForgeToQuest from '@/components/forge/ForgeToQuest';
 import BioDigitalForge from '@/components/forge/BioDigitalForge';
 import SpatialForge from '@/components/forge/SpatialForge';
+import ForgeInstructions from '@/components/forge/ForgeInstructions';
 
 const COLORS = [
   'hsl(var(--primary))',
@@ -114,6 +115,9 @@ const Forge = () => {
           transition={{ duration: 0.2 }}
           className="space-y-6"
         >
+          {['collision', 'canvas', 'spatial'].includes(activeTab) && (
+            <ForgeInstructions tab={activeTab} />
+          )}
           {activeTab === 'collision' && (
             <>
               <ConceptCollision onExperimentSelect={handleExperimentSelect} onAddToCanvas={handleAddToCanvas} />
