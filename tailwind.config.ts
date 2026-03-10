@@ -63,20 +63,19 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Sensage custom colors
-        jade: "hsl(var(--celadon-jade))",
-        clay: "hsl(var(--sun-baked-clay))",
-        petal: "hsl(var(--lotus-petal))",
-        gold: "hsl(var(--ochre-gold))",
-        dew: "hsl(var(--celadon-dew))",
-        ceramic: "hsl(var(--ceramic-white))",
-        frosted: "hsl(var(--frosted-glass))",
-        // Wavey palette
-        "deep-sea": "hsl(var(--deep-sea))",
-        lavender: "hsl(var(--lavender-mist))",
-        "cloud-white": "hsl(var(--cloud-white))",
-        silk: "hsl(var(--silk-blue))",
-        wave: "hsl(var(--wave-cyan))",
+        // 2026 Bioluminescent Deep Tech palette
+        "midnight-teal": "hsl(var(--midnight-teal))",
+        "electric-cyan": "hsl(var(--electric-cyan))",
+        "sunset-coral": "hsl(var(--sunset-coral))",
+        "pearl-mist": "hsl(var(--pearl-mist))",
+        "deep-lagoon": "hsl(var(--deep-lagoon))",
+        abyss: "hsl(var(--abyss))",
+        // Legacy aliases (mapped to new palette)
+        jade: "hsl(var(--electric-cyan))",
+        clay: "hsl(var(--sunset-coral))",
+        petal: "hsl(var(--sunset-coral))",
+        gold: "hsl(var(--electric-cyan))",
+        wave: "hsl(var(--electric-cyan))",
       },
       borderRadius: {
         lg: "var(--radius)",
