@@ -3,7 +3,8 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text, Float, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Lightbulb } from 'lucide-react';
+import { X, Lightbulb, LayoutGrid } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface SpatialNode {
   label: string;
@@ -23,19 +24,33 @@ interface ConceptSphereProps {
 
 const ConceptSphere = ({ label, fullText, position, color, onClick, isSelected }: ConceptSphereProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.3;
       const target = isSelected ? 1.3 : hovered ? 1.15 : 1;
       meshRef.current.scale.lerp(new THREE.Vector3(target, target, target), 0.1);
+    }
+    // Animate glow ring
+    if (glowRef.current) {
+      const pulse = Math.sin(state.clock.elapsedTime * 3) * 0.15 + 1;
+      const targetScale = isSelected ? pulse * 1.8 : hovered ? 1.5 : 0;
+      glowRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.12);
+      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = isSelected ? 0.25 : hovered ? 0.15 : 0;
     }
   });
 
   return (
     <Float speed={2} rotationIntensity={0.3} floatIntensity={0.5}>
       <group position={position}>
+        {/* Glow ring */}
+        <mesh ref={glowRef} scale={0}>
+          <sphereGeometry args={[0.55, 16, 16]} />
+          <meshBasicMaterial color={color} transparent opacity={0} side={THREE.BackSide} />
+        </mesh>
+
         <mesh
           ref={meshRef}
           onClick={(e) => { e.stopPropagation(); onClick(); }}
@@ -46,7 +61,7 @@ const ConceptSphere = ({ label, fullText, position, color, onClick, isSelected }
           <meshStandardMaterial
             color={color}
             emissive={color}
-            emissiveIntensity={isSelected ? 0.6 : hovered ? 0.35 : 0.15}
+            emissiveIntensity={isSelected ? 0.8 : hovered ? 0.5 : 0.15}
             wireframe={!isSelected}
             transparent
             opacity={isSelected ? 1 : 0.85}
@@ -63,20 +78,14 @@ const ConceptSphere = ({ label, fullText, position, color, onClick, isSelected }
         >
           {label}
         </Text>
-        {isSelected && (
-          <Html position={[0, -0.8, 0]} center distanceFactor={5} style={{ pointerEvents: 'none' }}>
-            <div className="w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-sm p-3 shadow-lg pointer-events-auto">
-              <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-grotesk mb-1">Detail</p>
-              <p className="text-xs text-foreground leading-relaxed">{fullText}</p>
-            </div>
-          </Html>
-        )}
       </group>
     </Float>
   );
 };
 
-const ConnectionLine = ({ start, end, color }: { start: [number, number, number]; end: [number, number, number]; color: string }) => {
+const ConnectionLine = ({ start, end, color, isActive }: { start: [number, number, number]; end: [number, number, number]; color: string; isActive: boolean }) => {
+  const ref = useRef<THREE.Line>(null);
+
   const points = useMemo(() => {
     const s = new THREE.Vector3(...start);
     const e = new THREE.Vector3(...end);
@@ -88,9 +97,20 @@ const ConnectionLine = ({ start, end, color }: { start: [number, number, number]
 
   const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), [points]);
 
-  return (
-    <primitive object={new THREE.Line(geometry, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.3 }))} />
-  );
+  useFrame(() => {
+    if (ref.current) {
+      const mat = ref.current.material as THREE.LineBasicMaterial;
+      const targetOpacity = isActive ? 0.8 : 0.25;
+      mat.opacity += (targetOpacity - mat.opacity) * 0.1;
+    }
+  });
+
+  const line = useMemo(() => {
+    const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.25 });
+    return new THREE.Line(geometry, mat);
+  }, [geometry, color]);
+
+  return <primitive ref={ref} object={line} />;
 };
 
 const ParticleField = () => {
@@ -123,11 +143,12 @@ const ParticleField = () => {
 interface SpatialSceneProps {
   dimensions: string[];
   title: string;
+  onAddToCanvas?: (result: { theme: string; description: string }) => void;
 }
 
 const PALETTE = ['#60a5fa', '#a78bfa', '#34d399', '#fbbf24', '#f472b6', '#fb923c'];
 
-const SpatialScene = ({ dimensions, title }: SpatialSceneProps) => {
+const SpatialScene = ({ dimensions, title, onAddToCanvas }: SpatialSceneProps) => {
   const [selected, setSelected] = useState<number | null>(null);
 
   const nodes: SpatialNode[] = useMemo(() => {
@@ -179,6 +200,7 @@ const SpatialScene = ({ dimensions, title }: SpatialSceneProps) => {
               start={nodes[0].position}
               end={node.position}
               color={node.color}
+              isActive={selected === i + 1 || selected === 0}
             />
           ))}
 
@@ -196,9 +218,10 @@ const SpatialScene = ({ dimensions, title }: SpatialSceneProps) => {
         <AnimatePresence>
           {selectedNode && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               className="absolute bottom-4 left-4 right-4 rounded-xl border border-border/50 bg-card/95 backdrop-blur-md p-4 shadow-lg"
             >
               <div className="flex items-start justify-between gap-2">
@@ -209,12 +232,24 @@ const SpatialScene = ({ dimensions, title }: SpatialSceneProps) => {
                     <p className="text-xs text-muted-foreground leading-relaxed">{selectedNode.fullText}</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setSelected(null)}
-                  className="p-1 rounded-lg hover:bg-muted/50 text-muted-foreground"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-1">
+                  {onAddToCanvas && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 text-xs text-accent hover:text-accent"
+                      onClick={() => onAddToCanvas({ theme: selectedNode.label, description: selectedNode.fullText })}
+                    >
+                      <LayoutGrid className="w-3 h-3 mr-1" /> Canvas
+                    </Button>
+                  )}
+                  <button
+                    onClick={() => setSelected(null)}
+                    className="p-1 rounded-lg hover:bg-muted/50 text-muted-foreground"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -225,10 +260,10 @@ const SpatialScene = ({ dimensions, title }: SpatialSceneProps) => {
       <div className="rounded-xl bg-muted/20 border border-border/20 px-4 py-3">
         <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-grotesk mb-1.5">How to use</p>
         <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
-          <li>Click any node to see its full description in a detail panel</li>
+          <li>Click any node to see its detail — selected nodes glow</li>
           <li>Drag to rotate the 3D scene, scroll to zoom in/out</li>
-          <li>Nodes auto-rotate — click again to deselect</li>
-          <li>Enter a new concept above and click "Map" to generate a new spatial map</li>
+          <li>Click "Canvas" on a node detail to add it to your concept map</li>
+          <li>Connection lines brighten when their node is selected</li>
         </ul>
       </div>
     </div>

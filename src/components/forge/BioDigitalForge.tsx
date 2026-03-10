@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Activity, Eye, Loader2, ExternalLink } from 'lucide-react';
+import { Brain, Activity, Eye, Loader2, ExternalLink, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +12,11 @@ interface BioResult {
   keyStructures: string[];
   functions: string[];
   connections: string[];
+}
+
+interface BioDigitalForgeProps {
+  onAddToCanvas?: (result: { theme: string; description: string }) => void;
+  prefillTopic?: string;
 }
 
 const BIODIGITAL_MODELS: Record<string, string> = {
@@ -33,8 +38,8 @@ const findBioDigitalModel = (query: string): string | null => {
   return null;
 };
 
-const BioDigitalForge = () => {
-  const [query, setQuery] = useState('');
+const BioDigitalForge = ({ onAddToCanvas, prefillTopic }: BioDigitalForgeProps) => {
+  const [query, setQuery] = useState(prefillTopic || '');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<BioResult | null>(null);
   const [bioDigitalUrl, setBioDigitalUrl] = useState<string | null>(null);
@@ -98,7 +103,6 @@ const BioDigitalForge = () => {
           </Button>
         </div>
 
-        {/* Quick access anatomy buttons */}
         <div className="flex flex-wrap gap-1.5 mt-3">
           {Object.keys(BIODIGITAL_MODELS).map(model => (
             <button
@@ -153,7 +157,19 @@ const BioDigitalForge = () => {
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="rounded-2xl border border-border/30 bg-card p-5">
-            <h3 className="text-lg font-serif text-foreground mb-2">{result.system}</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-serif text-foreground">{result.system}</h3>
+              {onAddToCanvas && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs text-accent hover:text-accent"
+                  onClick={() => onAddToCanvas({ theme: result.system, description: result.description })}
+                >
+                  <LayoutGrid className="w-3 h-3 mr-1" /> Add to Canvas
+                </Button>
+              )}
+            </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">{result.description}</p>
 
             {result.keyStructures.length > 0 && (
@@ -189,8 +205,8 @@ const BioDigitalForge = () => {
           <li>Type an organ or system name (Heart, Brain, Lungs) to get AI analysis</li>
           <li>Use the quick-access buttons for instant 3D anatomy models</li>
           <li>Click "Show 3D Viewer" to view an interactive BioDigital Human model</li>
-          <li>Rotate, zoom, and explore the 3D anatomy in the embedded viewer</li>
-          <li>Click "Open Full" to launch the model in a new tab for deeper exploration</li>
+          <li>Click "Add to Canvas" to save results to your concept map</li>
+          <li>Click "Open Full" to launch the model in a new tab</li>
         </ul>
       </div>
     </div>

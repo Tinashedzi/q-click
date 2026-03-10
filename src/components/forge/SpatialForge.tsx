@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Box, Loader2, Layers, Lightbulb } from 'lucide-react';
+import { Box, Loader2, Layers, Lightbulb, LayoutGrid } from 'lucide-react';
 import SpatialScene from './SpatialScene';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,8 +15,13 @@ interface SpatialResult {
   arPossibilities: string[];
 }
 
-const SpatialForge = () => {
-  const [query, setQuery] = useState('');
+interface SpatialForgeProps {
+  onAddToCanvas?: (result: { theme: string; description: string }) => void;
+  prefillTopic?: string;
+}
+
+const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
+  const [query, setQuery] = useState(prefillTopic || '');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SpatialResult | null>(null);
 
@@ -76,10 +81,22 @@ const SpatialForge = () => {
 
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-          <SpatialScene title={result.title} dimensions={result.spatialDimensions} />
+          <SpatialScene title={result.title} dimensions={result.spatialDimensions} onAddToCanvas={onAddToCanvas} />
 
           <div className="rounded-2xl border border-border/30 bg-card p-5">
-            <h3 className="text-lg font-serif text-foreground mb-2">{result.title}</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-serif text-foreground">{result.title}</h3>
+              {onAddToCanvas && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs text-accent hover:text-accent"
+                  onClick={() => onAddToCanvas({ theme: result.title, description: result.description })}
+                >
+                  <LayoutGrid className="w-3 h-3 mr-1" /> Add to Canvas
+                </Button>
+              )}
+            </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">{result.description}</p>
 
             {result.spatialDimensions.length > 0 && (
