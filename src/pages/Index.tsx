@@ -117,33 +117,36 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Lab Promo Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute bottom-20 left-1/2 -translate-x-1/2 z-20 w-full max-w-sm px-4"
-      >
-        <button
-          onClick={() => navigate('/forge', { state: { targetTab: 'experiment' } })}
-          className="w-full group relative overflow-hidden rounded-2xl border border-accent/30 bg-card/80 backdrop-blur-md p-4 flex items-center gap-4 hover:border-accent/50 hover:shadow-lg transition-all"
-        >
-          <div className="w-10 h-10 rounded-xl bg-accent/15 border border-accent/20 flex items-center justify-center shrink-0 group-hover:bg-accent/25 transition-colors">
-            <FlaskConical className="w-5 h-5 text-accent" />
-          </div>
-          <div className="text-left min-w-0 flex-1">
-            <p className="text-sm font-medium text-foreground">Try the Lab</p>
-            <p className="text-[11px] text-muted-foreground truncate">Interactive PhET simulations — Physics, Biology, Chemistry</p>
-          </div>
-          <ArrowRight className="w-4 h-4 text-accent shrink-0 group-hover:translate-x-1 transition-transform" />
-          <div className="absolute top-2 right-2">
-            <span className="text-[9px] font-grotesk uppercase tracking-widest text-accent/70 bg-accent/10 px-1.5 py-0.5 rounded-full">New</span>
-          </div>
-        </button>
-      </motion.div>
+      {/* Bottom bar — Delores left, Lab right */}
+      <div className="absolute bottom-20 md:bottom-6 left-0 right-0 z-20 px-4 flex items-end justify-between gap-3">
+        {/* Delores widget — left */}
+        <DeloresFloatingWidget />
 
-      {/* Floating Delores widget */}
-      <DeloresFloatingWidget />
+        {/* Lab Promo Banner — right */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-xs w-full sm:w-auto"
+        >
+          <button
+            onClick={() => navigate('/forge', { state: { targetTab: 'experiment' } })}
+            className="w-full group relative overflow-hidden rounded-2xl border border-accent/30 bg-card/80 backdrop-blur-md p-3 sm:p-4 flex items-center gap-3 hover:border-accent/50 hover:shadow-lg transition-all"
+          >
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-accent/15 border border-accent/20 flex items-center justify-center shrink-0 group-hover:bg-accent/25 transition-colors">
+              <FlaskConical className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
+            </div>
+            <div className="text-left min-w-0 flex-1">
+              <p className="text-xs sm:text-sm font-medium text-foreground">Try the Lab</p>
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate hidden sm:block">Interactive PhET simulations</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-accent shrink-0 group-hover:translate-x-1 transition-transform" />
+            <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
+              <span className="text-[8px] sm:text-[9px] font-grotesk uppercase tracking-widest text-accent/70 bg-accent/10 px-1.5 py-0.5 rounded-full">New</span>
+            </div>
+          </button>
+        </motion.div>
+      </div>
     </div>
   );
 };

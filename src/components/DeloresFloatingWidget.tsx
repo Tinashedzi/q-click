@@ -23,7 +23,7 @@ const DeloresFloatingWidget = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed bottom-20 right-4 z-40 flex flex-col items-end gap-2">
+    <div className="flex flex-col items-start gap-2 shrink-0">
       <AnimatePresence>
         {isExpanded && (
           <motion.div
