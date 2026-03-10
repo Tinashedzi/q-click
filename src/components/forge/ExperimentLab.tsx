@@ -6,12 +6,12 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 const SIMULATION_CATALOG = [
-  { id: 'gravity', name: 'Gravity & Orbits', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits_en.html', icon: Atom },
-  { id: 'waves', name: 'Wave Interference', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_en.html', icon: Atom },
-  { id: 'natural-selection', name: 'Natural Selection', category: 'Biology', url: 'https://phet.colorado.edu/sims/html/natural-selection/latest/natural-selection_en.html', icon: Microscope },
-  { id: 'molecules', name: 'Build a Molecule', category: 'Chemistry', url: 'https://phet.colorado.edu/sims/html/build-a-molecule/latest/build-a-molecule_en.html', icon: FlaskConical },
-  { id: 'fractions', name: 'Fractions', category: 'Math', url: 'https://phet.colorado.edu/sims/html/fractions-intro/latest/fractions-intro_en.html', icon: BarChart3 },
-  { id: 'energy', name: 'Energy Forms', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes_en.html', icon: Atom },
+  { id: 'gravity', name: 'Gravity & Orbits', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits_en.html', icon: Atom, thumbnail: 'https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits-600.png' },
+  { id: 'waves', name: 'Wave Interference', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_en.html', icon: Atom, thumbnail: 'https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference-600.png' },
+  { id: 'natural-selection', name: 'Natural Selection', category: 'Biology', url: 'https://phet.colorado.edu/sims/html/natural-selection/latest/natural-selection_en.html', icon: Microscope, thumbnail: 'https://phet.colorado.edu/sims/html/natural-selection/latest/natural-selection-600.png' },
+  { id: 'molecules', name: 'Build a Molecule', category: 'Chemistry', url: 'https://phet.colorado.edu/sims/html/build-a-molecule/latest/build-a-molecule_en.html', icon: FlaskConical, thumbnail: 'https://phet.colorado.edu/sims/html/build-a-molecule/latest/build-a-molecule-600.png' },
+  { id: 'fractions', name: 'Fractions', category: 'Math', url: 'https://phet.colorado.edu/sims/html/fractions-intro/latest/fractions-intro_en.html', icon: BarChart3, thumbnail: 'https://phet.colorado.edu/sims/html/fractions-intro/latest/fractions-intro-600.png' },
+  { id: 'energy', name: 'Energy Forms', category: 'Physics', url: 'https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes_en.html', icon: Atom, thumbnail: 'https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes-600.png' },
 ];
 
 interface ExperimentLabProps {
@@ -98,7 +98,7 @@ const ExperimentLab = ({ prefilledTopic }: ExperimentLabProps) => {
             return (
               <div key={cat}>
                 <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-grotesk mb-2">{cat}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {catSims.map((sim, i) => (
                     <motion.button
                       key={sim.id}
@@ -107,19 +107,27 @@ const ExperimentLab = ({ prefilledTopic }: ExperimentLabProps) => {
                       transition={{ delay: i * 0.05 }}
                       onClick={() => setActiveSim(sim)}
                       className={cn(
-                        'text-left p-4 rounded-xl border border-border/40 bg-card',
+                        'text-left rounded-xl border border-border/40 bg-card overflow-hidden',
                         'hover:border-primary/30 hover:shadow-soft transition-all group'
                       )}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-primary/8 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
+                      <div className="aspect-[16/9] w-full bg-muted/30 overflow-hidden">
+                        <img
+                          src={sim.thumbnail}
+                          alt={sim.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="p-3 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
                           <sim.icon className="w-4 h-4 text-primary" />
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{sim.name}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">Interactive · PhET</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{sim.name}</p>
+                          <p className="text-[10px] text-muted-foreground">Interactive · PhET</p>
                         </div>
-                        <Play className="w-3.5 h-3.5 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity mt-1" />
+                        <Play className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </motion.button>
                   ))}
