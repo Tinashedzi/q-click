@@ -4,6 +4,7 @@ import { Sparkles, Globe, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import CreditExhaustedFallback from './CreditExhaustedFallback';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -19,11 +20,13 @@ const ConceptForge = () => {
   const [topic, setTopic] = useState('');
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<GeneratedConcept | null>(null);
+  const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
 
   const generateConcept = async () => {
     if (!topic.trim()) return;
     setGenerating(true);
     setResult(null);
+    setErrorType(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('concept-forge', {
@@ -31,7 +34,11 @@ const ConceptForge = () => {
       });
 
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        if (data.error.includes('credits') || data.error.includes('Payment')) { setErrorType('credits'); return; }
+        if (data.error.includes('Rate limit')) { setErrorType('rate-limit'); return; }
+        throw new Error(data.error);
+      }
 
       setResult({ topic, ...data });
 
@@ -39,8 +46,10 @@ const ConceptForge = () => {
       saved.push({ topic, createdAt: new Date().toISOString() });
       localStorage.setItem('sensage-forge-concepts', JSON.stringify(saved));
     } catch (err: any) {
-      console.error('Concept forge error:', err);
-      toast.error(err.message || 'Failed to forge concept. Try again.');
+      const msg = err.message || '';
+      if (msg.includes('402') || msg.includes('credits')) { setErrorType('credits'); }
+      else if (msg.includes('429') || msg.includes('Rate')) { setErrorType('rate-limit'); }
+      else { toast.error(msg || 'Failed to forge concept. Try again.'); }
     } finally {
       setGenerating(false);
     }
@@ -65,6 +74,8 @@ const ConceptForge = () => {
           {generating ? 'Forging...' : 'Forge'}
         </Button>
       </div>
+
+      {errorType && <CreditExhaustedFallback type={errorType} onRetry={generateConcept} />}
 
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">

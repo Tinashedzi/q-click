@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Box, Loader2, Layers, Lightbulb, LayoutGrid } from 'lucide-react';
 import SpatialScene from './SpatialScene';
+import CreditExhaustedFallback from './CreditExhaustedFallback';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,18 +25,28 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
   const [query, setQuery] = useState(prefillTopic || '');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SpatialResult | null>(null);
+  const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
 
   const explore = async () => {
     if (!query.trim()) return;
     setLoading(true);
     setResult(null);
+    setErrorType(null);
 
     try {
       const { data, error } = await supabase.functions.invoke('concept-collision', {
         body: { conceptA: query.trim(), conceptB: 'Spatial Intelligence & 3D Visualization' },
       });
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        if (data.error.includes('credits') || data.error.includes('Payment')) {
+          setErrorType('credits'); return;
+        }
+        if (data.error.includes('Rate limit')) {
+          setErrorType('rate-limit'); return;
+        }
+        throw new Error(data.error);
+      }
 
       setResult({
         title: data.theme,
@@ -45,7 +56,10 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
         arPossibilities: data.questions || [],
       });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to explore. Try again.');
+      const msg = err.message || '';
+      if (msg.includes('402') || msg.includes('credits')) { setErrorType('credits'); }
+      else if (msg.includes('429') || msg.includes('Rate')) { setErrorType('rate-limit'); }
+      else { toast.error(msg || 'Failed to explore. Try again.'); }
     } finally {
       setLoading(false);
     }
@@ -78,6 +92,8 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
           </Button>
         </div>
       </div>
+
+      {errorType && <CreditExhaustedFallback type={errorType} onRetry={explore} />}
 
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
