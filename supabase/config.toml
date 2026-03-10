@@ -1,1 +1,10 @@
 project_id = "antjeroxyiwzfpuskzmk"
+
+[functions.concept-collision]
+verify_jwt = false
+
+[functions.generate-rubric]
+verify_jwt = false
+
+[functions.quest-architect]
+verify_jwt = false
