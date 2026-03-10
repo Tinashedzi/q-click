@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { Sparkles, Loader2, BookOpen, Users, Hammer, Heart, Clock, ChevronRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import QuestToForge from '@/components/oasis/QuestToForge';
 
 interface QuestStage {
   name: string;
@@ -57,6 +59,15 @@ const QuestGenerator = () => {
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   const { session } = useAuth();
+  const location = useLocation();
+
+  // Accept prefilled topic from Forge navigation
+  useEffect(() => {
+    const state = location.state as { prefillTopic?: string } | null;
+    if (state?.prefillTopic) {
+      setTopic(state.prefillTopic);
+    }
+  }, [location.state]);
 
   const generateQuest = async () => {
     if (!topic.trim()) return;
@@ -239,6 +250,13 @@ const QuestGenerator = () => {
                       </div>
                     ))}
                   </div>
+
+                  {/* Show Forge link on Creation stage */}
+                  {quest.stages[activeStage]?.name === 'Creation' && (
+                    <div className="mt-4">
+                      <QuestToForge topic={topic} />
+                    </div>
+                  )}
 
                   {activeStage < quest.stages.length - 1 && (
                     <Button variant="outline" size="sm" className="mt-4" onClick={() => setActiveStage(activeStage + 1)}>
