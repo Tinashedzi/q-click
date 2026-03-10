@@ -93,6 +93,8 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
         </div>
       </div>
 
+      {errorType && <CreditExhaustedFallback type={errorType} onRetry={explore} />}
+
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <SpatialScene title={result.title} dimensions={result.spatialDimensions} onAddToCanvas={onAddToCanvas} />
