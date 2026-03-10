@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Box, Loader2, Layers, Lightbulb, LayoutGrid } from 'lucide-react';
 import SpatialScene from './SpatialScene';
+import CreditExhaustedFallback from './CreditExhaustedFallback';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
