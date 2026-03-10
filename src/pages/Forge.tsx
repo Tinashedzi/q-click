@@ -115,6 +115,9 @@ const Forge = () => {
           transition={{ duration: 0.2 }}
           className="space-y-6"
         >
+          {['collision', 'canvas', 'spatial'].includes(activeTab) && (
+            <ForgeInstructions tab={activeTab} />
+          )}
           {activeTab === 'collision' && (
             <>
               <ConceptCollision onExperimentSelect={handleExperimentSelect} onAddToCanvas={handleAddToCanvas} />
