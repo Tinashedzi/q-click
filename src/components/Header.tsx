@@ -37,7 +37,7 @@ const Header = () => {
             )}
           </motion.div>
           <Link to="/" className="text-lg font-serif tracking-tight text-foreground hover:text-primary transition-colors">
-            Sensage
+            Q-Click
           </Link>
         </motion.div>
 

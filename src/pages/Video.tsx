@@ -58,7 +58,7 @@ const VideoPage = () => {
               <div>
                 <h3 className="text-lg font-serif text-foreground">Upload Educational Video</h3>
                 <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
-                  Upload your own educational videos. Sensage will automatically transcribe, annotate with Glossa, and make it interactive.
+                  Upload your own educational videos. Q-Click will automatically transcribe, annotate with Glossa, and make it interactive.
                 </p>
               </div>
               <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 gap-2">
