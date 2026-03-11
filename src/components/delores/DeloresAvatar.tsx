@@ -20,6 +20,7 @@ const moodConfig: Record<number, { breathe: number; color1: string; color2: stri
 };
 
 const sizes = {
+  xs: { container: 24, orb: 18 },
   sm: { container: 48, orb: 36 },
   md: { container: 80, orb: 60 },
   lg: { container: 112, orb: 84 },

@@ -11,7 +11,7 @@ import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import VoiceInput from '@/components/delores/VoiceInput';
 
 const Delores = () => {
-  const [activeTab, setActiveTab] = useState('checkin');
+  const [activeTab, setActiveTab] = useState('chat');
   const [currentMood, setCurrentMood] = useState<number | null>(null);
   const [isListening, setIsListening] = useState(false);
 
