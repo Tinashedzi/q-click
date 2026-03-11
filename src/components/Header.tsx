@@ -2,6 +2,7 @@ import { Sparkles, Flame, LogOut, Home } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import qclickLogo from '@/assets/qclick-logo.png';
 
 const Header = () => {
   const { profile, signOut } = useAuth();
@@ -36,8 +37,9 @@ const Header = () => {
               </span>
             )}
           </motion.div>
-          <Link to="/" className="text-lg font-serif tracking-tight text-foreground hover:text-primary transition-colors">
-            Q-Click
+          <Link to="/" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+            <img src={qclickLogo} alt="Q-Click" className="w-6 h-6 object-contain" />
+            <span className="text-lg font-serif tracking-tight text-foreground">Q-Click</span>
           </Link>
         </motion.div>
 

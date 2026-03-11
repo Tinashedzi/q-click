@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { FlaskConical, ArrowRight } from 'lucide-react';
+import qclickLogo from '@/assets/qclick-logo.png';
 import AuraLevel from '@/components/citadel/AuraLevel';
 import BeltRing from '@/components/citadel/BeltRing';
 import OnboardingTour from '@/components/OnboardingTour';
@@ -64,14 +65,17 @@ const Index = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-right shrink-0 ml-4"
+              className="flex items-center gap-2 shrink-0 ml-4"
             >
-              <h1 className="text-xl sm:text-3xl font-serif text-foreground tracking-tight">
-                Q-Click
-              </h1>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground/70 italic font-serif tracking-wide">
-                the architecture of thought
-              </p>
+              <img src={qclickLogo} alt="Q-Click" className="w-9 h-9 sm:w-11 sm:h-11 object-contain" />
+              <div className="text-right">
+                <h1 className="text-xl sm:text-3xl font-serif text-foreground tracking-tight">
+                  Q-Click
+                </h1>
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground/70 italic font-serif tracking-wide">
+                  the architecture of thought
+                </p>
+              </div>
             </motion.div>
           </div>
 
