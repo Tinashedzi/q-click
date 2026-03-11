@@ -39,12 +39,16 @@ const Delores = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-5 mb-6">
+              <TabsTrigger value="chat">Talk</TabsTrigger>
               <TabsTrigger value="checkin">Check-in</TabsTrigger>
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-              <TabsTrigger value="sel">SEL Skills</TabsTrigger>
+              <TabsTrigger value="sel">SEL</TabsTrigger>
               <TabsTrigger value="matrix">Matrix</TabsTrigger>
             </TabsList>
+            <TabsContent value="chat">
+              <DeloresChat moodLevel={currentMood} onMoodDetected={setCurrentMood} />
+            </TabsContent>
             <TabsContent value="checkin">
               <MoodCheckIn
                 onComplete={() => setActiveTab('dashboard')}
