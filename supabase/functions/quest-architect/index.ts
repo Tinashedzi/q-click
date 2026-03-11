@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are the Quest Architect for Swell: The Great Archive. You generate multi-stage, project-based learning (PBL) quests.
+const SYSTEM_PROMPT = `You are the Quest Architect for Q-Click. You generate multi-stage, project-based learning (PBL) quests.
 
 Each quest MUST include:
 1. ESSENTIAL QUESTION: A provocative, open-ended question that drives inquiry
