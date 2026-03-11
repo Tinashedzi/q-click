@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
+import DeloresChat from '@/components/delores/DeloresChat';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
 import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 import SELRadarChart from '@/components/delores/SELRadarChart';
