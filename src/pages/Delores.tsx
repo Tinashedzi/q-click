@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
+import DeloresChat from '@/components/delores/DeloresChat';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
 import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 import SELRadarChart from '@/components/delores/SELRadarChart';
@@ -10,7 +11,7 @@ import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import VoiceInput from '@/components/delores/VoiceInput';
 
 const Delores = () => {
-  const [activeTab, setActiveTab] = useState('checkin');
+  const [activeTab, setActiveTab] = useState('chat');
   const [currentMood, setCurrentMood] = useState<number | null>(null);
   const [isListening, setIsListening] = useState(false);
 
@@ -38,12 +39,16 @@ const Delores = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-5 mb-6">
+              <TabsTrigger value="chat">Talk</TabsTrigger>
               <TabsTrigger value="checkin">Check-in</TabsTrigger>
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-              <TabsTrigger value="sel">SEL Skills</TabsTrigger>
+              <TabsTrigger value="sel">SEL</TabsTrigger>
               <TabsTrigger value="matrix">Matrix</TabsTrigger>
             </TabsList>
+            <TabsContent value="chat">
+              <DeloresChat moodLevel={currentMood} onMoodDetected={setCurrentMood} />
+            </TabsContent>
             <TabsContent value="checkin">
               <MoodCheckIn
                 onComplete={() => setActiveTab('dashboard')}
