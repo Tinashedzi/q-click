@@ -16,7 +16,7 @@ const Gamification = () => {
             <Trophy className="w-5 h-5 text-gold" />
           </div>
           <div>
-            <h2 className="text-2xl font-serif text-foreground">Progress</h2>
+            <h2 className="text-2xl font-serif text-foreground">Dashboard</h2>
             <p className="text-sm text-muted-foreground">Track your learning journey</p>
           </div>
         </div>
