@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { FlaskConical, ArrowRight } from 'lucide-react';
+import qclickLogo from '@/assets/qclick-logo.png';
 import AuraLevel from '@/components/citadel/AuraLevel';
 import BeltRing from '@/components/citadel/BeltRing';
 import OnboardingTour from '@/components/OnboardingTour';
