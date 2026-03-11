@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.quest-architect]
 verify_jwt = false
+
+[functions.delores-chat]
+verify_jwt = false
