@@ -10,7 +10,7 @@ const desktopTabs = [
   { path: '/oasis', label: 'Oasis', icon: Compass },
   { path: '/video', label: 'Video', icon: Video },
   { path: '/forge', label: 'Forge', icon: Hammer },
-  { path: '/gamification', label: 'Progress', icon: Trophy },
+  { path: '/gamification', label: 'Dashboard', icon: Trophy },
   { path: '/library', label: 'Library', icon: Library },
 ];
 

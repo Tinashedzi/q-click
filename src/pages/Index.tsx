@@ -67,7 +67,7 @@ const Index = () => {
               className="text-right shrink-0 ml-4"
             >
               <h1 className="text-xl sm:text-3xl font-serif text-foreground tracking-tight">
-                Sensage
+                Q-Click
               </h1>
               <p className="text-[9px] sm:text-[10px] text-muted-foreground/70 italic font-serif tracking-wide">
                 the architecture of thought
