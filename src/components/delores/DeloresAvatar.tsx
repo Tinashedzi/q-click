@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 
 interface DeloresAvatarProps {
   moodLevel: number | null;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   isListening?: boolean;
 }
 
