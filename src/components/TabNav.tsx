@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Video, Hammer, Heart, Compass, Trophy, Library } from 'lucide-react';
+import { Home, BookOpen, Video, Hammer, Heart, Compass, Trophy, Library, FlaskConical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -10,6 +10,7 @@ const desktopTabs = [
   { path: '/oasis', label: 'Oasis', icon: Compass },
   { path: '/video', label: 'Video', icon: Video },
   { path: '/forge', label: 'Forge', icon: Hammer },
+  { path: '/forge?tab=lab', label: 'Lab', icon: FlaskConical },
   { path: '/gamification', label: 'Dashboard', icon: Trophy },
   { path: '/library', label: 'Library', icon: Library },
 ];
@@ -17,6 +18,7 @@ const desktopTabs = [
 const mobileTabs = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/forge', label: 'Forge', icon: Hammer },
+  { path: '/forge?tab=lab', label: 'Lab', icon: FlaskConical },
   { path: '/library', label: 'Library', icon: Library },
 ];
 
