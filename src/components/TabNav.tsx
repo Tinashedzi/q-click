@@ -10,6 +10,7 @@ const desktopTabs = [
   { path: '/oasis', label: 'Oasis', icon: Compass },
   { path: '/video', label: 'Video', icon: Video },
   { path: '/forge', label: 'Forge', icon: Hammer },
+  { path: '/forge?tab=lab', label: 'Lab', icon: FlaskConical },
   { path: '/gamification', label: 'Dashboard', icon: Trophy },
   { path: '/library', label: 'Library', icon: Library },
 ];
@@ -17,6 +18,7 @@ const desktopTabs = [
 const mobileTabs = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/forge', label: 'Forge', icon: Hammer },
+  { path: '/forge?tab=lab', label: 'Lab', icon: FlaskConical },
   { path: '/library', label: 'Library', icon: Library },
 ];
 
