@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Video, Hammer, Heart, Compass, Trophy, Library } from 'lucide-react';
+import { Home, BookOpen, Video, Hammer, Heart, Compass, Trophy, Library, FlaskConical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
