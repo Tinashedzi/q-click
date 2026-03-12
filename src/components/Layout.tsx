@@ -23,7 +23,6 @@ const Layout = ({ children }: LayoutProps) => {
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const rafRef = useRef<number>();
 
-  // Mouse-following radial gradient for bioluminescent effect
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -43,7 +42,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Bioluminescent deep-sea background */}
+      {/* Bioluminescent background */}
       <div
         className="fixed inset-0 pointer-events-none z-0 transition-[background] duration-1000 ease-out"
         style={{
@@ -57,7 +56,7 @@ const Layout = ({ children }: LayoutProps) => {
         }}
       />
 
-      {/* Subtle bioluminescent particles */}
+      {/* Particles */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {[...Array(5)].map((_, i) => (
           <motion.div
@@ -89,7 +88,7 @@ const Layout = ({ children }: LayoutProps) => {
 
       {!isHome && <Header />}
       {!isHome && <TabNav />}
-      <main className={`${isHome ? '' : 'pt-14 md:pt-[6.25rem]'} pb-24 relative z-10`}>
+      <main className={`${isHome ? '' : 'pt-14 md:pt-[6.25rem]'} pb-20 relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -104,10 +103,12 @@ const Layout = ({ children }: LayoutProps) => {
         </AnimatePresence>
       </main>
 
-      {/* Global bottom CitadelNav */}
-      <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4">
-        <CitadelNav onJournalOpen={() => setJournalOpen(true)} />
-      </div>
+      {/* Global CitadelNav — hidden on home for clean look */}
+      {!isHome && (
+        <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4">
+          <CitadelNav onJournalOpen={() => setJournalOpen(true)} />
+        </div>
+      )}
 
       <JournalOverlay isOpen={journalOpen} onClose={() => setJournalOpen(false)} />
     </div>

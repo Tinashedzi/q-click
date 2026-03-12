@@ -1,156 +1,129 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { FlaskConical, ArrowRight } from 'lucide-react';
-import qclickLogo from '@/assets/qclick-logo.png';
-import AuraLevel from '@/components/citadel/AuraLevel';
-import BeltRing from '@/components/citadel/BeltRing';
-import OnboardingTour from '@/components/OnboardingTour';
-import CognitiveModeToggle from '@/components/cognitive/CognitiveModeToggle';
-import ExplorerFeed from '@/components/cognitive/ExplorerFeed';
-import DeepFocusMode from '@/components/cognitive/DeepFocusMode';
-import DeloresFloatingWidget from '@/components/DeloresFloatingWidget';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { Compass, Hammer, BookOpen, Heart, ArrowRight } from 'lucide-react';
+
+const pathways = [
+  {
+    icon: Compass,
+    title: 'Explore',
+    subtitle: 'Discover ideas that change how you see the world',
+    path: '/oasis',
+    color: 'hsl(var(--electric-cyan))',
+    bg: 'hsl(var(--electric-cyan) / 0.08)',
+    border: 'hsl(var(--electric-cyan) / 0.2)',
+  },
+  {
+    icon: Hammer,
+    title: 'Create',
+    subtitle: 'Build projects, experiments & creative works',
+    path: '/forge',
+    color: 'hsl(var(--sunset-coral))',
+    bg: 'hsl(var(--sunset-coral) / 0.08)',
+    border: 'hsl(var(--sunset-coral) / 0.2)',
+  },
+  {
+    icon: BookOpen,
+    title: 'Learn',
+    subtitle: 'Deep-dive into language, meaning & knowledge',
+    path: '/glossa',
+    color: 'hsl(var(--pearl-mist))',
+    bg: 'hsl(0 0% 100% / 0.05)',
+    border: 'hsl(0 0% 100% / 0.1)',
+  },
+  {
+    icon: Heart,
+    title: 'Reflect',
+    subtitle: 'Check in with Delores, your learning companion',
+    path: '/delores',
+    color: 'hsl(var(--sunset-coral))',
+    bg: 'hsl(var(--sunset-coral) / 0.06)',
+    border: 'hsl(var(--sunset-coral) / 0.15)',
+  },
+];
 
 const Index = () => {
-  const [cognitiveMode, setCognitiveMode] = useState<'explorer' | 'deep-focus'>('explorer');
   const navigate = useNavigate();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
-      <OnboardingTour />
-
-      {/* Video background */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          src="/videos/ambient-bg.mp4"
+    <div className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-12">
+      {/* Centered Logo + Tagline */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="flex flex-col items-center mb-12"
+      >
+        <img
+          src="/images/qclick-logo.svg"
+          alt="Q-Click"
+          className="w-20 h-20 sm:w-28 sm:h-28 mb-4"
         />
-        {/* Blend overlay to match Silicon Porcelain palette */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `
-              radial-gradient(ellipse 90% 70% at 20% 20%, hsl(var(--lavender-mist) / 0.35), transparent),
-              radial-gradient(ellipse 60% 50% at 80% 80%, hsl(var(--wave-cyan) / 0.15), transparent),
-              hsl(var(--background) / 0.55)
-            `,
-          }}
-        />
-      </div>
+        <h1 className="text-3xl sm:text-5xl font-serif tracking-tight text-foreground">
+          Q-Click
+        </h1>
+        <p className="text-sm sm:text-base text-muted-foreground italic font-serif tracking-wide mt-1">
+          the architecture of thought
+        </p>
+      </motion.div>
 
-      {/* Content layer */}
-      <div className="relative z-10 flex flex-col h-full">
-        {/* Top bar */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between px-4 sm:px-6 pt-3 gap-2 sm:gap-0">
-          <div className="flex items-center justify-between w-full">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center gap-3 min-w-0 flex-1"
-            >
-              <Link to="/gamification" className="shrink-0">
-                <BeltRing />
-              </Link>
-              <div className="hidden md:block min-w-0">
-                <AuraLevel />
-              </div>
-            </motion.div>
+      {/* Hook line */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.6 }}
+        className="text-center text-muted-foreground text-sm sm:text-base max-w-md mb-10 leading-relaxed"
+      >
+        Your mind is the most powerful tool you own.
+        <br />
+        <span className="text-foreground font-medium">Start sharpening it.</span>
+      </motion.p>
 
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="flex items-center gap-2 shrink-0 ml-4"
-            >
-              <img src={qclickLogo} alt="Q-Click" className="w-9 h-9 sm:w-11 sm:h-11 object-contain" />
-              <div className="text-right">
-                <h1 className="text-xl sm:text-3xl font-serif text-foreground tracking-tight">
-                  Q-Click
-                </h1>
-                <p className="text-[9px] sm:text-[10px] text-muted-foreground/70 italic font-serif tracking-wide">
-                  the architecture of thought
-                </p>
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="flex justify-center sm:absolute sm:top-4 sm:left-1/2 sm:-translate-x-1/2 z-30">
-            <CognitiveModeToggle mode={cognitiveMode} onChange={setCognitiveMode} />
-          </div>
-        </div>
-
-        {/* Main content area */}
-        <div className="flex-1 relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={cognitiveMode}
-              className="absolute inset-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {cognitiveMode === 'explorer' ? (
-                <div className="w-full h-full flex items-center justify-center">
-                  <motion.div
-                    className="w-full max-w-md h-[75%]"
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <ExplorerFeed />
-                  </motion.div>
-                </div>
-              ) : (
-                <motion.div
-                  className="w-full h-full"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1, duration: 0.4 }}
-                >
-                  <DeepFocusMode />
-                </motion.div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Bottom bar — Delores left, Lab right */}
-      <div className="absolute bottom-20 md:bottom-6 left-0 right-0 z-20 px-4 flex items-end justify-between gap-3">
-        {/* Delores widget — left */}
-        <DeloresFloatingWidget />
-
-        {/* Lab Promo Banner — right */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-xs w-full sm:w-auto"
-        >
-          <button
-            onClick={() => navigate('/forge', { state: { targetTab: 'experiment' } })}
-            className="w-full group relative overflow-hidden rounded-2xl border border-accent/30 bg-card/80 backdrop-blur-md p-3 sm:p-4 flex items-center gap-3 hover:border-accent/50 hover:shadow-lg transition-all"
+      {/* Pathway Cards */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.6 }}
+        className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-lg"
+      >
+        {pathways.map((p, i) => (
+          <motion.button
+            key={p.path}
+            onClick={() => navigate(p.path)}
+            onMouseEnter={() => setHoveredIndex(i)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="relative rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 group"
+            style={{
+              background: p.bg,
+              border: `1px solid ${p.border}`,
+              boxShadow: hoveredIndex === i ? `0 8px 30px -8px ${p.color}30` : 'none',
+            }}
           >
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-accent/15 border border-accent/20 flex items-center justify-center shrink-0 group-hover:bg-accent/25 transition-colors">
-              <FlaskConical className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
-            </div>
-            <div className="text-left min-w-0 flex-1">
-              <p className="text-xs sm:text-sm font-medium text-foreground">Try the Lab</p>
-              <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate hidden sm:block">Interactive PhET simulations</p>
-            </div>
-            <ArrowRight className="w-4 h-4 text-accent shrink-0 group-hover:translate-x-1 transition-transform" />
-            <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
-              <span className="text-[8px] sm:text-[9px] font-grotesk uppercase tracking-widest text-accent/70 bg-accent/10 px-1.5 py-0.5 rounded-full">New</span>
-            </div>
-          </button>
-        </motion.div>
-      </div>
+            <p.icon
+              className="w-6 h-6 sm:w-7 sm:h-7 mb-3 transition-transform duration-300 group-hover:scale-110"
+              style={{ color: p.color }}
+            />
+            <h3 className="text-base sm:text-lg font-serif text-foreground mb-1">{p.title}</h3>
+            <p className="text-[11px] sm:text-xs text-muted-foreground leading-snug">{p.subtitle}</p>
+            <ArrowRight
+              className="absolute bottom-4 right-4 w-4 h-4 text-muted-foreground/40 group-hover:text-foreground/60 group-hover:translate-x-0.5 transition-all"
+            />
+          </motion.button>
+        ))}
+      </motion.div>
+
+      {/* Subtle social proof */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.6 }}
+        className="text-[11px] text-muted-foreground/50 mt-10 text-center"
+      >
+        Built for curious minds · Learn anything · Go anywhere
+      </motion.p>
     </div>
   );
 };
