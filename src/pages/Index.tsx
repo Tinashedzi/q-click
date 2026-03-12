@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Compass, Hammer, BookOpen, Heart, ArrowRight } from 'lucide-react';
+import qclickLogo from '@/assets/qclick-logo.png';
 
 const pathways = [
   {
