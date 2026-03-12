@@ -56,9 +56,9 @@ const Index = () => {
         className="flex flex-col items-center mb-12"
       >
         <img
-          src="/images/qclick-logo.svg"
+          src={qclickLogo}
           alt="Q-Click"
-          className="w-20 h-20 sm:w-28 sm:h-28 mb-4"
+          className="w-16 h-16 sm:w-24 sm:h-24 mb-4 drop-shadow-lg"
         />
         <h1 className="text-3xl sm:text-5xl font-serif tracking-tight text-foreground">
           Q-Click
