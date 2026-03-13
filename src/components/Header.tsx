@@ -39,7 +39,7 @@ const Header = () => {
           </motion.div>
           <Link to="/" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
             <img src={qclickLogo} alt="Q-Click" className="w-6 h-6 object-contain" />
-            <span className="text-lg font-serif tracking-tight text-foreground">Q-Click</span>
+            <span className="text-lg font-semibold tracking-tight text-foreground">Q-Click</span>
           </Link>
         </motion.div>
 
