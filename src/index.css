@@ -191,36 +191,35 @@
   }
 
   /* ═══════════════════════════════════════
-     Typography
+     Typography — Two weights: 400 + 600
      ═══════════════════════════════════════ */
 
   .text-serif {
-    font-family: 'Fraunces', 'Georgia', serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
   }
 
   .text-journal {
-    font-family: 'IBM Plex Serif', 'Georgia', serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   .text-grotesk {
-    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   .universal-meaning {
-    font-family: 'Fraunces', 'Georgia', serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-style: italic;
     font-weight: 400;
   }
 
-  /* Bioluminescent text shimmer */
+  /* Subtle text glow — 10% accent usage */
   .text-glow {
-    text-shadow: 0 0 20px hsl(var(--electric-cyan) / 0.4),
-                 0 0 60px hsl(var(--electric-cyan) / 0.1);
+    text-shadow: 0 0 16px hsl(var(--electric-cyan) / 0.25);
   }
 
   .text-coral-glow {
-    text-shadow: 0 0 20px hsl(var(--sunset-coral) / 0.4),
-                 0 0 60px hsl(var(--sunset-coral) / 0.1);
+    text-shadow: 0 0 16px hsl(var(--sunset-coral) / 0.25);
   }
 
   /* ═══════════════════════════════════════
