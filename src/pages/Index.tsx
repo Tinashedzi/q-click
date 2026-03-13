@@ -97,7 +97,7 @@ const Index = () => {
         muted
         loop
         playsInline
-        className="fixed inset-0 w-full h-full object-cover z-0 opacity-20"
+        className="fixed inset-0 w-full h-full object-cover z-0 opacity-35"
       >
         <source src="/videos/ambient-bg.mp4" type="video/mp4" />
       </video>
