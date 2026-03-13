@@ -310,9 +310,9 @@
     overflow: hidden;
   }
 
-  /* Silk flow text */
+  /* Silk flow text — reserved for hero accent only */
   .silk-text {
-    background: linear-gradient(135deg, hsl(var(--pearl-mist)), hsl(var(--electric-cyan)), hsl(var(--pearl-mist)));
+    background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--electric-cyan)), hsl(var(--foreground)));
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
