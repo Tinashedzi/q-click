@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,78 +7,79 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════
-       2026 Bioluminescent Deep Tech — "Liquid Glass"
+       Obsidian Vault — Phantom-Style Minimalism
+       60% neutral (obsidian), 30% complement (white/mist), 10% accent (cyan)
        ═══════════════════════════════════════════ */
 
-    /* Foundation: Midnight Teal — deep, near-black with organic depth */
-    --background: 160 55% 7%;
-    --foreground: 184 85% 93%;
+    /* 60% — Deep obsidian foundation */
+    --background: 0 0% 2%;
+    --foreground: 0 0% 96%;
 
-    --card: 160 40% 9%;
-    --card-foreground: 184 85% 93%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 160 45% 8%;
-    --popover-foreground: 184 85% 93%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 96%;
 
-    /* Electric Cyan — active / primary glow */
+    /* 10% — Electric Cyan accent */
     --primary: 183 100% 50%;
-    --primary-foreground: 160 55% 7%;
+    --primary-foreground: 0 0% 2%;
 
-    /* Sunset Coral — warm pop accent (replaces gold) */
+    /* Warm accent — used sparingly */
     --secondary: 5 100% 69%;
-    --secondary-foreground: 160 55% 7%;
+    --secondary-foreground: 0 0% 2%;
 
-    --muted: 160 25% 14%;
-    --muted-foreground: 184 40% 60%;
+    /* 30% — Muted layers */
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 55%;
 
-    /* Accent = Coral glow */
-    --accent: 5 100% 69%;
-    --accent-foreground: 160 55% 7%;
+    --accent: 183 100% 50%;
+    --accent-foreground: 0 0% 2%;
 
     --destructive: 0 72% 51%;
-    --destructive-foreground: 184 85% 93%;
+    --destructive-foreground: 0 0% 96%;
 
-    --border: 160 20% 16%;
-    --input: 160 20% 16%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
     --ring: 183 100% 50%;
 
     --radius: 0.75rem;
 
-    /* Bioluminescent tokens */
-    --midnight-teal: 160 55% 7%;
+    /* Semantic tokens */
+    --midnight-teal: 0 0% 2%;
     --electric-cyan: 183 100% 50%;
     --sunset-coral: 5 100% 69%;
-    --pearl-mist: 184 85% 93%;
-    --deep-lagoon: 170 45% 12%;
-    --abyss: 160 60% 4%;
+    --pearl-mist: 0 0% 96%;
+    --deep-lagoon: 0 0% 6%;
+    --abyss: 0 0% 1%;
 
     /* Glass material tokens */
-    --glass-surface: 0 0% 100% / 0.05;
-    --glass-border: 0 0% 100% / 0.1;
-    --glass-highlight: 0 0% 100% / 0.15;
+    --glass-surface: 0 0% 100% / 0.04;
+    --glass-border: 0 0% 100% / 0.08;
+    --glass-highlight: 0 0% 100% / 0.12;
 
-    /* Glow shadows */
-    --shadow-cyan-glow: 0 0 40px hsl(183 100% 50% / 0.1);
-    --shadow-coral-glow: 0 0 40px hsl(5 100% 69% / 0.1);
-    --shadow-deep: 0 12px 50px -12px hsl(160 60% 4% / 0.6);
-    --shadow-float: 0 8px 32px hsl(160 60% 4% / 0.4);
-    --shadow-card: 0 4px 30px -8px hsl(160 60% 4% / 0.5);
-    --shadow-soft: 0 2px 20px -4px hsl(160 60% 4% / 0.3);
+    /* Shadows — minimal */
+    --shadow-cyan-glow: 0 0 30px hsl(183 100% 50% / 0.06);
+    --shadow-coral-glow: 0 0 30px hsl(5 100% 69% / 0.06);
+    --shadow-deep: 0 8px 40px -12px hsl(0 0% 0% / 0.6);
+    --shadow-float: 0 4px 24px hsl(0 0% 0% / 0.4);
+    --shadow-card: 0 2px 20px -8px hsl(0 0% 0% / 0.5);
+    --shadow-soft: 0 1px 12px -4px hsl(0 0% 0% / 0.3);
 
-    /* Gradients */
+    /* Gradients — subtle */
     --gradient-cyan: linear-gradient(135deg, hsl(183 100% 50%), hsl(183 80% 40%));
     --gradient-coral: linear-gradient(135deg, hsl(5 100% 69%), hsl(15 90% 55%));
-    --gradient-lagoon: linear-gradient(170deg, hsl(160 55% 7%), hsl(170 45% 12%), hsl(183 60% 15%));
-    --gradient-bioluminescent: radial-gradient(ellipse at 30% 20%, hsl(183 100% 50% / 0.08), transparent 50%),
-                                radial-gradient(ellipse at 70% 80%, hsl(5 100% 69% / 0.05), transparent 50%);
+    --gradient-lagoon: linear-gradient(170deg, hsl(0 0% 2%), hsl(0 0% 6%), hsl(0 0% 8%));
+    --gradient-bioluminescent: radial-gradient(ellipse at 30% 20%, hsl(183 100% 50% / 0.04), transparent 50%),
+                                radial-gradient(ellipse at 70% 80%, hsl(5 100% 69% / 0.02), transparent 50%);
 
-    --sidebar-background: 160 45% 8%;
-    --sidebar-foreground: 184 85% 93%;
+    --sidebar-background: 0 0% 3%;
+    --sidebar-foreground: 0 0% 96%;
     --sidebar-primary: 183 100% 50%;
-    --sidebar-primary-foreground: 160 55% 7%;
-    --sidebar-accent: 160 25% 14%;
-    --sidebar-accent-foreground: 184 85% 93%;
-    --sidebar-border: 160 20% 16%;
+    --sidebar-primary-foreground: 0 0% 2%;
+    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 12%;
     --sidebar-ring: 183 100% 50%;
   }
 }
@@ -91,14 +92,18 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
     overflow-x: hidden;
   }
 
+  /* Two weights only: 400 (body) and 600 (headings) */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Fraunces', 'Georgia', serif;
-    font-weight: 400;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
     letter-spacing: -0.02em;
-    color: hsl(var(--pearl-mist));
+    line-height: 1.1;
+    color: hsl(var(--foreground));
   }
 
   /* Sleek scrollbar for the deep-sea theme */
@@ -186,36 +191,35 @@
   }
 
   /* ═══════════════════════════════════════
-     Typography
+     Typography — Two weights: 400 + 600
      ═══════════════════════════════════════ */
 
   .text-serif {
-    font-family: 'Fraunces', 'Georgia', serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 600;
   }
 
   .text-journal {
-    font-family: 'IBM Plex Serif', 'Georgia', serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   .text-grotesk {
-    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   .universal-meaning {
-    font-family: 'Fraunces', 'Georgia', serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-style: italic;
     font-weight: 400;
   }
 
-  /* Bioluminescent text shimmer */
+  /* Subtle text glow — 10% accent usage */
   .text-glow {
-    text-shadow: 0 0 20px hsl(var(--electric-cyan) / 0.4),
-                 0 0 60px hsl(var(--electric-cyan) / 0.1);
+    text-shadow: 0 0 16px hsl(var(--electric-cyan) / 0.25);
   }
 
   .text-coral-glow {
-    text-shadow: 0 0 20px hsl(var(--sunset-coral) / 0.4),
-                 0 0 60px hsl(var(--sunset-coral) / 0.1);
+    text-shadow: 0 0 16px hsl(var(--sunset-coral) / 0.25);
   }
 
   /* ═══════════════════════════════════════
@@ -306,9 +310,9 @@
     overflow: hidden;
   }
 
-  /* Silk flow text */
+  /* Silk flow text — reserved for hero accent only */
   .silk-text {
-    background: linear-gradient(135deg, hsl(var(--pearl-mist)), hsl(var(--electric-cyan)), hsl(var(--pearl-mist)));
+    background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--electric-cyan)), hsl(var(--foreground)));
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
