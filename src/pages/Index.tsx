@@ -88,6 +88,17 @@ const FlowingText = ({ text, show }: { text: string; show: boolean }) => {
 };
 
 /* ════════════════════════════════════════════════
+   PAGE TRANSITION WRAPPER
+   ════════════════════════════════════════════════ */
+
+const pageTransition = {
+  initial: { opacity: 0, scale: 0.97, filter: 'blur(6px)' },
+  animate: { opacity: 1, scale: 1, filter: 'blur(0px)' },
+  exit: { opacity: 0, scale: 1.02, filter: 'blur(4px)' },
+  transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+};
+
+/* ════════════════════════════════════════════════
    INDEX
    ════════════════════════════════════════════════ */
 
@@ -103,6 +114,7 @@ const Index = () => {
   const [showOnboard, setShowOnboard] = useState(false);
   const [obStep, setObStep] = useState(0);
   const [menuHover, setMenuHover] = useState<number | null>(null);
+  const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
 
   /* Onboarding */
   useEffect(() => {
@@ -129,6 +141,12 @@ const Index = () => {
     else finishOb();
   }, [obStep, finishOb]);
 
+  /* Smooth page transition navigate */
+  const smoothNavigate = useCallback((path: string) => {
+    setNavigatingTo(path);
+    setTimeout(() => navigate(path), 350);
+  }, [navigate]);
+
   /* Close dashboard on outside click */
   useEffect(() => {
     if (!dashOpen) return;
@@ -138,14 +156,19 @@ const Index = () => {
   }, [dashOpen]);
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col overflow-hidden">
+    <motion.div
+      className="relative w-full min-h-screen flex flex-col overflow-hidden"
+      {...pageTransition}
+      animate={navigatingTo ? { opacity: 0, scale: 0.96, filter: 'blur(8px)' } : pageTransition.animate}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+    >
       {/* ═══ BG VIDEO ═══ */}
       <AnimatePresence>
         {bgVideo && (
           <motion.video
             key="bg"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.45 }}
+            animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
             autoPlay
@@ -158,7 +181,7 @@ const Index = () => {
           </motion.video>
         )}
       </AnimatePresence>
-      <div className="fixed inset-0 z-0 bg-background/65" />
+      <div className="fixed inset-0 z-0 bg-background/40" />
 
       {/* ═══════════ TOP BAR ═══════════ */}
       <motion.div
@@ -179,7 +202,7 @@ const Index = () => {
 
         {/* Avatar + Dashboard pullout */}
         <div className="relative flex items-center gap-2">
-          {/* Points badge — always visible */}
+          {/* Points badge */}
           <motion.div
             initial={{ opacity: 0, x: 8 }}
             animate={{ opacity: 1, x: 0 }}
@@ -204,7 +227,6 @@ const Index = () => {
                 {(profile?.display_name || 'U')[0].toUpperCase()}
               </span>
             )}
-            {/* Pull-out hint arrow */}
             <motion.div
               animate={{ y: [0, 2, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -230,7 +252,7 @@ const Index = () => {
                   <span className="text-sm font-semibold text-foreground">128 Wisdom Points</span>
                 </div>
                 <button
-                  onClick={() => { setDashOpen(false); navigate('/gamification'); }}
+                  onClick={() => { setDashOpen(false); smoothNavigate('/gamification'); }}
                   className="w-full flex items-center gap-2 px-2 py-2 rounded-xl text-xs text-muted-foreground hover:text-foreground hover:bg-card/30 transition-colors"
                 >
                   <ChevronRight className="w-3 h-3" />
@@ -244,39 +266,37 @@ const Index = () => {
 
       {/* ═══════════ CENTER — LOGO + PATHWAYS ═══════════ */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
-        {/* Frosted Glass Logo */}
+        {/* Logo — no background, just the image with ambient glow */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="relative mb-14 group cursor-pointer"
-          onClick={() => navigate('/delores')}
+          onClick={() => smoothNavigate('/delores')}
         >
           <motion.div
             animate={{
-              scale: [1, 1.03, 1],
-              borderRadius: ['24px', '28px', '24px'],
+              scale: [1, 1.04, 1],
+              rotate: [0, 1, -1, 0],
             }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl backdrop-blur-3xl border border-border/30 bg-card/15 flex items-center justify-center shadow-deep relative overflow-hidden"
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center relative"
           >
             <img
               src="/images/qclick-logo.svg"
               alt="Q-Click"
-              className="w-16 h-16 sm:w-20 sm:h-20 object-contain relative z-10"
+              className="w-28 h-28 sm:w-32 sm:h-32 object-contain relative z-10 drop-shadow-[0_0_20px_hsl(183_100%_50%/0.15)]"
             />
-            {/* Inner glass shine */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
           </motion.div>
 
           {/* Ambient glow */}
           <motion.div
-            animate={{ opacity: [0.3, 0.6, 0.3], scale: [1.3, 1.5, 1.3] }}
+            animate={{ opacity: [0.2, 0.5, 0.2], scale: [1.2, 1.6, 1.2] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute inset-0 -z-10 rounded-full bg-primary/8 blur-3xl"
+            className="absolute inset-0 -z-10 rounded-full bg-primary/10 blur-3xl"
           />
 
-          {/* Delores hover/tap message */}
+          {/* Delores hover message */}
           <motion.div
             className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap"
             initial={{ opacity: 0 }}
@@ -289,28 +309,125 @@ const Index = () => {
           </motion.div>
         </motion.div>
 
-        {/* ═══ PATHWAY GRID — 2×2 ═══ */}
+        {/* ═══ PATHWAY GRID — mobile 1×4 icons only, desktop 2×2 with text ═══ */}
+
+        {/* MOBILE: 1×4 horizontal icon row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="grid grid-cols-2 gap-3 w-full max-w-sm"
+          className="flex md:hidden gap-4 items-start"
+        >
+          {pathways.map((p, i) => {
+            const isExp = expanded === i;
+
+            return (
+              <div key={p.path} className="flex flex-col items-center">
+                <motion.button
+                  onClick={() => {
+                    if (!isExp) {
+                      setExpanded(expanded === i ? null : i);
+                    } else {
+                      smoothNavigate(p.path);
+                    }
+                  }}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  whileTap={{ scale: 0.88 }}
+                  className={cn(
+                    'relative w-14 h-14 rounded-2xl backdrop-blur-2xl border flex items-center justify-center transition-all duration-300',
+                    isExp
+                      ? 'border-primary/30 bg-primary/10 shadow-[0_0_24px_-6px_hsl(183_100%_50%/0.2)]'
+                      : 'border-border/30 bg-card/12'
+                  )}
+                >
+                  {/* Notification dot */}
+                  {p.notification && (
+                    <motion.span
+                      className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary"
+                      animate={{ scale: [1, 1.3, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  )}
+
+                  {/* Onboarding pulse */}
+                  {showOnboard && obStep === i && (
+                    <motion.div
+                      className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary"
+                      animate={{ scale: [1, 1.6, 1], opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.4, repeat: Infinity }}
+                    />
+                  )}
+
+                  <motion.div
+                    animate={isExp ? { scale: [1, 1.1, 1] } : {}}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <p.icon
+                      className={cn(
+                        'w-5 h-5 transition-colors duration-300',
+                        isExp ? 'text-primary' : 'text-muted-foreground'
+                      )}
+                    />
+                  </motion.div>
+                </motion.button>
+
+                {/* Label below icon */}
+                <span className={cn(
+                  'text-[9px] mt-1.5 font-medium transition-colors duration-300',
+                  isExp ? 'text-primary' : 'text-muted-foreground/60'
+                )}>
+                  {p.title}
+                </span>
+
+                {/* Expanded description card */}
+                <AnimatePresence>
+                  {isExp && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4, height: 0 }}
+                      animate={{ opacity: 1, y: 0, height: 'auto' }}
+                      exit={{ opacity: 0, y: -4, height: 0 }}
+                      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                      className="mt-2 w-28 rounded-xl backdrop-blur-2xl border border-border/20 bg-card/60 p-2 text-center overflow-hidden"
+                    >
+                      <p className="text-[9px] text-muted-foreground leading-relaxed">{p.description}</p>
+                      {p.delores && (
+                        <div className="mt-1 flex items-center justify-center gap-1">
+                          <Heart className="w-2 h-2 text-secondary/70" />
+                          <span className="text-[8px] text-secondary/60">Wellness</span>
+                        </div>
+                      )}
+                      <motion.span
+                        className="inline-block mt-1.5 text-[8px] text-primary/70 font-medium"
+                        animate={{ x: [0, 2, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        Tap to open →
+                      </motion.span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </motion.div>
+
+        {/* DESKTOP: 2×2 grid with text */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="hidden md:grid grid-cols-2 gap-3 w-full max-w-sm"
         >
           {pathways.map((p, i) => {
             const isH = hovered === i;
-            const isExp = expanded === i;
             const isRight = i % 2 === 1;
 
             return (
               <motion.button
                 key={p.path}
-                onClick={() => {
-                  if (window.innerWidth < 768 && !isExp) {
-                    setExpanded(expanded === i ? null : i);
-                    return;
-                  }
-                  navigate(p.path);
-                }}
+                onClick={() => smoothNavigate(p.path)}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
                 initial={{ opacity: 0, y: 16 }}
@@ -319,9 +436,8 @@ const Index = () => {
                 whileHover={{ scale: 1.04, y: -4 }}
                 whileTap={{ scale: 0.96 }}
                 className={cn(
-                  'relative rounded-2xl backdrop-blur-2xl border border-border/30 bg-card/12 text-left transition-all duration-500 overflow-hidden',
+                  'relative rounded-2xl backdrop-blur-2xl border border-border/30 bg-card/12 p-5 text-left transition-all duration-500 overflow-hidden',
                   isRight ? 'justify-self-end' : 'justify-self-start',
-                  isExp ? 'p-4' : 'p-4 md:p-5',
                 )}
                 style={{
                   boxShadow: isH
@@ -337,7 +453,7 @@ const Index = () => {
                     transition={{ duration: 2.5, repeat: Infinity }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span className="text-[8px] text-primary/70 font-medium hidden md:inline">NEW</span>
+                    <span className="text-[8px] text-primary/70 font-medium">NEW</span>
                   </motion.div>
                 )}
 
@@ -350,12 +466,11 @@ const Index = () => {
                   />
                 )}
 
-                {/* Icon + content */}
                 <div className="flex items-start gap-3">
                   <div
                     className={cn(
                       'w-9 h-9 rounded-xl backdrop-blur-xl border flex items-center justify-center shrink-0 transition-all duration-300',
-                      isH || isExp
+                      isH
                         ? 'border-primary/20 bg-primary/8'
                         : 'border-border/20 bg-card/20'
                     )}
@@ -363,23 +478,19 @@ const Index = () => {
                     <p.icon
                       className={cn(
                         'w-4 h-4 transition-colors duration-300',
-                        isH || isExp ? 'text-primary' : 'text-muted-foreground'
+                        isH ? 'text-primary' : 'text-muted-foreground'
                       )}
                     />
                   </div>
-
-                  {/* Title + flowing description — desktop always, mobile on expand */}
-                  <div className={cn('min-w-0 hidden md:block', isExp && '!block')}>
+                  <div className="min-w-0">
                     <h3 className="text-sm font-semibold text-foreground leading-tight">
                       {p.title}
                       {p.subtitle && (
                         <span className="text-muted-foreground font-normal text-xs"> {p.subtitle}</span>
                       )}
                     </h3>
-                    <FlowingText text={p.description} show={isH || isExp} />
-
-                    {/* Delores hint on Focus */}
-                    {p.delores && (isH || isExp) && (
+                    <FlowingText text={p.description} show={isH} />
+                    {p.delores && isH && (
                       <motion.div
                         initial={{ opacity: 0, y: 4 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -442,7 +553,6 @@ const Index = () => {
               transition={{ type: 'spring', damping: 28, stiffness: 280 }}
               className="fixed left-0 top-0 bottom-0 z-50 w-60 backdrop-blur-3xl border-r border-border/20 bg-card/85 p-5 flex flex-col"
             >
-              {/* Header */}
               <div className="flex items-center justify-between mb-8">
                 <span className="text-xs font-semibold text-foreground tracking-tight uppercase">Menu</span>
                 <motion.button
@@ -454,7 +564,6 @@ const Index = () => {
                 </motion.button>
               </div>
 
-              {/* Items */}
               <div className="flex flex-col gap-0.5 flex-1">
                 {menuItems.map((item, i) => (
                   <motion.button
@@ -464,7 +573,7 @@ const Index = () => {
                     transition={{ delay: 0.05 + i * 0.04, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     onMouseEnter={() => setMenuHover(i)}
                     onMouseLeave={() => setMenuHover(null)}
-                    onClick={() => { setMenuOpen(false); navigate(item.path); }}
+                    onClick={() => { setMenuOpen(false); smoothNavigate(item.path); }}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-card/30 transition-colors group"
                   >
                     <item.icon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
@@ -489,7 +598,6 @@ const Index = () => {
                 ))}
               </div>
 
-              {/* Help */}
               <motion.button
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -554,7 +662,7 @@ const Index = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };
 
