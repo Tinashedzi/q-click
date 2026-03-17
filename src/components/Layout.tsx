@@ -88,9 +88,9 @@ const Layout = ({ children }: LayoutProps) => {
         ))}
       </div>
 
-      {!isHome && <Header />}
-      {!isHome && <TabNav />}
-      <main className={`${isHome ? '' : 'pt-14 md:pt-[6.25rem]'} pb-20 relative z-10`}>
+      {!hideChrome && <Header />}
+      {!hideChrome && <TabNav />}
+      <main className={`${hideChrome ? '' : 'pt-14 md:pt-[6.25rem]'} pb-20 relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
