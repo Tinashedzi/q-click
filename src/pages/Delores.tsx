@@ -202,6 +202,7 @@ const Delores = () => {
             <ChevronLeft className="w-5 h-5 text-foreground" />
           </motion.button>
         </motion.div>
+      </motion.div>
     </div>
   );
 };
