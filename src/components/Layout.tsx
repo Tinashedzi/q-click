@@ -19,6 +19,8 @@ const pageVariants = {
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isDelores = location.pathname === '/delores';
+  const hideChrome = isHome || isDelores;
   const [journalOpen, setJournalOpen] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const rafRef = useRef<number>();
