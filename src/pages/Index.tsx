@@ -168,7 +168,7 @@ const Index = () => {
           <motion.video
             key="bg"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
+            animate={{ opacity: 0.9 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
             autoPlay
@@ -181,7 +181,7 @@ const Index = () => {
           </motion.video>
         )}
       </AnimatePresence>
-      <div className="fixed inset-0 z-0 bg-background/40" />
+      <div className="fixed inset-0 z-0 bg-background/20" />
 
       {/* ═══════════ TOP BAR ═══════════ */}
       <motion.div
