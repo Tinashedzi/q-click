@@ -19,6 +19,8 @@ const pageVariants = {
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isDelores = location.pathname === '/delores';
+  const hideChrome = isHome || isDelores;
   const [journalOpen, setJournalOpen] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const rafRef = useRef<number>();
@@ -86,9 +88,9 @@ const Layout = ({ children }: LayoutProps) => {
         ))}
       </div>
 
-      {!isHome && <Header />}
-      {!isHome && <TabNav />}
-      <main className={`${isHome ? '' : 'pt-14 md:pt-[6.25rem]'} pb-20 relative z-10`}>
+      {!hideChrome && <Header />}
+      {!hideChrome && <TabNav />}
+      <main className={`${hideChrome ? '' : 'pt-14 md:pt-[6.25rem]'} pb-20 relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -104,7 +106,7 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
 
       {/* Global CitadelNav — hidden on home for clean look */}
-      {!isHome && (
+      {!hideChrome && (
         <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4">
           <CitadelNav onJournalOpen={() => setJournalOpen(true)} />
         </div>

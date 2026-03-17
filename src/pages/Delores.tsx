@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   Menu, X, Library as LibraryIcon, Video, User,
-  SlidersHorizontal, Info, HelpCircle, ChevronLeft,
+  SlidersHorizontal, Info, ChevronLeft,
 } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
@@ -151,41 +151,31 @@ const Delores = () => {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="relative z-10 flex flex-col h-full"
       >
-        {/* Top bar — back + hamburger */}
+        {/* Top bar — hamburger only + orb */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center justify-between px-5 pt-5 pb-2"
         >
-          <div className="flex items-center gap-2">
-            <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
-              onClick={() => navigate('/')}
-              className="w-10 h-10 rounded-2xl flex items-center justify-center backdrop-blur-2xl border border-border/40 bg-card/15 hover:bg-card/25 transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
-              onClick={() => setMenuOpen(true)}
-              className="w-10 h-10 rounded-2xl flex items-center justify-center backdrop-blur-2xl border border-border/40 bg-card/15 hover:bg-card/25 transition-colors"
-            >
-              <Menu className="w-4 h-4 text-muted-foreground" />
-            </motion.button>
-          </div>
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setMenuOpen(true)}
+            className="w-10 h-10 rounded-2xl flex items-center justify-center backdrop-blur-2xl border border-border/40 bg-card/15 hover:bg-card/25 transition-colors"
+          >
+            <Menu className="w-4 h-4 text-muted-foreground" />
+          </motion.button>
 
           {/* Pulsating orb only — no text */}
           <DeloresAvatar moodLevel={currentMood} size="md" isListening={isListening} />
 
           {/* Spacer for centering */}
-          <div className="w-[88px]" />
+          <div className="w-10" />
         </motion.div>
 
         {/* Chat — full remaining height, frosted glass card */}
-        <div className="flex-1 min-h-0 px-4 pb-4">
+        <div className="flex-1 min-h-0 px-4 pb-16">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -195,6 +185,23 @@ const Delores = () => {
             <DeloresChat moodLevel={currentMood} onMoodDetected={setCurrentMood} />
           </motion.div>
         </div>
+
+        {/* Bottom — home button only */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          className="fixed bottom-4 left-0 right-0 z-20 flex justify-center"
+        >
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate('/')}
+            className="w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
+          >
+            <ChevronLeft className="w-5 h-5 text-foreground" />
+          </motion.button>
+        </motion.div>
       </motion.div>
     </div>
   );
