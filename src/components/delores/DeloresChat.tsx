@@ -147,7 +147,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected }: DeloresChatProps) => {
   };
 
   return (
-    <div className="flex flex-col h-[55vh] max-h-[550px]">
+    <div className="flex flex-col h-full">
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-4">
         <AnimatePresence>
           {messages.map(msg => (

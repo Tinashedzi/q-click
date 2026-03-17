@@ -1,55 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageCircle, HeartPulse, BarChart3, Brain, Grid3X3 } from 'lucide-react';
-import MoodCheckIn from '@/components/delores/MoodCheckIn';
-import DeloresChat from '@/components/delores/DeloresChat';
-import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
-import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
-import SELRadarChart from '@/components/delores/SELRadarChart';
-import MoodAmbient from '@/components/delores/MoodAmbient';
+import { useNavigate } from 'react-router-dom';
+import {
+  Menu, X, Library as LibraryIcon, Video, User,
+  SlidersHorizontal, Info, HelpCircle, ChevronLeft,
+} from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
-import VoiceInput from '@/components/delores/VoiceInput';
-import deloresBg from '@/assets/delores-bg.gif';
+import DeloresChat from '@/components/delores/DeloresChat';
+import MoodAmbient from '@/components/delores/MoodAmbient';
 
-const tabs = [
-  { value: 'chat', label: 'Talk', icon: MessageCircle },
-  { value: 'checkin', label: 'Check-in', icon: HeartPulse },
-  { value: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-  { value: 'sel', label: 'SEL', icon: Brain },
-  { value: 'matrix', label: 'Matrix', icon: Grid3X3 },
+/* ════════════════════════════════════════════════
+   MENU DATA (mirrors homepage)
+   ════════════════════════════════════════════════ */
+
+const menuItems = [
+  { icon: LibraryIcon, label: 'Library', hover: 'Your Collection', path: '/library' },
+  { icon: Video, label: 'Video', hover: 'Watch & Learn', path: '/video' },
+  { icon: User, label: 'Profile', hover: 'Your Settings', path: '/gamification' },
+  { icon: SlidersHorizontal, label: 'Preferences', hover: 'Customize App', path: '/gamification' },
+  { icon: Info, label: 'About', hover: 'Q-Click Info', path: '/' },
 ];
 
+/* ════════════════════════════════════════════════
+   DELORES PAGE
+   ════════════════════════════════════════════════ */
+
 const Delores = () => {
-  const [activeTab, setActiveTab] = useState('chat');
+  const navigate = useNavigate();
   const [currentMood, setCurrentMood] = useState<number | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuHover, setMenuHover] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 2200);
     return () => clearTimeout(t);
   }, []);
 
+  const smoothNavigate = useCallback((path: string) => {
+    setTimeout(() => navigate(path), 300);
+  }, [navigate]);
+
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* GIF background — reacts to voice with brightness pulse */}
-      <motion.div
-        className="fixed inset-0 z-0"
+    <div className="relative w-full h-screen flex flex-col overflow-hidden">
+      {/* ═══ VIDEO BACKGROUND — reacts to voice ═══ */}
+      <motion.video
+        autoPlay muted loop playsInline
+        className="fixed inset-0 w-full h-full object-cover z-0"
         animate={{
           filter: isListening
-            ? ['brightness(0.6)', 'brightness(0.85)', 'brightness(0.6)']
-            : 'brightness(0.5)',
+            ? ['brightness(0.7)', 'brightness(1)', 'brightness(0.7)']
+            : 'brightness(0.65)',
         }}
         transition={isListening ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.8 }}
       >
-        <img
-          src={deloresBg}
-          alt=""
-          className="w-full h-full object-cover"
-        />
-      </motion.div>
-      <div className="fixed inset-0 z-0 bg-background/30" />
+        <source src="/videos/delores-bg.mp4" type="video/mp4" />
+      </motion.video>
+      <div className="fixed inset-0 z-0 bg-background/25" />
 
       {/* Mood ambient overlay */}
       <MoodAmbient moodLevel={currentMood} />
@@ -70,21 +78,69 @@ const Delores = () => {
             >
               <DeloresAvatar moodLevel={null} size="lg" isListening />
             </motion.div>
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-              className="mt-6 text-sm text-muted-foreground tracking-wider"
-            >
-              Connecting…
-            </motion.p>
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: 120 }}
+              animate={{ width: 80 }}
               transition={{ delay: 0.6, duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-              className="h-[1px] bg-primary/40 mt-3 rounded-full"
+              className="h-[1px] bg-primary/40 mt-6 rounded-full"
             />
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ HAMBURGER MENU (same as homepage) ═══ */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-background/40 backdrop-blur-sm"
+              onClick={() => setMenuOpen(false)}
+            />
+            <motion.div
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="fixed left-0 top-0 bottom-0 z-50 w-64 backdrop-blur-3xl border-r border-border/20 bg-card/80 p-5 flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-sm font-semibold text-foreground tracking-tight">Menu</span>
+                <motion.button whileTap={{ scale: 0.9 }} onClick={() => setMenuOpen(false)}>
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </motion.button>
+              </div>
+              <div className="space-y-1 flex-1">
+                {menuItems.map((item, i) => (
+                  <motion.button
+                    key={item.label}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.04 }}
+                    onHoverStart={() => setMenuHover(i)}
+                    onHoverEnd={() => setMenuHover(null)}
+                    onClick={() => { setMenuOpen(false); smoothNavigate(item.path); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-card/40 transition-colors"
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={menuHover === i ? 'hover' : 'label'}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="text-xs font-medium"
+                      >
+                        {menuHover === i ? item.hover : item.label}
+                      </motion.span>
+                    </AnimatePresence>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
@@ -93,88 +149,51 @@ const Delores = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: loading ? 0 : 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="relative z-10 flex flex-col items-center min-h-screen"
+        className="relative z-10 flex flex-col h-full"
       >
-        {/* Header — centered */}
+        {/* Top bar — back + hamburger */}
         <motion.div
-          initial={{ opacity: 0, y: -16 }}
+          initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col items-center pt-10 pb-4 gap-3"
+          transition={{ delay: 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-center justify-between px-5 pt-5 pb-2"
         >
-          <div className="flex items-center gap-3">
-            <DeloresAvatar moodLevel={currentMood} size="md" isListening={isListening} />
-            <div className="text-center">
-              <h1 className="text-2xl font-semibold text-foreground tracking-tight">Delores</h1>
-              <p className="text-[11px] text-muted-foreground/60">Emotional Intelligence</p>
-            </div>
+          <div className="flex items-center gap-2">
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={() => navigate('/')}
+              className="w-10 h-10 rounded-2xl flex items-center justify-center backdrop-blur-2xl border border-border/40 bg-card/15 hover:bg-card/25 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={() => setMenuOpen(true)}
+              className="w-10 h-10 rounded-2xl flex items-center justify-center backdrop-blur-2xl border border-border/40 bg-card/15 hover:bg-card/25 transition-colors"
+            >
+              <Menu className="w-4 h-4 text-muted-foreground" />
+            </motion.button>
           </div>
 
-          {/* Voice — centered */}
-          <VoiceInput
-            onTranscript={(text) => {
-              setIsListening(false);
-              console.log('Voice transcript:', text);
-            }}
-          />
+          {/* Pulsating orb only — no text */}
+          <DeloresAvatar moodLevel={currentMood} size="md" isListening={isListening} />
+
+          {/* Spacer for centering */}
+          <div className="w-[88px]" />
         </motion.div>
 
-        {/* Tab navigation — frosted glass, icon-based */}
-        <div className="w-full max-w-md px-4">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-4 backdrop-blur-2xl border border-border/20 bg-card/15 rounded-2xl h-12 p-1">
-              {tabs.map((tab, i) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  asChild
-                >
-                  <motion.button
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.9 }}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + i * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className={`flex flex-col items-center gap-0.5 rounded-xl py-1.5 transition-all duration-300 cursor-pointer ${
-                      activeTab === tab.value
-                        ? 'bg-primary/10 text-primary shadow-[0_0_16px_-4px_hsl(var(--primary)/0.25)]'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    <tab.icon className="w-4 h-4" />
-                    <span className="text-[8px] font-medium leading-none">{tab.label}</span>
-                  </motion.button>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {/* Content area — frosted glass card */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="backdrop-blur-2xl border border-border/20 bg-card/15 rounded-2xl overflow-hidden"
-            >
-              <TabsContent value="chat" className="m-0">
-                <DeloresChat moodLevel={currentMood} onMoodDetected={setCurrentMood} />
-              </TabsContent>
-              <TabsContent value="checkin" className="m-0 p-4">
-                <MoodCheckIn
-                  onComplete={() => setActiveTab('dashboard')}
-                  onMoodChange={setCurrentMood}
-                />
-              </TabsContent>
-              <TabsContent value="dashboard" className="m-0 p-4">
-                <EmotionalDashboard />
-              </TabsContent>
-              <TabsContent value="sel" className="m-0 p-4">
-                <SELRadarChart />
-              </TabsContent>
-              <TabsContent value="matrix" className="m-0 p-4">
-                <EmotionalMatrix />
-              </TabsContent>
-            </motion.div>
-          </Tabs>
+        {/* Chat — full remaining height, frosted glass card */}
+        <div className="flex-1 min-h-0 px-4 pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="h-full backdrop-blur-2xl border border-border/20 bg-card/10 rounded-3xl overflow-hidden"
+          >
+            <DeloresChat moodLevel={currentMood} onMoodDetected={setCurrentMood} />
+          </motion.div>
         </div>
       </motion.div>
     </div>
