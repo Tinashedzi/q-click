@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   Menu, X, Library as LibraryIcon, Video, User,
-  SlidersHorizontal, Info, HelpCircle, ChevronLeft,
+  SlidersHorizontal, Info, ChevronLeft,
 } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
