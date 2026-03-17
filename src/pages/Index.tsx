@@ -181,7 +181,7 @@ const Index = () => {
           </motion.video>
         )}
       </AnimatePresence>
-      <div className="fixed inset-0 z-0 bg-background/40" />
+      <div className="fixed inset-0 z-0 bg-background/20" />
 
       {/* ═══════════ TOP BAR ═══════════ */}
       <motion.div
