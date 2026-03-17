@@ -106,7 +106,7 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
 
       {/* Global CitadelNav — hidden on home for clean look */}
-      {!isHome && (
+      {!hideChrome && (
         <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4">
           <CitadelNav onJournalOpen={() => setJournalOpen(true)} />
         </div>
