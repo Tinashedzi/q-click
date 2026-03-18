@@ -5,6 +5,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { moodLevels, contributingChips, saveMoodEntry, getDeloresResponse } from '@/data/deloresResponses';
 import { emotionalMatrix } from '@/engine/delores-matrix';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import DeloresAvatar from './DeloresAvatar';
 import ResponseArchetype, { getArchetype } from './ResponseArchetype';
 
