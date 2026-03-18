@@ -4,13 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import {
   Menu, X, Library as LibraryIcon, Video, User,
   SlidersHorizontal, Info, ChevronLeft,
+  BookHeart, Smile, CalendarDays, Target, LayoutDashboard, Heart,
 } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
 import MoodAmbient from '@/components/delores/MoodAmbient';
+import { cn } from '@/lib/utils';
 
 /* ════════════════════════════════════════════════
-   MENU DATA (mirrors homepage)
+   MENU DATA
    ════════════════════════════════════════════════ */
 
 const menuItems = [
@@ -20,6 +22,50 @@ const menuItems = [
   { icon: SlidersHorizontal, label: 'Preferences', hover: 'Customize App', path: '/gamification' },
   { icon: Info, label: 'About', hover: 'Q-Click Info', path: '/' },
 ];
+
+/* ════════════════════════════════════════════════
+   FEATURE BUTTONS — homepage style
+   ════════════════════════════════════════════════ */
+
+const features = [
+  { icon: Smile, title: 'Mood', description: 'Check in with yourself', action: 'mood' },
+  { icon: BookHeart, title: 'Journal', description: 'Reflect & grow daily', action: 'journal' },
+  { icon: CalendarDays, title: 'Calendar', description: 'Track your streaks', action: 'calendar' },
+  { icon: Target, title: 'Focus', description: 'Deep work sessions', action: 'focus' },
+];
+
+/* ════════════════════════════════════════════════
+   FLOWING TEXT — word-by-word reveal (from homepage)
+   ════════════════════════════════════════════════ */
+
+const FlowingText = ({ text, show }: { text: string; show: boolean }) => {
+  const words = text.split(' ');
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.p
+          className="text-[9px] text-muted-foreground mt-1 flex flex-wrap gap-x-1 leading-relaxed justify-center"
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+        >
+          {words.map((w, i) => (
+            <motion.span
+              key={i}
+              variants={{
+                hidden: { opacity: 0, y: 6, filter: 'blur(3px)' },
+                visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
+              }}
+              transition={{ delay: i * 0.05, duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {w}
+            </motion.span>
+          ))}
+        </motion.p>
+      )}
+    </AnimatePresence>
+  );
+};
 
 /* ════════════════════════════════════════════════
    DELORES PAGE
@@ -32,6 +78,8 @@ const Delores = () => {
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuHover, setMenuHover] = useState<number | null>(null);
+  const [activeView, setActiveView] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 2200);
@@ -42,9 +90,18 @@ const Delores = () => {
     setTimeout(() => navigate(path), 300);
   }, [navigate]);
 
+  const handleFeatureTap = (action: string, index: number) => {
+    if (expanded !== index) {
+      setExpanded(index);
+    } else {
+      setActiveView(activeView === action ? null : action);
+      setExpanded(null);
+    }
+  };
+
   return (
     <div className="relative w-full h-screen flex flex-col overflow-hidden">
-      {/* ═══ VIDEO BACKGROUND — reacts to voice ═══ */}
+      {/* ═══ VIDEO BACKGROUND ═══ */}
       <motion.video
         autoPlay muted loop playsInline
         className="fixed inset-0 w-full h-full object-cover z-0"
@@ -57,9 +114,8 @@ const Delores = () => {
       >
         <source src="/videos/delores-bg.mp4" type="video/mp4" />
       </motion.video>
-      <div className="fixed inset-0 z-0 bg-background/25" />
+      <div className="fixed inset-0 z-0 bg-background/20" />
 
-      {/* Mood ambient overlay */}
       <MoodAmbient moodLevel={currentMood} />
 
       {/* ═══ LOADING PHASE ═══ */}
@@ -88,7 +144,7 @@ const Delores = () => {
         )}
       </AnimatePresence>
 
-      {/* ═══ HAMBURGER MENU (same as homepage) ═══ */}
+      {/* ═══ HAMBURGER MENU ═══ */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -151,12 +207,12 @@ const Delores = () => {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="relative z-10 flex flex-col h-full"
       >
-        {/* Top bar — hamburger only + orb */}
+        {/* Top bar — hamburger only */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-center justify-between px-5 pt-5 pb-2"
+          className="flex items-center px-5 pt-5 pb-2"
         >
           <motion.button
             whileHover={{ scale: 1.08 }}
@@ -166,40 +222,192 @@ const Delores = () => {
           >
             <Menu className="w-4 h-4 text-muted-foreground" />
           </motion.button>
-
-          {/* Pulsating orb only — no text */}
-          <DeloresAvatar moodLevel={currentMood} size="md" isListening={isListening} />
-
-          {/* Spacer for centering */}
-          <div className="w-10" />
         </motion.div>
 
-        {/* Chat — full remaining height, frosted glass card */}
-        <div className="flex-1 min-h-0 px-4 pb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="h-full backdrop-blur-2xl border border-border/20 bg-card/10 rounded-3xl overflow-hidden"
-          >
-            <DeloresChat moodLevel={currentMood} onMoodDetected={setCurrentMood} />
-          </motion.div>
+        {/* Center content — orb + features or chat */}
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4">
+          <AnimatePresence mode="wait">
+            {!activeView ? (
+              /* ═══ HUB VIEW — Orb + Feature buttons ═══ */
+              <motion.div
+                key="hub"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="flex flex-col items-center gap-8 w-full max-w-sm"
+              >
+                {/* Pulsating Orb — center, thumb-reachable */}
+                <motion.button
+                  onClick={() => setActiveView('chat')}
+                  className="relative cursor-pointer"
+                  whileTap={{ scale: [1, 0.9, 1.1, 1] }}
+                >
+                  <DeloresAvatar moodLevel={currentMood} size="lg" isListening={isListening} />
+                  
+                  {/* Ambient glow */}
+                  <motion.div
+                    animate={{ opacity: [0.2, 0.5, 0.2], scale: [1.2, 1.6, 1.2] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute inset-0 -z-10 rounded-full bg-primary/10 blur-3xl"
+                  />
+                  
+                  {/* Hint */}
+                  <motion.span
+                    className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-primary/60 font-medium tracking-wider flex items-center gap-1"
+                    animate={{ opacity: [0.4, 0.8, 0.4] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  >
+                    <Heart className="w-2.5 h-2.5" /> Talk to me
+                  </motion.span>
+                </motion.button>
+
+                {/* Feature buttons — 1×4 horizontal row like homepage */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex gap-4 items-start mt-4"
+                >
+                  {features.map((f, i) => {
+                    const isExp = expanded === i;
+
+                    return (
+                      <div key={f.action} className="flex flex-col items-center">
+                        <motion.button
+                          onClick={() => handleFeatureTap(f.action, i)}
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.4 + i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                          whileTap={{ scale: [1, 0.88, 1.05, 1] }}
+                          className={cn(
+                            'relative w-14 h-14 rounded-2xl backdrop-blur-2xl border flex items-center justify-center transition-all duration-300',
+                            isExp
+                              ? 'border-primary/30 bg-primary/10 shadow-[0_0_24px_-6px_hsl(var(--primary)/0.2)]'
+                              : 'border-border/30 bg-card/12'
+                          )}
+                        >
+                          <motion.div
+                            animate={isExp ? { scale: [1, 1.1, 1] } : {}}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <f.icon
+                              className={cn(
+                                'w-5 h-5 transition-colors duration-300',
+                                isExp ? 'text-primary' : 'text-muted-foreground'
+                              )}
+                            />
+                          </motion.div>
+                        </motion.button>
+
+                        {/* Label */}
+                        <span className={cn(
+                          'text-[9px] mt-1.5 font-medium transition-colors duration-300',
+                          isExp ? 'text-primary' : 'text-muted-foreground/60'
+                        )}>
+                          {f.title}
+                        </span>
+
+                        {/* Expanded description */}
+                        <AnimatePresence>
+                          {isExp && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -4, height: 0 }}
+                              animate={{ opacity: 1, y: 0, height: 'auto' }}
+                              exit={{ opacity: 0, y: -4, height: 0 }}
+                              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                              className="mt-2 w-24 rounded-xl backdrop-blur-2xl border border-border/20 bg-card/60 p-2 text-center overflow-hidden"
+                            >
+                              <FlowingText text={f.description} show />
+                              <motion.span
+                                className="inline-block mt-1.5 text-[8px] text-primary/70 font-medium"
+                                animate={{ x: [0, 2, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
+                              >
+                                Tap to open →
+                              </motion.span>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              </motion.div>
+            ) : activeView === 'chat' ? (
+              /* ═══ CHAT VIEW ═══ */
+              <motion.div
+                key="chat"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 12 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full h-full max-w-lg pb-16"
+              >
+                <div className="h-full backdrop-blur-2xl border border-border/20 bg-card/10 rounded-3xl overflow-hidden">
+                  <DeloresChat
+                    moodLevel={currentMood}
+                    onMoodDetected={setCurrentMood}
+                    onListeningChange={setIsListening}
+                  />
+                </div>
+              </motion.div>
+            ) : (
+              /* ═══ FEATURE PLACEHOLDER (Mood, Journal, Calendar, Focus) ═══ */
+              <motion.div
+                key={activeView}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full max-w-lg pb-16"
+              >
+                <div className="backdrop-blur-2xl border border-border/20 bg-card/10 rounded-3xl p-6 min-h-[50vh] flex flex-col items-center justify-center">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.4 }}
+                  >
+                    {activeView === 'mood' && <Smile className="w-10 h-10 text-primary/60 mb-3" />}
+                    {activeView === 'journal' && <BookHeart className="w-10 h-10 text-primary/60 mb-3" />}
+                    {activeView === 'calendar' && <CalendarDays className="w-10 h-10 text-primary/60 mb-3" />}
+                    {activeView === 'focus' && <Target className="w-10 h-10 text-primary/60 mb-3" />}
+                  </motion.div>
+                  <span className="text-sm font-medium text-foreground/80 capitalize">{activeView}</span>
+                  <span className="text-xs text-muted-foreground mt-1">Coming soon</span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Bottom — home button only */}
+        {/* Bottom — home button (when in sub-view, show back) */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.4 }}
-          className="fixed bottom-4 left-0 right-0 z-20 flex justify-center"
+          className="fixed bottom-4 left-0 right-0 z-20 flex justify-center gap-3"
         >
+          {activeView && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: [1, 0.9, 1.1, 1] }}
+              onClick={() => { setActiveView(null); setExpanded(null); }}
+              className="w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
+            >
+              <ChevronLeft className="w-5 h-5 text-foreground" />
+            </motion.button>
+          )}
           <motion.button
             whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: [1, 0.9, 1.1, 1] }}
             onClick={() => navigate('/')}
             className="w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
           >
-            <ChevronLeft className="w-5 h-5 text-foreground" />
+            <img src="/images/qclick-logo.svg" alt="Home" className="w-6 h-6 object-contain opacity-70" />
           </motion.button>
         </motion.div>
       </motion.div>

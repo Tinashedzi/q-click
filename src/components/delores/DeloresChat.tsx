@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Volume2, VolumeX } from 'lucide-react';
+import { Send, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -17,6 +17,49 @@ interface Message {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-chat`;
 
+/* ═══ MIC BUTTON ═══ */
+const MicButton = ({ onTranscript, onListeningChange }: { onTranscript: (text: string) => void; onListeningChange?: (l: boolean) => void }) => {
+  const [listening, setListening] = useState(false);
+  const supported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+
+  const toggle = () => {
+    if (!supported) return;
+    if (listening) { setListening(false); onListeningChange?.(false); return; }
+
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const rec = new SR();
+    rec.continuous = false; rec.interimResults = false; rec.lang = 'en-US';
+    let result = '';
+    rec.onresult = (e: any) => { result = Array.from(e.results).map((r: any) => r[0].transcript).join(''); };
+    rec.onend = () => { setListening(false); onListeningChange?.(false); if (result) onTranscript(result); };
+    rec.onerror = () => { setListening(false); onListeningChange?.(false); };
+    setListening(true); onListeningChange?.(true);
+    rec.start();
+  };
+
+  if (!supported) return null;
+
+  return (
+    <motion.button
+      type="button"
+      onClick={toggle}
+      whileTap={{ scale: 0.9 }}
+      className={cn(
+        'w-9 h-9 shrink-0 rounded-full flex items-center justify-center border transition-all duration-300',
+        listening
+          ? 'border-destructive/40 bg-destructive/10 shadow-[0_0_16px_-4px_hsl(var(--destructive)/0.3)]'
+          : 'border-border/30 bg-card/20 hover:bg-card/40'
+      )}
+    >
+      {listening ? (
+        <MicOff className="w-4 h-4 text-destructive" />
+      ) : (
+        <Mic className="w-4 h-4 text-muted-foreground" />
+      )}
+    </motion.button>
+  );
+};
+
 const suggestedPrompts = [
   "I'm feeling overwhelmed today",
   "Help me with a breathing exercise",
@@ -28,9 +71,10 @@ const suggestedPrompts = [
 interface DeloresChatProps {
   moodLevel?: number | null;
   onMoodDetected?: (level: number) => void;
+  onListeningChange?: (listening: boolean) => void;
 }
 
-const DeloresChat = ({ moodLevel, onMoodDetected }: DeloresChatProps) => {
+const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresChatProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
@@ -215,7 +259,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected }: DeloresChatProps) => {
       )}
 
       <div className="p-4 border-t border-border/30">
-        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2">
+        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2 items-center">
+          <MicButton onTranscript={(text) => { setInput(text); sendMessage(text); }} onListeningChange={onListeningChange} />
           <Input value={input} onChange={e => setInput(e.target.value)} placeholder="Talk to Delores…" className="bg-card/50 border-border/30" disabled={isLoading} />
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
             className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly">
