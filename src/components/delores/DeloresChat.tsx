@@ -28,6 +28,7 @@ const suggestedPrompts = [
 interface DeloresChatProps {
   moodLevel?: number | null;
   onMoodDetected?: (level: number) => void;
+  onListeningChange?: (listening: boolean) => void;
 }
 
 const DeloresChat = ({ moodLevel, onMoodDetected }: DeloresChatProps) => {
