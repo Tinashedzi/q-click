@@ -17,6 +17,49 @@ interface Message {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-chat`;
 
+/* ═══ MIC BUTTON ═══ */
+const MicButton = ({ onTranscript, onListeningChange }: { onTranscript: (text: string) => void; onListeningChange?: (l: boolean) => void }) => {
+  const [listening, setListening] = useState(false);
+  const supported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+
+  const toggle = () => {
+    if (!supported) return;
+    if (listening) { setListening(false); onListeningChange?.(false); return; }
+
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const rec = new SR();
+    rec.continuous = false; rec.interimResults = false; rec.lang = 'en-US';
+    let result = '';
+    rec.onresult = (e: any) => { result = Array.from(e.results).map((r: any) => r[0].transcript).join(''); };
+    rec.onend = () => { setListening(false); onListeningChange?.(false); if (result) onTranscript(result); };
+    rec.onerror = () => { setListening(false); onListeningChange?.(false); };
+    setListening(true); onListeningChange?.(true);
+    rec.start();
+  };
+
+  if (!supported) return null;
+
+  return (
+    <motion.button
+      type="button"
+      onClick={toggle}
+      whileTap={{ scale: 0.9 }}
+      className={cn(
+        'w-9 h-9 shrink-0 rounded-full flex items-center justify-center border transition-all duration-300',
+        listening
+          ? 'border-destructive/40 bg-destructive/10 shadow-[0_0_16px_-4px_hsl(var(--destructive)/0.3)]'
+          : 'border-border/30 bg-card/20 hover:bg-card/40'
+      )}
+    >
+      {listening ? (
+        <MicOff className="w-4 h-4 text-destructive" />
+      ) : (
+        <Mic className="w-4 h-4 text-muted-foreground" />
+      )}
+    </motion.button>
+  );
+};
+
 const suggestedPrompts = [
   "I'm feeling overwhelmed today",
   "Help me with a breathing exercise",
