@@ -133,7 +133,9 @@ const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
               ))}
             </div>
             <Textarea placeholder="Anything else on your mind? (optional)" value={freeText} onChange={e => setFreeText(e.target.value)} className="bg-card" />
-            <Button onClick={handleSubmit} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Share with Delores</Button>
+            <Button onClick={handleSubmit} disabled={saving} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+              {saving ? 'Saving…' : 'Share with Delores'}
+            </Button>
           </motion.div>
         )}
 
