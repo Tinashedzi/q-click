@@ -356,28 +356,31 @@ const Delores = () => {
                 </div>
               </motion.div>
             ) : (
-              /* ═══ FEATURE PLACEHOLDER (Mood, Journal, Calendar, Focus) ═══ */
+              /* ═══ FEATURE SUB-VIEWS ═══ */
               <motion.div
                 key={activeView}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full max-w-lg pb-16"
+                className="w-full max-w-lg pb-16 overflow-y-auto max-h-full"
               >
-                <div className="backdrop-blur-2xl border border-border/20 bg-card/10 rounded-3xl p-6 min-h-[50vh] flex flex-col items-center justify-center">
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.4 }}
-                  >
-                    {activeView === 'mood' && <Smile className="w-10 h-10 text-primary/60 mb-3" />}
-                    {activeView === 'journal' && <BookHeart className="w-10 h-10 text-primary/60 mb-3" />}
-                    {activeView === 'calendar' && <CalendarDays className="w-10 h-10 text-primary/60 mb-3" />}
-                    {activeView === 'focus' && <Target className="w-10 h-10 text-primary/60 mb-3" />}
-                  </motion.div>
-                  <span className="text-sm font-medium text-foreground/80 capitalize">{activeView}</span>
-                  <span className="text-xs text-muted-foreground mt-1">Coming soon</span>
+                <div className="backdrop-blur-2xl border border-border/20 bg-card/10 rounded-3xl p-5">
+                  {activeView === 'mood' && (
+                    <MoodCheckIn
+                      onComplete={() => { setActiveView(null); setExpanded(null); }}
+                      onMoodChange={setCurrentMood}
+                    />
+                  )}
+                  {activeView === 'dashboard' && <EmotionalDashboard />}
+                  {activeView === 'matrix' && <EmotionalMatrix />}
+                  {activeView === 'journal' && (
+                    <div className="flex flex-col items-center justify-center min-h-[40vh]">
+                      <BookHeart className="w-10 h-10 text-primary/60 mb-3" />
+                      <span className="text-sm font-medium text-foreground/80">Journal</span>
+                      <span className="text-xs text-muted-foreground mt-1">Coming soon</span>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}
