@@ -4,11 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import {
   Menu, X, Library as LibraryIcon, Video, User,
   SlidersHorizontal, Info, ChevronLeft,
-  BookHeart, Smile, CalendarDays, Target, LayoutDashboard, Heart,
+  BookHeart, Smile, CalendarDays, Target, LayoutDashboard, Heart, Activity,
 } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
 import MoodAmbient from '@/components/delores/MoodAmbient';
+import MoodCheckIn from '@/components/delores/MoodCheckIn';
+import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
+import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 import { cn } from '@/lib/utils';
 
 /* ════════════════════════════════════════════════
@@ -29,9 +32,9 @@ const menuItems = [
 
 const features = [
   { icon: Smile, title: 'Mood', description: 'Check in with yourself', action: 'mood' },
+  { icon: LayoutDashboard, title: 'Dashboard', description: 'Your emotional trends', action: 'dashboard' },
+  { icon: Activity, title: 'Matrix', description: 'Focus & signal gauge', action: 'matrix' },
   { icon: BookHeart, title: 'Journal', description: 'Reflect & grow daily', action: 'journal' },
-  { icon: CalendarDays, title: 'Calendar', description: 'Track your streaks', action: 'calendar' },
-  { icon: Target, title: 'Focus', description: 'Deep work sessions', action: 'focus' },
 ];
 
 /* ════════════════════════════════════════════════
