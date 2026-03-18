@@ -216,7 +216,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
       )}
 
       <div className="p-4 border-t border-border/30">
-        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2">
+        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2 items-center">
+          <MicButton onTranscript={(text) => { setInput(text); sendMessage(text); }} onListeningChange={onListeningChange} />
           <Input value={input} onChange={e => setInput(e.target.value)} placeholder="Talk to Delores…" className="bg-card/50 border-border/30" disabled={isLoading} />
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
             className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly">
