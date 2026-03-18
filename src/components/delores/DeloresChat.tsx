@@ -31,7 +31,7 @@ interface DeloresChatProps {
   onListeningChange?: (listening: boolean) => void;
 }
 
-const DeloresChat = ({ moodLevel, onMoodDetected }: DeloresChatProps) => {
+const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresChatProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
