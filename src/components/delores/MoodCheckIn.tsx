@@ -25,11 +25,13 @@ const moodRingColors: Record<number, string> = {
 };
 
 const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
+  const { user } = useAuth();
   const [step, setStep] = useState<'mood' | 'factors' | 'response'>('mood');
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [selectedFactors, setSelectedFactors] = useState<string[]>([]);
   const [freeText, setFreeText] = useState('');
   const [showAdvice, setShowAdvice] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleMoodSelect = (level: number) => {
     setSelectedMood(level);
