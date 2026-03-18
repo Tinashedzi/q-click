@@ -5,6 +5,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { moodLevels, contributingChips, saveMoodEntry, getDeloresResponse } from '@/data/deloresResponses';
 import { emotionalMatrix } from '@/engine/delores-matrix';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import DeloresAvatar from './DeloresAvatar';
 import ResponseArchetype, { getArchetype } from './ResponseArchetype';
 
@@ -23,11 +25,13 @@ const moodRingColors: Record<number, string> = {
 };
 
 const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
+  const { user } = useAuth();
   const [step, setStep] = useState<'mood' | 'factors' | 'response'>('mood');
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [selectedFactors, setSelectedFactors] = useState<string[]>([]);
   const [freeText, setFreeText] = useState('');
   const [showAdvice, setShowAdvice] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleMoodSelect = (level: number) => {
     setSelectedMood(level);
@@ -41,20 +45,40 @@ const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedMood === null) return;
+    setSaving(true);
     const snapshot = emotionalMatrix.createSnapshot(selectedMood, freeText || undefined);
+    const moodLevel = moodLevels[selectedMood - 1];
+    
+    // Save to localStorage (offline fallback)
     saveMoodEntry({
       id: crypto.randomUUID(),
       level: selectedMood,
-      label: moodLevels[selectedMood - 1].label,
-      emoji: moodLevels[selectedMood - 1].emoji,
+      label: moodLevel.label,
+      emoji: moodLevel.emoji,
       contributingFactors: selectedFactors,
       freeText: freeText || undefined,
       timestamp: new Date().toISOString(),
       detected: snapshot.detected,
       recommendation: snapshot.recommendation,
     });
+
+    // Save to database if authenticated
+    if (user) {
+      await supabase.from('mood_entries').insert({
+        user_id: user.id,
+        level: selectedMood,
+        label: moodLevel.label,
+        emoji: moodLevel.emoji,
+        contributing_factors: selectedFactors,
+        free_text: freeText || undefined,
+        detected: snapshot.detected as any,
+        recommendation: snapshot.recommendation as any,
+      });
+    }
+
+    setSaving(false);
     setStep('response');
   };
 
@@ -109,7 +133,9 @@ const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
               ))}
             </div>
             <Textarea placeholder="Anything else on your mind? (optional)" value={freeText} onChange={e => setFreeText(e.target.value)} className="bg-card" />
-            <Button onClick={handleSubmit} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Share with Delores</Button>
+            <Button onClick={handleSubmit} disabled={saving} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+              {saving ? 'Saving…' : 'Share with Delores'}
+            </Button>
           </motion.div>
         )}
 
