@@ -45,20 +45,40 @@ const MoodCheckIn = ({ onComplete, onMoodChange }: MoodCheckInProps) => {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedMood === null) return;
+    setSaving(true);
     const snapshot = emotionalMatrix.createSnapshot(selectedMood, freeText || undefined);
+    const moodLevel = moodLevels[selectedMood - 1];
+    
+    // Save to localStorage (offline fallback)
     saveMoodEntry({
       id: crypto.randomUUID(),
       level: selectedMood,
-      label: moodLevels[selectedMood - 1].label,
-      emoji: moodLevels[selectedMood - 1].emoji,
+      label: moodLevel.label,
+      emoji: moodLevel.emoji,
       contributingFactors: selectedFactors,
       freeText: freeText || undefined,
       timestamp: new Date().toISOString(),
       detected: snapshot.detected,
       recommendation: snapshot.recommendation,
     });
+
+    // Save to database if authenticated
+    if (user) {
+      await supabase.from('mood_entries').insert({
+        user_id: user.id,
+        level: selectedMood,
+        label: moodLevel.label,
+        emoji: moodLevel.emoji,
+        contributing_factors: selectedFactors,
+        free_text: freeText || undefined,
+        detected: snapshot.detected as any,
+        recommendation: snapshot.recommendation as any,
+      });
+    }
+
+    setSaving(false);
     setStep('response');
   };
 
