@@ -37,6 +37,7 @@ const features = [
   { icon: LayoutDashboard, title: 'Dashboard', description: 'Your emotional trends', action: 'dashboard' },
   { icon: Activity, title: 'Matrix', description: 'Focus & signal gauge', action: 'matrix' },
   { icon: BookHeart, title: 'Journal', description: 'Reflect & grow daily', action: 'journal' },
+  { icon: Target, title: 'Focus', description: 'Pomodoro deep work', action: 'focus' },
 ];
 
 /* ════════════════════════════════════════════════
