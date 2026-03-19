@@ -13,6 +13,7 @@ import MoodCheckIn from '@/components/delores/MoodCheckIn';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
 import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 import PomodoroFocus from '@/components/delores/PomodoroFocus';
+import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
 import { cn } from '@/lib/utils';
 
