@@ -378,12 +378,9 @@ const Delores = () => {
                   {activeView === 'dashboard' && <EmotionalDashboard />}
                   {activeView === 'matrix' && <EmotionalMatrix />}
                   {activeView === 'journal' && (
-                    <div className="flex flex-col items-center justify-center min-h-[40vh]">
-                      <BookHeart className="w-10 h-10 text-primary/60 mb-3" />
-                      <span className="text-sm font-medium text-foreground/80">Journal</span>
-                      <span className="text-xs text-muted-foreground mt-1">Coming soon</span>
-                    </div>
+                    <JournalEntry onComplete={() => { setActiveView(null); setExpanded(null); }} />
                   )}
+                  {activeView === 'focus' && <PomodoroFocus />}
                 </div>
               </motion.div>
             )}
