@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { Play, Pause, RotateCcw, Target } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, RotateCcw, Target, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const PRESETS = [
@@ -9,21 +9,59 @@ const PRESETS = [
   { label: '5 min', seconds: 5 * 60 },
 ];
 
+type Session = { duration: number; completedAt: Date };
+
+const playChime = () => {
+  try {
+    const ctx = new AudioContext();
+    const play = (freq: number, start: number, dur: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, ctx.currentTime + start);
+      gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + start + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + dur);
+    };
+    play(523.25, 0, 0.6);
+    play(659.25, 0.2, 0.6);
+    play(783.99, 0.4, 0.8);
+  } catch { /* audio not available */ }
+};
+
 const PomodoroFocus = () => {
   const [duration, setDuration] = useState(25 * 60);
   const [remaining, setRemaining] = useState(25 * 60);
   const [running, setRunning] = useState(false);
+  const [sessions, setSessions] = useState<Session[]>(() => {
+    try { return JSON.parse(localStorage.getItem('pomodoro-sessions') || '[]'); } catch { return []; }
+  });
+  const chimePlayed = useRef(false);
 
   useEffect(() => {
     if (!running) return;
+    chimePlayed.current = false;
     const id = setInterval(() => {
       setRemaining(r => {
-        if (r <= 1) { setRunning(false); return 0; }
+        if (r <= 1) {
+          setRunning(false);
+          if (!chimePlayed.current) { chimePlayed.current = true; playChime(); }
+          const s: Session = { duration, completedAt: new Date() };
+          setSessions(prev => {
+            const next = [s, ...prev].slice(0, 20);
+            localStorage.setItem('pomodoro-sessions', JSON.stringify(next));
+            return next;
+          });
+          return 0;
+        }
         return r - 1;
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [running]);
+  }, [running, duration]);
 
   const reset = useCallback(() => { setRunning(false); setRemaining(duration); }, [duration]);
   const pick = (s: number) => { setDuration(s); setRemaining(s); setRunning(false); };
@@ -35,6 +73,12 @@ const PomodoroFocus = () => {
   const radius = 54;
   const circ = 2 * Math.PI * radius;
   const offset = circ - (pct / 100) * circ;
+
+  const todaySessions = sessions.filter(s => {
+    const d = new Date(s.completedAt);
+    const now = new Date();
+    return d.toDateString() === now.toDateString();
+  });
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -96,14 +140,43 @@ const PomodoroFocus = () => {
         </motion.button>
       </div>
 
-      {remaining === 0 && (
-        <motion.p
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-sm font-medium text-primary"
+      <AnimatePresence>
+        {remaining === 0 && (
+          <motion.p
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-sm font-medium text-primary"
+          >
+            ✨ Session complete — well done!
+          </motion.p>
+        )}
+      </AnimatePresence>
+
+      {/* Today's sessions */}
+      {todaySessions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-xs"
         >
-          ✨ Session complete — well done!
-        </motion.p>
+          <div className="flex items-center gap-1.5 mb-2">
+            <Clock className="w-3 h-3 text-muted-foreground/50" />
+            <span className="text-[10px] text-muted-foreground/60 font-medium">Today: {todaySessions.length} session{todaySessions.length > 1 ? 's' : ''}</span>
+          </div>
+          <div className="flex gap-1.5 flex-wrap">
+            {todaySessions.map((s, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.05 }}
+                className="px-2 py-1 rounded-lg border border-primary/15 bg-primary/5 text-[9px] text-primary/70 font-medium"
+              >
+                {Math.floor(s.duration / 60)}m
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       )}
     </div>
   );
