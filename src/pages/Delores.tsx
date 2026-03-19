@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Menu, X, Library as LibraryIcon, Video, User,
   SlidersHorizontal, Info, ChevronLeft,
-  BookHeart, Smile, CalendarDays, Target, LayoutDashboard, Heart, Activity,
+  BookHeart, Smile, Target, LayoutDashboard, Heart, Activity,
 } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
@@ -12,6 +12,8 @@ import MoodAmbient from '@/components/delores/MoodAmbient';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
 import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
+import PomodoroFocus from '@/components/delores/PomodoroFocus';
+import JournalEntry from '@/components/delores/JournalEntry';
 import { cn } from '@/lib/utils';
 
 /* ════════════════════════════════════════════════
@@ -35,6 +37,7 @@ const features = [
   { icon: LayoutDashboard, title: 'Dashboard', description: 'Your emotional trends', action: 'dashboard' },
   { icon: Activity, title: 'Matrix', description: 'Focus & signal gauge', action: 'matrix' },
   { icon: BookHeart, title: 'Journal', description: 'Reflect & grow daily', action: 'journal' },
+  { icon: Target, title: 'Focus', description: 'Pomodoro deep work', action: 'focus' },
 ];
 
 /* ════════════════════════════════════════════════
@@ -270,7 +273,7 @@ const Delores = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex gap-4 items-start mt-4"
+                  className="flex flex-wrap justify-center gap-4 items-start mt-4"
                 >
                   {features.map((f, i) => {
                     const isExp = expanded === i;
@@ -375,12 +378,9 @@ const Delores = () => {
                   {activeView === 'dashboard' && <EmotionalDashboard />}
                   {activeView === 'matrix' && <EmotionalMatrix />}
                   {activeView === 'journal' && (
-                    <div className="flex flex-col items-center justify-center min-h-[40vh]">
-                      <BookHeart className="w-10 h-10 text-primary/60 mb-3" />
-                      <span className="text-sm font-medium text-foreground/80">Journal</span>
-                      <span className="text-xs text-muted-foreground mt-1">Coming soon</span>
-                    </div>
+                    <JournalEntry onComplete={() => { setActiveView(null); setExpanded(null); }} />
                   )}
+                  {activeView === 'focus' && <PomodoroFocus />}
                 </div>
               </motion.div>
             )}
