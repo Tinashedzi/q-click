@@ -12,6 +12,8 @@ import MoodAmbient from '@/components/delores/MoodAmbient';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
 import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
+import PomodoroFocus from '@/components/delores/PomodoroFocus';
+import JournalEntry from '@/components/delores/JournalEntry';
 import { cn } from '@/lib/utils';
 
 /* ════════════════════════════════════════════════
