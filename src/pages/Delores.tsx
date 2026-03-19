@@ -383,6 +383,7 @@ const Delores = () => {
                     <JournalEntry onComplete={() => { setActiveView(null); setExpanded(null); }} />
                   )}
                   {activeView === 'focus' && <PomodoroFocus />}
+                  {activeView === 'calendar' && <StreakCalendar />}
                 </div>
               </motion.div>
             )}
