@@ -168,7 +168,7 @@ const Index = () => {
           <motion.video
             key="bg"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.9 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
             autoPlay
