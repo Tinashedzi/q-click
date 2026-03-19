@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Menu, X, Library as LibraryIcon, Video, User,
   SlidersHorizontal, Info, ChevronLeft,
-  BookHeart, Smile, Target, LayoutDashboard, Heart, Activity,
+  BookHeart, Smile, Target, LayoutDashboard, Heart, Activity, Calendar,
 } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
