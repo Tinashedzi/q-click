@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Menu, X, Library as LibraryIcon, Video, User,
   SlidersHorizontal, Info, ChevronLeft,
-  BookHeart, Smile, Target, LayoutDashboard, Heart, Activity,
+  BookHeart, Smile, Target, LayoutDashboard, Heart, Activity, Calendar,
 } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
@@ -13,6 +13,7 @@ import MoodCheckIn from '@/components/delores/MoodCheckIn';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
 import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 import PomodoroFocus from '@/components/delores/PomodoroFocus';
+import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +38,7 @@ const features = [
   { icon: LayoutDashboard, title: 'Dashboard', description: 'Your emotional trends', action: 'dashboard' },
   { icon: Activity, title: 'Matrix', description: 'Focus & signal gauge', action: 'matrix' },
   { icon: BookHeart, title: 'Journal', description: 'Reflect & grow daily', action: 'journal' },
+  { icon: Calendar, title: 'Calendar', description: 'Streak & check-ins', action: 'calendar' },
   { icon: Target, title: 'Focus', description: 'Pomodoro deep work', action: 'focus' },
 ];
 
@@ -381,6 +383,7 @@ const Delores = () => {
                     <JournalEntry onComplete={() => { setActiveView(null); setExpanded(null); }} />
                   )}
                   {activeView === 'focus' && <PomodoroFocus />}
+                  {activeView === 'calendar' && <StreakCalendar />}
                 </div>
               </motion.div>
             )}

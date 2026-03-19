@@ -168,7 +168,7 @@ const Index = () => {
           <motion.video
             key="bg"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.9 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
             autoPlay
@@ -176,12 +176,13 @@ const Index = () => {
             loop
             playsInline
             className="fixed inset-0 w-full h-full object-cover z-0"
+            style={{ filter: 'brightness(1.25)' }}
           >
             <source src="/videos/ambient-bg.mp4" type="video/mp4" />
           </motion.video>
         )}
       </AnimatePresence>
-      <div className="fixed inset-0 z-0 bg-background/20" />
+      <div className="fixed inset-0 z-0 bg-background/10" />
 
       {/* ═══════════ TOP BAR ═══════════ */}
       <motion.div
@@ -280,12 +281,12 @@ const Index = () => {
               rotate: [0, 1, -1, 0],
             }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center relative"
+            className="w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center relative"
           >
             <img
               src="/images/qclick-logo.svg"
               alt="Q-Click"
-              className="w-28 h-28 sm:w-32 sm:h-32 object-contain relative z-10 drop-shadow-[0_0_20px_hsl(183_100%_50%/0.15)]"
+              className="w-36 h-36 sm:w-44 sm:h-44 object-contain relative z-10 drop-shadow-[0_0_30px_hsl(183_100%_50%/0.3)] brightness-125"
             />
           </motion.div>
 
