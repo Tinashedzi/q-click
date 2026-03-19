@@ -176,6 +176,7 @@ const Index = () => {
             loop
             playsInline
             className="fixed inset-0 w-full h-full object-cover z-0"
+            style={{ filter: 'brightness(1.25)' }}
           >
             <source src="/videos/ambient-bg.mp4" type="video/mp4" />
           </motion.video>
