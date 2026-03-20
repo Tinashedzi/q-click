@@ -1,5 +1,9 @@
 project_id = "antjeroxyiwzfpuskzmk"
 
+[auth]
+[auth.password]
+hibp_enabled = true
+
 [functions.concept-collision]
 verify_jwt = false
 
