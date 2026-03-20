@@ -389,36 +389,36 @@ const Delores = () => {
             )}
           </AnimatePresence>
         </div>
+      </motion.div>
 
-        {/* Bottom — home button (when in sub-view, show back) */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.4 }}
-          className="fixed bottom-4 left-0 right-0 z-20 flex justify-center gap-3"
-        >
-          {activeView && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: [1, 0.9, 1.1, 1] }}
-              onClick={() => { setActiveView(null); setExpanded(null); }}
-              className="w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
-            >
-              <ChevronLeft className="w-5 h-5 text-foreground" />
-            </motion.button>
-          )}
+      {/* Bottom — home button (OUTSIDE main content z-10 for proper stacking) */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: loading ? 0 : 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.4 }}
+        className="fixed bottom-4 left-0 right-0 z-30 flex justify-center gap-3 pointer-events-none"
+      >
+        {activeView && (
           <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: [1, 0.9, 1.1, 1] }}
-            onClick={() => navigate('/')}
-            className="w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
+            onClick={() => { setActiveView(null); setExpanded(null); }}
+            className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
           >
-            <img src="/images/qclick-logo.svg" alt="Home" className="w-6 h-6 object-contain opacity-70" />
+            <ChevronLeft className="w-5 h-5 text-foreground" />
           </motion.button>
-        </motion.div>
+        )}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: [1, 0.9, 1.1, 1] }}
+          onClick={() => navigate('/')}
+          className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
+        >
+          <img src="/images/qclick-logo.svg" alt="Home" className="w-6 h-6 object-contain opacity-70" />
+        </motion.button>
       </motion.div>
     </div>
   );
