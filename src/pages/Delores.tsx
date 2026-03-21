@@ -98,6 +98,10 @@ const Delores = () => {
     setTimeout(() => navigate(path), 300);
   }, [navigate]);
 
+  const returnHome = useCallback(() => {
+    window.location.assign('/');
+  }, []);
+
   const handleFeatureTap = (action: string, index: number) => {
     if (expanded !== index) {
       setExpanded(index);
@@ -417,7 +421,7 @@ const Delores = () => {
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: [1, 0.9, 1.1, 1] }}
-          onClick={() => navigate('/')}
+          onClick={returnHome}
           className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
         >
           <img src="/images/qclick-logo.svg" alt="Home" className="w-6 h-6 object-contain opacity-70" />
