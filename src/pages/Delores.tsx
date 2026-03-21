@@ -110,19 +110,22 @@ const Delores = () => {
   return (
     <div className="relative w-full h-screen flex flex-col overflow-hidden">
       {/* ═══ VIDEO BACKGROUND ═══ */}
-      <motion.video
-        autoPlay muted loop playsInline
-        className="fixed inset-0 w-full h-full object-cover z-0"
+      <motion.div
+        className="fixed inset-0 w-full h-full z-0"
         animate={{
           filter: isListening
-            ? ['brightness(0.7)', 'brightness(1)', 'brightness(0.7)']
-            : 'brightness(0.65)',
+            ? ['brightness(0.8)', 'brightness(1.1)', 'brightness(0.8)']
+            : 'brightness(0.9)',
         }}
         transition={isListening ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.8 }}
       >
-        <source src="/videos/delores-bg.mp4" type="video/mp4" />
-      </motion.video>
-      <div className="fixed inset-0 z-0 bg-background/20" />
+        <img
+          src="/images/delores-bg.jpg"
+          alt=""
+          className="w-full h-full object-cover"
+        />
+      </motion.div>
+      <div className="fixed inset-0 z-0 bg-background/10" />
 
       <MoodAmbient moodLevel={currentMood} />
 
