@@ -4,11 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import {
   Menu, X, Library as LibraryIcon, Video, User,
   SlidersHorizontal, Info, ChevronLeft,
-  BookHeart, Smile, Target, LayoutDashboard, Heart, Activity, Calendar,
+  Smile, LayoutDashboard, Activity, BookHeart, Calendar, Target,
 } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
-import MoodAmbient from '@/components/delores/MoodAmbient';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
 import EmotionalDashboard from '@/components/delores/EmotionalDashboard';
 import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
@@ -17,67 +16,29 @@ import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
 import { cn } from '@/lib/utils';
 
-/* ════════════════════════════════════════════════
-   MENU DATA
-   ════════════════════════════════════════════════ */
+/* ─── Data ─── */
 
 const menuItems = [
   { icon: LibraryIcon, label: 'Library', hover: 'Your Collection', path: '/library' },
   { icon: Video, label: 'Video', hover: 'Watch & Learn', path: '/video' },
   { icon: User, label: 'Profile', hover: 'Your Settings', path: '/gamification' },
-  { icon: SlidersHorizontal, label: 'Preferences', hover: 'Customize App', path: '/gamification' },
+  { icon: SlidersHorizontal, label: 'Preferences', hover: 'Customize', path: '/gamification' },
   { icon: Info, label: 'About', hover: 'Q-Click Info', path: '/' },
 ];
 
-/* ════════════════════════════════════════════════
-   FEATURE BUTTONS — homepage style
-   ════════════════════════════════════════════════ */
-
 const features = [
-  { icon: Smile, title: 'Mood', description: 'Check in with yourself', action: 'mood' },
-  { icon: LayoutDashboard, title: 'Dashboard', description: 'Your emotional trends', action: 'dashboard' },
-  { icon: Activity, title: 'Matrix', description: 'Focus & signal gauge', action: 'matrix' },
-  { icon: BookHeart, title: 'Journal', description: 'Reflect & grow daily', action: 'journal' },
-  { icon: Calendar, title: 'Calendar', description: 'Streak & check-ins', action: 'calendar' },
-  { icon: Target, title: 'Focus', description: 'Pomodoro deep work', action: 'focus' },
+  { icon: Smile, title: 'Mood', desc: 'Check in', action: 'mood' },
+  { icon: LayoutDashboard, title: 'Insights', desc: 'Trends', action: 'dashboard' },
+  { icon: Activity, title: 'Matrix', desc: 'Focus gauge', action: 'matrix' },
+  { icon: BookHeart, title: 'Journal', desc: 'Reflect', action: 'journal' },
+  { icon: Calendar, title: 'Streak', desc: 'History', action: 'calendar' },
+  { icon: Target, title: 'Focus', desc: 'Pomodoro', action: 'focus' },
 ];
 
-/* ════════════════════════════════════════════════
-   FLOWING TEXT — word-by-word reveal (from homepage)
-   ════════════════════════════════════════════════ */
+/* ─── Ease constant ─── */
+const ease = [0.22, 1, 0.36, 1] as const;
 
-const FlowingText = ({ text, show }: { text: string; show: boolean }) => {
-  const words = text.split(' ');
-  return (
-    <AnimatePresence>
-      {show && (
-        <motion.p
-          className="text-[9px] text-muted-foreground mt-1 flex flex-wrap gap-x-1 leading-relaxed justify-center"
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-        >
-          {words.map((w, i) => (
-            <motion.span
-              key={i}
-              variants={{
-                hidden: { opacity: 0, y: 6, filter: 'blur(3px)' },
-                visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
-              }}
-              transition={{ delay: i * 0.05, duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {w}
-            </motion.span>
-          ))}
-        </motion.p>
-      )}
-    </AnimatePresence>
-  );
-};
-
-/* ════════════════════════════════════════════════
-   DELORES PAGE
-   ════════════════════════════════════════════════ */
+/* ─── Component ─── */
 
 const Delores = () => {
   const navigate = useNavigate();
@@ -87,79 +48,51 @@ const Delores = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuHover, setMenuHover] = useState<number | null>(null);
   const [activeView, setActiveView] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<number | null>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 2200);
+    const t = setTimeout(() => setLoading(false), 1800);
     return () => clearTimeout(t);
   }, []);
 
   const smoothNavigate = useCallback((path: string) => {
-    setTimeout(() => navigate(path), 300);
+    setTimeout(() => navigate(path), 200);
   }, [navigate]);
 
   const returnHome = useCallback(() => {
     window.location.assign('/');
   }, []);
 
-  const handleFeatureTap = (action: string, index: number) => {
-    if (expanded !== index) {
-      setExpanded(index);
-    } else {
-      setActiveView(activeView === action ? null : action);
-      setExpanded(null);
-    }
-  };
-
   return (
-    <div className="relative w-full h-screen flex flex-col overflow-hidden">
-      {/* ═══ VIDEO BACKGROUND ═══ */}
-      <motion.div
-        className="fixed inset-0 w-full h-full z-0"
-        animate={{
-          filter: isListening
-            ? ['brightness(0.8)', 'brightness(1.1)', 'brightness(0.8)']
-            : 'brightness(0.9)',
-        }}
-        transition={isListening ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.8 }}
-      >
-        <img
-          src="/images/delores-bg.jpg"
-          alt=""
-          className="w-full h-full object-cover"
-        />
-      </motion.div>
-      <div className="fixed inset-0 z-0 bg-background/10" />
+    <div className="relative w-full h-screen flex flex-col overflow-hidden bg-white">
 
-      <MoodAmbient moodLevel={currentMood} />
-
-      {/* ═══ LOADING PHASE ═══ */}
+      {/* ─── Loading ─── */}
       <AnimatePresence>
         {loading && (
           <motion.div
             key="loader"
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-xl"
-            exit={{ opacity: 0, filter: 'blur(12px)' }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease }}
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.7, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, ease }}
             >
               <DeloresAvatar moodLevel={null} size="lg" isListening />
             </motion.div>
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: 80 }}
-              transition={{ delay: 0.6, duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-              className="h-[1px] bg-primary/40 mt-6 rounded-full"
+              animate={{ width: 64 }}
+              transition={{ delay: 0.5, duration: 1, ease }}
+              className="h-px mt-6 rounded-full"
+              style={{ background: 'linear-gradient(90deg, transparent, hsl(183 100% 50% / 0.4), transparent)' }}
             />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ═══ HAMBURGER MENU ═══ */}
+      {/* ─── Hamburger Menu ─── */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -167,7 +100,7 @@ const Delores = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-background/40 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm"
               onClick={() => setMenuOpen(false)}
             />
             <motion.div
@@ -175,12 +108,12 @@ const Delores = () => {
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="fixed left-0 top-0 bottom-0 z-50 w-64 backdrop-blur-3xl border-r border-border/20 bg-card/80 p-5 flex flex-col"
+              className="fixed left-0 top-0 bottom-0 z-50 w-60 bg-white/90 backdrop-blur-xl border-r border-gray-200 p-5 flex flex-col"
             >
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-sm font-semibold text-foreground tracking-tight">Menu</span>
+              <div className="flex items-center justify-between mb-8">
+                <span className="text-sm font-semibold text-gray-900 tracking-tight">Menu</span>
                 <motion.button whileTap={{ scale: 0.9 }} onClick={() => setMenuOpen(false)}>
-                  <X className="w-4 h-4 text-muted-foreground" />
+                  <X className="w-4 h-4 text-gray-400" />
                 </motion.button>
               </div>
               <div className="space-y-1 flex-1">
@@ -193,7 +126,7 @@ const Delores = () => {
                     onHoverStart={() => setMenuHover(i)}
                     onHoverEnd={() => setMenuHover(null)}
                     onClick={() => { setMenuOpen(false); smoothNavigate(item.path); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-card/40 transition-colors"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                   >
                     <item.icon className="w-4 h-4" />
                     <AnimatePresence mode="wait">
@@ -215,151 +148,100 @@ const Delores = () => {
         )}
       </AnimatePresence>
 
-      {/* ═══ MAIN CONTENT ═══ */}
+      {/* ─── Main Content ─── */}
       <motion.div
-        initial={{ opacity: 0 }}
         animate={{ opacity: loading ? 0 : 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.4 }}
         className="relative z-10 flex flex-col h-full"
       >
-        {/* Top bar — hamburger only */}
-        <motion.div
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-center px-5 pt-5 pb-2"
-        >
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-2">
           <motion.button
-            whileHover={{ scale: 1.08 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.92 }}
             onClick={() => setMenuOpen(true)}
-            className="w-10 h-10 rounded-2xl flex items-center justify-center backdrop-blur-2xl border border-border/40 bg-card/15 hover:bg-card/25 transition-colors"
+            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-gray-200 bg-white/60 backdrop-blur-xl hover:bg-gray-50 transition-colors"
           >
-            <Menu className="w-4 h-4 text-muted-foreground" />
+            <Menu className="w-4 h-4 text-gray-500" />
           </motion.button>
-        </motion.div>
 
-        {/* Center content — orb + features or chat */}
-        <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4">
+          {activeView && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setActiveView(null)}
+              className="w-10 h-10 rounded-2xl flex items-center justify-center border border-gray-200 bg-white/60 backdrop-blur-xl hover:bg-gray-50 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4 text-gray-500" />
+            </motion.button>
+          )}
+        </div>
+
+        {/* Center */}
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-5">
           <AnimatePresence mode="wait">
             {!activeView ? (
-              /* ═══ HUB VIEW — Orb + Feature buttons ═══ */
+              /* ─── Hub ─── */
               <motion.div
                 key="hub"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                className="flex flex-col items-center gap-8 w-full max-w-sm"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.35, ease }}
+                className="flex flex-col items-center gap-10 w-full max-w-md"
               >
-                {/* Pulsating Orb — center, thumb-reachable */}
+                {/* Orb */}
                 <motion.button
                   onClick={() => setActiveView('chat')}
-                  className="relative cursor-pointer"
-                  whileTap={{ scale: [1, 0.9, 1.1, 1] }}
+                  className="relative"
+                  whileTap={{ scale: [1, 0.92, 1.06, 1] }}
                 >
                   <DeloresAvatar moodLevel={currentMood} size="lg" isListening={isListening} />
                   
-                  {/* Ambient glow */}
+                  {/* Subtle glow — cyan accent */}
                   <motion.div
-                    animate={{ opacity: [0.2, 0.5, 0.2], scale: [1.2, 1.6, 1.2] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute inset-0 -z-10 rounded-full bg-primary/10 blur-3xl"
+                    animate={{ opacity: [0.08, 0.2, 0.08], scale: [1.3, 1.6, 1.3] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute inset-0 -z-10 rounded-full blur-3xl"
+                    style={{ background: 'radial-gradient(circle, hsl(183 100% 50% / 0.15), transparent 70%)' }}
                   />
-                  
-                  {/* Hint */}
-                  <motion.span
-                    className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-primary/60 font-medium tracking-wider flex items-center gap-1"
-                    animate={{ opacity: [0.4, 0.8, 0.4] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    <Heart className="w-2.5 h-2.5" /> Talk to me
-                  </motion.span>
                 </motion.button>
 
-                {/* Feature buttons — 1×4 horizontal row like homepage */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="flex flex-wrap justify-center gap-4 items-start mt-4"
-                >
-                  {features.map((f, i) => {
-                    const isExp = expanded === i;
-
-                    return (
-                      <div key={f.action} className="flex flex-col items-center">
-                        <motion.button
-                          onClick={() => handleFeatureTap(f.action, i)}
-                          initial={{ opacity: 0, y: 16 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 + i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                          whileTap={{ scale: [1, 0.88, 1.05, 1] }}
-                          className={cn(
-                            'relative w-14 h-14 rounded-2xl backdrop-blur-2xl border flex items-center justify-center transition-all duration-300',
-                            isExp
-                              ? 'border-primary/30 bg-primary/10 shadow-[0_0_24px_-6px_hsl(var(--primary)/0.2)]'
-                              : 'border-border/30 bg-card/12'
-                          )}
-                        >
-                          <motion.div
-                            animate={isExp ? { scale: [1, 1.1, 1] } : {}}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <f.icon
-                              className={cn(
-                                'w-5 h-5 transition-colors duration-300',
-                                isExp ? 'text-primary' : 'text-muted-foreground'
-                              )}
-                            />
-                          </motion.div>
-                        </motion.button>
-
-                        {/* Label */}
-                        <span className={cn(
-                          'text-[9px] mt-1.5 font-medium transition-colors duration-300',
-                          isExp ? 'text-primary' : 'text-muted-foreground/60'
-                        )}>
-                          {f.title}
-                        </span>
-
-                        {/* Expanded description */}
-                        <AnimatePresence>
-                          {isExp && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -4, height: 0 }}
-                              animate={{ opacity: 1, y: 0, height: 'auto' }}
-                              exit={{ opacity: 0, y: -4, height: 0 }}
-                              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                              className="mt-2 w-24 rounded-xl backdrop-blur-2xl border border-border/20 bg-card/60 p-2 text-center overflow-hidden"
-                            >
-                              <FlowingText text={f.description} show />
-                              <motion.span
-                                className="inline-block mt-1.5 text-[8px] text-primary/70 font-medium"
-                                animate={{ x: [0, 2, 0] }}
-                                transition={{ duration: 1.5, repeat: Infinity }}
-                              >
-                                Tap to open →
-                              </motion.span>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                {/* 3×2 Grid — glass cards */}
+                <div className="grid grid-cols-3 gap-3 w-full">
+                  {features.map((f, i) => (
+                    <motion.button
+                      key={f.action}
+                      onClick={() => setActiveView(f.action)}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 + i * 0.06, duration: 0.4, ease }}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex flex-col items-center gap-2 py-4 px-2 rounded-2xl border border-gray-200 bg-white/50 backdrop-blur-xl hover:border-gray-300 hover:shadow-sm transition-all"
+                    >
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50">
+                        <f.icon className="w-5 h-5 text-gray-600" />
                       </div>
-                    );
-                  })}
-                </motion.div>
+                      <span className="text-xs font-medium text-gray-900">{f.title}</span>
+                      <span className="text-[10px] text-gray-400 font-normal">{f.desc}</span>
+                    </motion.button>
+                  ))}
+                </div>
               </motion.div>
+
             ) : activeView === 'chat' ? (
-              /* ═══ CHAT VIEW ═══ */
+              /* ─── Chat ─── */
               <motion.div
                 key="chat"
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 12 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                exit={{ opacity: 0, y: 16 }}
+                transition={{ duration: 0.35, ease }}
                 className="w-full h-full max-w-lg pb-16"
               >
-                <div className="h-full backdrop-blur-2xl border border-border/20 bg-card/10 rounded-3xl overflow-hidden">
+                <div className="h-full border border-gray-200 bg-white/70 backdrop-blur-xl rounded-2xl overflow-hidden shadow-sm">
                   <DeloresChat
                     moodLevel={currentMood}
                     onMoodDetected={setCurrentMood}
@@ -367,27 +249,28 @@ const Delores = () => {
                   />
                 </div>
               </motion.div>
+
             ) : (
-              /* ═══ FEATURE SUB-VIEWS ═══ */
+              /* ─── Feature Sub-views ─── */
               <motion.div
                 key={activeView}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 16 }}
+                transition={{ duration: 0.35, ease }}
                 className="w-full max-w-lg pb-16 overflow-y-auto max-h-full"
               >
-                <div className="backdrop-blur-2xl border border-border/20 bg-card/10 rounded-3xl p-5">
+                <div className="border border-gray-200 bg-white/70 backdrop-blur-xl rounded-2xl p-5 shadow-sm">
                   {activeView === 'mood' && (
                     <MoodCheckIn
-                      onComplete={() => { setActiveView(null); setExpanded(null); }}
+                      onComplete={() => setActiveView(null)}
                       onMoodChange={setCurrentMood}
                     />
                   )}
                   {activeView === 'dashboard' && <EmotionalDashboard />}
                   {activeView === 'matrix' && <EmotionalMatrix />}
                   {activeView === 'journal' && (
-                    <JournalEntry onComplete={() => { setActiveView(null); setExpanded(null); }} />
+                    <JournalEntry onComplete={() => setActiveView(null)} />
                   )}
                   {activeView === 'focus' && <PomodoroFocus />}
                   {activeView === 'calendar' && <StreakCalendar />}
@@ -398,33 +281,19 @@ const Delores = () => {
         </div>
       </motion.div>
 
-      {/* Bottom — home button (OUTSIDE main content z-10 for proper stacking) */}
+      {/* ─── Floating Home Button ─── */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: loading ? 0 : 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-        className="fixed bottom-4 left-0 right-0 z-30 flex justify-center gap-3 pointer-events-none"
+        animate={{ opacity: loading ? 0 : 1 }}
+        transition={{ delay: 0.3 }}
+        className="fixed bottom-5 left-0 right-0 z-30 flex justify-center pointer-events-none"
       >
-        {activeView && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: [1, 0.9, 1.1, 1] }}
-            onClick={() => { setActiveView(null); setExpanded(null); }}
-            className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
-          >
-            <ChevronLeft className="w-5 h-5 text-foreground" />
-          </motion.button>
-        )}
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: [1, 0.9, 1.1, 1] }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
           onClick={returnHome}
-          className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-2xl border border-border/30 bg-card/20 hover:bg-card/35 transition-colors shadow-lg"
+          className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center border border-gray-200 bg-white/80 backdrop-blur-xl shadow-sm hover:shadow-md transition-all"
         >
-          <img src="/images/qclick-logo.svg" alt="Home" className="w-6 h-6 object-contain opacity-70" />
+          <img src="/images/qclick-logo.svg" alt="Home" className="w-6 h-6 object-contain" />
         </motion.button>
       </motion.div>
     </div>
