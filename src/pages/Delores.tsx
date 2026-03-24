@@ -63,7 +63,16 @@ const Delores = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-screen flex flex-col overflow-hidden bg-white">
+    <div className="relative w-full h-screen flex flex-col overflow-hidden">
+      {/* BG Image */}
+      <div className="fixed inset-0 z-0">
+        <img
+          src={deloresBg}
+          alt=""
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-white/50" />
+      </div>
 
       {/* ─── Loading ─── */}
       <AnimatePresence>
