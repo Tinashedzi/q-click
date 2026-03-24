@@ -15,6 +15,7 @@ import PomodoroFocus from '@/components/delores/PomodoroFocus';
 import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
 import { cn } from '@/lib/utils';
+import deloresBg from '@/assets/delores-bg.png';
 
 /* ─── Data ─── */
 
