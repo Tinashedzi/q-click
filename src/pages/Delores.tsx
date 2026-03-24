@@ -72,7 +72,7 @@ const Delores = () => {
           alt=""
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-white/50" />
+        <div className="absolute inset-0 bg-white/20" />
       </div>
 
       {/* ─── Loading ─── */}
