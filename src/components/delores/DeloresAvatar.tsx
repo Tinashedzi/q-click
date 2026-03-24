@@ -12,11 +12,11 @@ interface DeloresAvatarProps {
 }
 
 const moodConfig: Record<number, { breathe: number; color1: string; color2: string; color3: string; pulseOpacity: number }> = {
-  1: { breathe: 8, color1: 'hsl(260 30% 72%)', color2: 'hsl(240 20% 60%)', color3: 'hsl(280 25% 65%)', pulseOpacity: 0.3 },
-  2: { breathe: 6.5, color1: 'hsl(220 40% 70%)', color2: 'hsl(200 35% 65%)', color3: 'hsl(240 30% 68%)', pulseOpacity: 0.4 },
-  3: { breathe: 5, color1: 'hsl(280 30% 72%)', color2: 'hsl(330 25% 70%)', color3: 'hsl(260 28% 75%)', pulseOpacity: 0.5 },
-  4: { breathe: 3.5, color1: 'hsl(330 35% 68%)', color2: 'hsl(300 30% 72%)', color3: 'hsl(350 30% 70%)', pulseOpacity: 0.6 },
-  5: { breathe: 2.5, color1: 'hsl(43 55% 60%)', color2: 'hsl(30 50% 65%)', color3: 'hsl(55 50% 55%)', pulseOpacity: 0.7 },
+  1: { breathe: 8, color1: 'hsl(200 60% 75%)', color2: 'hsl(210 50% 80%)', color3: 'hsl(190 45% 78%)', pulseOpacity: 0.35 },
+  2: { breathe: 6.5, color1: 'hsl(195 55% 70%)', color2: 'hsl(180 50% 75%)', color3: 'hsl(210 45% 72%)', pulseOpacity: 0.4 },
+  3: { breathe: 5, color1: 'hsl(183 60% 65%)', color2: 'hsl(200 50% 72%)', color3: 'hsl(170 45% 70%)', pulseOpacity: 0.5 },
+  4: { breathe: 3.5, color1: 'hsl(170 55% 62%)', color2: 'hsl(183 50% 68%)', color3: 'hsl(160 45% 65%)', pulseOpacity: 0.55 },
+  5: { breathe: 2.5, color1: 'hsl(160 50% 58%)', color2: 'hsl(170 55% 62%)', color3: 'hsl(150 45% 60%)', pulseOpacity: 0.6 },
 };
 
 const sizes = {
