@@ -28,7 +28,7 @@ const TabNav = () => {
   return (
     <>
       {/* Desktop nav */}
-      <nav className="hidden md:block fixed top-14 left-0 right-0 z-40 glass-wavey border-b border-white/10">
+      <nav className="hidden md:block fixed top-14 left-0 right-0 z-40 bg-background/90 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto flex items-center gap-0.5 px-4 h-11">
           {desktopTabs.map((tab) => {
             const isActive = location.pathname === tab.path;
@@ -37,7 +37,7 @@ const TabNav = () => {
                 key={tab.path}
                 to={tab.path}
                 className={cn(
-                  'relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-grotesk font-medium transition-all duration-300',
+                  'relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300',
                   isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 )}
               >
@@ -46,7 +46,7 @@ const TabNav = () => {
                 {isActive && (
                   <motion.div
                     layoutId="tab-indicator"
-                    className="absolute inset-0 rounded-xl glass-deep"
+                    className="absolute inset-0 rounded-xl bg-muted"
                     style={{ zIndex: -1 }}
                     transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
                   />
@@ -58,7 +58,7 @@ const TabNav = () => {
       </nav>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-wavey border-t border-white/10 pb-safe">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-xl border-t border-border pb-safe">
         <div className="flex items-center justify-around h-16 px-4">
           {mobileTabs.map((tab) => {
             const isActive = location.pathname === tab.path;
@@ -68,13 +68,13 @@ const TabNav = () => {
                 to={tab.path}
                 className={cn(
                   'relative flex flex-col items-center gap-0.5 px-5 py-1.5 rounded-2xl transition-all duration-300',
-                  isActive ? 'text-foreground' : 'text-muted-foreground'
+                  isActive ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId="mobile-tab"
-                    className="absolute inset-0 rounded-2xl glass-deep"
+                    className="absolute inset-0 rounded-2xl bg-primary/10"
                     transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
                   />
                 )}
@@ -84,7 +84,7 @@ const TabNav = () => {
                 >
                   <tab.icon className="w-5 h-5 relative z-10" />
                 </motion.div>
-                <span className="text-[10px] font-grotesk font-medium relative z-10">{tab.label}</span>
+                <span className="text-[10px] font-medium relative z-10">{tab.label}</span>
               </NavLink>
             );
           })}

@@ -30,14 +30,14 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
       transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="relative"
     >
-      <div className="flex items-end bg-[hsl(var(--deep-sea))] rounded-2xl px-2 py-2 shadow-elevated relative overflow-visible">
+      <div className="flex items-end bg-background/95 backdrop-blur-xl rounded-2xl px-2 py-2 shadow-float border border-border relative overflow-visible">
         {/* Streak */}
         <div className="flex items-center gap-1 px-2.5 py-1.5 self-center">
           <Flame className="w-4 h-4 text-destructive" />
-          <span className="text-xs font-grotesk font-semibold text-white/90">{streak}</span>
+          <span className="text-xs font-semibold text-foreground">{streak}</span>
         </div>
 
-        <div className="w-px h-6 bg-white/15 mx-1 self-center" />
+        <div className="w-px h-6 bg-border mx-1 self-center" />
 
         {/* Nav items */}
         <div className="flex items-end gap-0.5 relative">
@@ -51,15 +51,14 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
               >
                 {isActive ? (
                   <div className="relative flex flex-col items-center w-12">
-                    {/* Raised circle with layoutId for sliding */}
                     <motion.div
                       layoutId="citadel-bubble"
-                      className="w-12 h-12 -mb-1 rounded-full bg-[hsl(var(--celadon-jade))] flex items-center justify-center shadow-lg border-[3px] border-[hsl(var(--deep-sea))]"
+                      className="w-12 h-12 -mb-1 rounded-full bg-primary flex items-center justify-center shadow-lg border-[3px] border-background"
                       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
                       style={{ marginTop: -20 }}
                     >
                       <motion.div
-                        className="text-white"
+                        className="text-primary-foreground"
                         initial={{ scale: 0.5, rotate: -30 }}
                         animate={{ scale: 1, rotate: 0 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.05 }}
@@ -69,7 +68,7 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
                     </motion.div>
                     <motion.span
                       layoutId="citadel-label"
-                      className="text-[9px] font-grotesk font-semibold text-white mt-0.5"
+                      className="text-[9px] font-semibold text-foreground mt-0.5"
                       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
                     >
                       {item.label}
@@ -77,11 +76,11 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
                   </div>
                 ) : (
                   <motion.div
-                    className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-muted transition-colors"
                     whileHover={{ scale: 1.15 }}
                     whileTap={{ scale: 0.85 }}
                   >
-                    <div className="text-white/50">{item.icon}</div>
+                    <div className="text-muted-foreground">{item.icon}</div>
                   </motion.div>
                 )}
               </Link>
@@ -89,16 +88,16 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
           })}
         </div>
 
-        <div className="w-px h-6 bg-white/15 mx-1 self-center" />
+        <div className="w-px h-6 bg-border mx-1 self-center" />
 
         {/* Journal */}
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={onJournalOpen}
-          className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/10 transition-colors self-center"
+          className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-muted transition-colors self-center"
         >
-          <Pencil className="w-4 h-4 text-accent" />
+          <Pencil className="w-4 h-4 text-secondary" />
         </motion.button>
 
         {/* WP */}
@@ -106,10 +105,10 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
           <motion.div
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl hover:bg-white/10 transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl hover:bg-muted transition-colors"
           >
-            <Sparkles className="w-4 h-4 text-gold" />
-            <span className="text-xs font-grotesk font-semibold text-white/90">{progress.wisdom_points}</span>
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-xs font-semibold text-foreground">{progress.wisdom_points}</span>
           </motion.div>
         </Link>
 
@@ -118,10 +117,10 @@ const CitadelNav = ({ onJournalOpen }: CitadelNavProps) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={signOut}
-          className="p-2 rounded-xl hover:bg-destructive/20 transition-colors self-center"
+          className="p-2 rounded-xl hover:bg-destructive/10 transition-colors self-center"
           title="Sign out"
         >
-          <LogOut className="w-4 h-4 text-white/50" />
+          <LogOut className="w-4 h-4 text-muted-foreground" />
         </motion.button>
       </div>
     </motion.div>

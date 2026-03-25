@@ -14,10 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ['"Fraunces"', 'Georgia', 'serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        journal: ['"IBM Plex Serif"', 'Georgia', 'serif'],
-        grotesk: ['"Space Grotesk"', 'Inter', 'system-ui', 'sans-serif'],
+        serif: ['Inter', 'system-ui', 'sans-serif'],
+        journal: ['Inter', 'system-ui', 'sans-serif'],
+        grotesk: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -63,19 +63,22 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // 2026 Bioluminescent Deep Tech palette
+        // Britannica Bright-Clean palette
+        "britannica-green": "hsl(var(--britannica-green))",
+        "britannica-blue": "hsl(var(--britannica-blue))",
+        "britannica-teal": "hsl(var(--britannica-teal))",
+        // Legacy aliases — mapped to new palette
         "midnight-teal": "hsl(var(--midnight-teal))",
         "electric-cyan": "hsl(var(--electric-cyan))",
         "sunset-coral": "hsl(var(--sunset-coral))",
         "pearl-mist": "hsl(var(--pearl-mist))",
         "deep-lagoon": "hsl(var(--deep-lagoon))",
         abyss: "hsl(var(--abyss))",
-        // Legacy aliases (mapped to new palette)
-        jade: "hsl(var(--electric-cyan))",
-        clay: "hsl(var(--sunset-coral))",
-        petal: "hsl(var(--sunset-coral))",
-        gold: "hsl(var(--electric-cyan))",
-        wave: "hsl(var(--electric-cyan))",
+        jade: "hsl(var(--britannica-green))",
+        clay: "hsl(var(--britannica-green))",
+        petal: "hsl(var(--britannica-green))",
+        gold: "hsl(var(--britannica-green))",
+        wave: "hsl(var(--britannica-blue))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -90,14 +93,16 @@ export default {
         card: "var(--shadow-card)",
         float: "var(--shadow-float)",
         deep: "var(--shadow-deep)",
-        "glow-cyan": "var(--shadow-cyan-glow)",
-        "glow-coral": "var(--shadow-coral-glow)",
+        "glow-green": "var(--shadow-green-glow)",
+        "glow-blue": "var(--shadow-blue-glow)",
         // Legacy aliases
         elevated: "var(--shadow-deep)",
-        "glow-jade": "var(--shadow-cyan-glow)",
-        "glow-petal": "var(--shadow-coral-glow)",
-        "glow-gold": "var(--shadow-cyan-glow)",
-        "glow-clay": "var(--shadow-coral-glow)",
+        "glow-cyan": "var(--shadow-blue-glow)",
+        "glow-coral": "var(--shadow-green-glow)",
+        "glow-jade": "var(--shadow-green-glow)",
+        "glow-petal": "var(--shadow-green-glow)",
+        "glow-gold": "var(--shadow-green-glow)",
+        "glow-clay": "var(--shadow-green-glow)",
       },
       keyframes: {
         "accordion-down": {
