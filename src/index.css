@@ -7,80 +7,86 @@
 @layer base {
   :root {
     /* ═══════════════════════════════════════════
-       Obsidian Vault — Phantom-Style Minimalism
-       60% neutral (obsidian), 30% complement (white/mist), 10% accent (cyan)
+       Britannica Bright-Clean Matrix
+       60% white, 30% light grey, 10% green/blue accent
        ═══════════════════════════════════════════ */
 
-    /* 60% — Deep obsidian foundation */
-    --background: 0 0% 2%;
-    --foreground: 0 0% 96%;
+    /* 60% — Pure white foundation */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 13%;
 
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 13%;
 
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 13%;
 
-    /* 10% — Electric Cyan accent */
-    --primary: 183 100% 50%;
-    --primary-foreground: 0 0% 2%;
+    /* 10% — Soft Green accent (health/progress) */
+    --primary: 122 39% 49%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Warm accent — used sparingly */
-    --secondary: 5 100% 69%;
-    --secondary-foreground: 0 0% 2%;
+    /* Soft Blue accent (interactive/tabs) */
+    --secondary: 207 90% 54%;
+    --secondary-foreground: 0 0% 100%;
 
     /* 30% — Muted layers */
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 55%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 0 0% 46%;
 
-    --accent: 183 100% 50%;
-    --accent-foreground: 0 0% 2%;
+    --accent: 207 90% 54%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 96%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 183 100% 50%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 122 39% 49%;
 
     --radius: 0.75rem;
 
-    /* Semantic tokens */
-    --midnight-teal: 0 0% 2%;
-    --electric-cyan: 183 100% 50%;
-    --sunset-coral: 5 100% 69%;
+    /* Semantic tokens — Britannica palette */
+    --britannica-green: 122 39% 49%;
+    --britannica-blue: 207 90% 54%;
+    --britannica-teal: 187 69% 48%;
+    --text-primary: 0 0% 13%;
+    --text-secondary: 0 0% 46%;
+    --surface-warm: 30 33% 98%;
+
+    /* Glass material tokens — bright mode */
+    --glass-surface: 0 0% 100% / 0.70;
+    --glass-border: 220 13% 91%;
+    --glass-highlight: 0 0% 100% / 0.90;
+
+    /* Shadows — soft & clean */
+    --shadow-soft: 0 1px 3px hsl(0 0% 0% / 0.04), 0 1px 2px hsl(0 0% 0% / 0.06);
+    --shadow-card: 0 2px 8px -2px hsl(0 0% 0% / 0.06), 0 4px 16px -4px hsl(0 0% 0% / 0.04);
+    --shadow-float: 0 4px 24px -8px hsl(0 0% 0% / 0.08);
+    --shadow-deep: 0 8px 40px -12px hsl(0 0% 0% / 0.10);
+    --shadow-green-glow: 0 0 20px hsl(122 39% 49% / 0.08);
+    --shadow-blue-glow: 0 0 20px hsl(207 90% 54% / 0.08);
+
+    /* Legacy aliases — mapped to new palette */
+    --midnight-teal: 0 0% 100%;
+    --electric-cyan: 187 69% 48%;
+    --sunset-coral: 122 39% 49%;
     --pearl-mist: 0 0% 96%;
-    --deep-lagoon: 0 0% 6%;
-    --abyss: 0 0% 1%;
+    --deep-lagoon: 210 20% 96%;
+    --abyss: 0 0% 98%;
 
-    /* Glass material tokens */
-    --glass-surface: 0 0% 100% / 0.04;
-    --glass-border: 0 0% 100% / 0.08;
-    --glass-highlight: 0 0% 100% / 0.12;
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(122 39% 49%), hsl(122 39% 42%));
+    --gradient-secondary: linear-gradient(135deg, hsl(207 90% 54%), hsl(207 90% 46%));
+    --gradient-warm: linear-gradient(170deg, hsl(0 0% 100%), hsl(30 33% 98%), hsl(210 20% 97%));
 
-    /* Shadows — minimal */
-    --shadow-cyan-glow: 0 0 30px hsl(183 100% 50% / 0.06);
-    --shadow-coral-glow: 0 0 30px hsl(5 100% 69% / 0.06);
-    --shadow-deep: 0 8px 40px -12px hsl(0 0% 0% / 0.6);
-    --shadow-float: 0 4px 24px hsl(0 0% 0% / 0.4);
-    --shadow-card: 0 2px 20px -8px hsl(0 0% 0% / 0.5);
-    --shadow-soft: 0 1px 12px -4px hsl(0 0% 0% / 0.3);
-
-    /* Gradients — subtle */
-    --gradient-cyan: linear-gradient(135deg, hsl(183 100% 50%), hsl(183 80% 40%));
-    --gradient-coral: linear-gradient(135deg, hsl(5 100% 69%), hsl(15 90% 55%));
-    --gradient-lagoon: linear-gradient(170deg, hsl(0 0% 2%), hsl(0 0% 6%), hsl(0 0% 8%));
-    --gradient-bioluminescent: radial-gradient(ellipse at 30% 20%, hsl(183 100% 50% / 0.04), transparent 50%),
-                                radial-gradient(ellipse at 70% 80%, hsl(5 100% 69% / 0.02), transparent 50%);
-
-    --sidebar-background: 0 0% 3%;
-    --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 183 100% 50%;
-    --sidebar-primary-foreground: 0 0% 2%;
-    --sidebar-accent: 0 0% 8%;
-    --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 0 0% 12%;
-    --sidebar-ring: 183 100% 50%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 13%;
+    --sidebar-primary: 122 39% 49%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 96%;
+    --sidebar-accent-foreground: 0 0% 13%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 122 39% 49%;
   }
 }
 
@@ -97,16 +103,15 @@
     overflow-x: hidden;
   }
 
-  /* Two weights only: 400 (body) and 600 (headings) */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', system-ui, sans-serif;
     font-weight: 600;
     letter-spacing: -0.02em;
-    line-height: 1.1;
+    line-height: 1.2;
     color: hsl(var(--foreground));
   }
 
-  /* Sleek scrollbar for the deep-sea theme */
+  /* Clean scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -114,98 +119,60 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--electric-cyan) / 0.2);
+    background: hsl(var(--britannica-blue) / 0.15);
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--electric-cyan) / 0.4);
+    background: hsl(var(--britannica-blue) / 0.3);
   }
 }
 
 @layer utilities {
   /* ═══════════════════════════════════════
-     Liquid Glass Materials
+     Glass Materials — Bright Mode
      ═══════════════════════════════════════ */
 
   .glass-surface {
-    @apply backdrop-blur-xl saturate-150;
+    @apply backdrop-blur-xl;
     background: hsl(var(--glass-surface));
     border: 1px solid hsl(var(--glass-border));
-    box-shadow: var(--shadow-cyan-glow);
+    box-shadow: var(--shadow-soft);
   }
 
   .glass-deep {
-    @apply backdrop-blur-2xl saturate-150;
-    background: linear-gradient(
-      135deg,
-      hsl(0 0% 100% / 0.06),
-      hsl(0 0% 100% / 0.02)
-    );
+    @apply backdrop-blur-xl;
+    background: hsl(0 0% 100% / 0.80);
     border: 1px solid hsl(var(--glass-border));
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.1),
-      var(--shadow-float);
+    box-shadow: var(--shadow-card);
   }
 
   .glass-wavey {
-    @apply backdrop-blur-3xl saturate-150;
-    background: linear-gradient(
-      170deg,
-      hsl(var(--electric-cyan) / 0.06),
-      hsl(0 0% 100% / 0.04),
-      hsl(var(--sunset-coral) / 0.03)
-    );
+    @apply backdrop-blur-xl;
+    background: hsl(0 0% 100% / 0.85);
     border: 1px solid hsl(var(--glass-border));
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.08),
-      var(--shadow-deep);
+    box-shadow: var(--shadow-soft);
   }
 
-  /* Refraction card — sharpens on hover like focusing underwater */
   .glass-refract {
-    @apply glass-deep rounded-3xl transition-all duration-700;
-    filter: blur(0.3px);
+    @apply glass-deep rounded-xl transition-all duration-500;
   }
   .glass-refract:hover {
-    filter: blur(0px);
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.15),
-      var(--shadow-cyan-glow),
-      var(--shadow-deep);
+    box-shadow: var(--shadow-float);
+    transform: translateY(-2px);
   }
 
   /* Z-depth layers */
-  .depth-0 {
-    transform: translateZ(0);
-    z-index: 30;
-  }
-  .depth-1 {
-    transform: translateZ(0);
-    z-index: 20;
-    opacity: 0.95;
-  }
-  .depth-2 {
-    transform: translateZ(0);
-    z-index: 10;
-    opacity: 0.85;
-  }
+  .depth-0 { transform: translateZ(0); z-index: 30; }
+  .depth-1 { transform: translateZ(0); z-index: 20; opacity: 0.95; }
+  .depth-2 { transform: translateZ(0); z-index: 10; opacity: 0.85; }
 
   /* ═══════════════════════════════════════
      Typography — Two weights: 400 + 600
      ═══════════════════════════════════════ */
 
-  .text-serif {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-weight: 600;
-  }
-
-  .text-journal {
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  .text-grotesk {
-    font-family: 'Inter', system-ui, sans-serif;
-  }
+  .text-serif { font-family: 'Inter', system-ui, sans-serif; font-weight: 600; }
+  .text-journal { font-family: 'Inter', system-ui, sans-serif; }
+  .text-grotesk { font-family: 'Inter', system-ui, sans-serif; }
 
   .universal-meaning {
     font-family: 'Inter', system-ui, sans-serif;
@@ -213,57 +180,33 @@
     font-weight: 400;
   }
 
-  /* Subtle text glow — 10% accent usage */
-  .text-glow {
-    text-shadow: 0 0 16px hsl(var(--electric-cyan) / 0.25);
-  }
-
-  .text-coral-glow {
-    text-shadow: 0 0 16px hsl(var(--sunset-coral) / 0.25);
-  }
-
   /* ═══════════════════════════════════════
-     Buttons — Liquid / Jelly
+     Buttons — Clean & Health-Focused
      ═══════════════════════════════════════ */
 
   .btn-liquid {
-    @apply relative overflow-hidden rounded-2xl font-medium transition-all duration-500;
-    background: linear-gradient(135deg, hsl(var(--electric-cyan) / 0.15), hsl(0 0% 100% / 0.05));
-    backdrop-filter: blur(20px) saturate(1.5);
-    border: 1px solid hsl(var(--glass-border));
-    box-shadow: var(--shadow-cyan-glow);
-  }
-  .btn-liquid::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, hsl(var(--electric-cyan) / 0.2), hsl(var(--sunset-coral) / 0.1));
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-  .btn-liquid:hover::before {
-    opacity: 1;
+    @apply relative overflow-hidden rounded-xl font-medium transition-all duration-300;
+    background: hsl(var(--britannica-green));
+    color: white;
+    box-shadow: var(--shadow-soft);
   }
   .btn-liquid:hover {
     transform: translateY(-2px);
-    box-shadow:
-      0 0 50px hsl(var(--electric-cyan) / 0.2),
-      var(--shadow-float);
+    box-shadow: var(--shadow-float), var(--shadow-green-glow);
   }
   .btn-liquid:active {
-    transform: translateY(0) scale(0.96);
+    transform: translateY(0) scale(0.97);
   }
 
-  /* Jelly click (squash & stretch via framer-motion, but CSS fallback) */
   .btn-jelly {
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .btn-jelly:active {
-    transform: scale(0.92);
+    transform: scale(0.95);
   }
 
   /* ═══════════════════════════════════════
-     Cards & Surfaces
+     Cards & Surfaces — Bright
      ═══════════════════════════════════════ */
 
   .card-wavey {
@@ -274,15 +217,18 @@
   }
 
   /* ═══════════════════════════════════════
-     Glow Effects
+     Glow Effects — Soft
      ═══════════════════════════════════════ */
 
-  .glow-cyan { box-shadow: var(--shadow-cyan-glow); }
-  .glow-coral { box-shadow: var(--shadow-coral-glow); }
-  .glow-jade { box-shadow: var(--shadow-cyan-glow); }
-  .glow-petal { box-shadow: var(--shadow-coral-glow); }
-  .glow-gold { box-shadow: var(--shadow-cyan-glow); }
-  .glow-clay { box-shadow: var(--shadow-coral-glow); }
+  .glow-cyan { box-shadow: var(--shadow-blue-glow); }
+  .glow-coral { box-shadow: var(--shadow-green-glow); }
+  .glow-jade { box-shadow: var(--shadow-green-glow); }
+  .glow-petal { box-shadow: var(--shadow-green-glow); }
+  .glow-gold { box-shadow: var(--shadow-green-glow); }
+  .glow-clay { box-shadow: var(--shadow-green-glow); }
+
+  .text-glow { text-shadow: none; }
+  .text-coral-glow { text-shadow: none; }
 
   /* Ripple effect */
   .ripple-effect {
@@ -293,7 +239,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), hsl(var(--electric-cyan) / 0.2) 0%, transparent 60%);
+    background: radial-gradient(circle at var(--ripple-x, 50%) var(--ripple-y, 50%), hsl(var(--britannica-blue) / 0.1) 0%, transparent 60%);
     opacity: 0;
     transition: opacity 0.6s ease;
   }
@@ -301,7 +247,6 @@
     opacity: 1;
   }
 
-  /* Floating particle background */
   .particle-field {
     position: fixed;
     inset: 0;
@@ -310,9 +255,8 @@
     overflow: hidden;
   }
 
-  /* Silk flow text — reserved for hero accent only */
   .silk-text {
-    background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--electric-cyan)), hsl(var(--foreground)));
+    background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--britannica-green)), hsl(var(--foreground)));
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
