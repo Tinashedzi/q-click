@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,6 +15,9 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const Oasis = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { profile } = useAuth();
+  const navigate = useNavigate();
+
+  const returnHome = useCallback(() => navigate('/'), [navigate]);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
@@ -28,9 +32,9 @@ const Oasis = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, ease }}
-        className="relative z-10 container mx-auto px-4 py-6 max-w-2xl"
+        className="relative z-10 container mx-auto px-4 py-6 max-w-3xl"
       >
-        {/* Header — avatar + title + settings */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -110,6 +114,7 @@ const Oasis = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5, ease }}
+            className="pb-24"
           >
             <TabsContent value="quests">
               <div className="rounded-2xl bg-background/70 backdrop-blur-xl border border-border p-5 shadow-sm">
@@ -133,6 +138,23 @@ const Oasis = () => {
             </TabsContent>
           </motion.div>
         </Tabs>
+      </motion.div>
+
+      {/* Floating Home Button */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="fixed bottom-5 left-0 right-0 z-30 flex justify-center pointer-events-none"
+      >
+        <motion.button
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          onClick={returnHome}
+          className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center border border-border bg-background/80 backdrop-blur-xl shadow-sm hover:shadow-md transition-all"
+        >
+          <img src="/images/qclick-logo.svg" alt="Home" className="w-6 h-6 object-contain" />
+        </motion.button>
       </motion.div>
     </div>
   );

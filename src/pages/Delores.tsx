@@ -16,7 +16,6 @@ import deloresBg from '@/assets/delores-bg.png';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-/* ─── Activity cards data ─── */
 const activities = [
   {
     title: 'Deep Breathing Basics',
@@ -30,7 +29,7 @@ const activities = [
     title: 'Managing Stress',
     subtitle: 'Calm your mind',
     progress: 60,
-    unlocked: false,
+    unlocked: true,
     action: 'mood',
     color: 'hsl(var(--secondary))',
   },
@@ -38,8 +37,32 @@ const activities = [
     title: 'Mindful Movement Flow',
     subtitle: 'Gentle body movements',
     progress: 45,
-    unlocked: false,
+    unlocked: true,
     action: 'matrix',
+    color: 'hsl(183 50% 45%)',
+  },
+  {
+    title: 'Daily Journal',
+    subtitle: 'Reflect & grow',
+    progress: 20,
+    unlocked: true,
+    action: 'journal',
+    color: 'hsl(var(--primary))',
+  },
+  {
+    title: 'Emotional Dashboard',
+    subtitle: 'See your patterns',
+    progress: 70,
+    unlocked: true,
+    action: 'dashboard',
+    color: 'hsl(var(--secondary))',
+  },
+  {
+    title: 'Streak Calendar',
+    subtitle: 'Stay consistent',
+    progress: 50,
+    unlocked: true,
+    action: 'calendar',
     color: 'hsl(183 50% 45%)',
   },
 ];
@@ -63,7 +86,7 @@ const Delores = () => {
 
   return (
     <div className="relative w-full min-h-screen flex flex-col overflow-hidden">
-      {/* BG Image — full visibility */}
+      {/* BG Image */}
       <div className="fixed inset-0 z-0">
         <img src={deloresBg} alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-white/20" />
@@ -101,7 +124,7 @@ const Delores = () => {
         transition={{ duration: 0.4 }}
         className="relative z-10 flex flex-col h-full min-h-screen"
       >
-        {/* Top bar — avatar + title + settings */}
+        {/* Top bar */}
         <div className="flex items-center justify-between px-5 pt-5 pb-2">
           <div className="flex items-center gap-3">
             {activeView ? (
@@ -141,7 +164,6 @@ const Delores = () => {
 
         <AnimatePresence mode="wait">
           {!activeView ? (
-            /* ─── Hub view ─── */
             <motion.div
               key="hub"
               initial={{ opacity: 0, y: 12 }}
@@ -163,78 +185,73 @@ const Delores = () => {
                 <p className="text-sm text-muted-foreground">Your AI Wellness Coach</p>
               </motion.div>
 
-              {/* Hero illustration area — transparent, shows BG */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.6, ease }}
-                className="flex-1 min-h-[200px] max-h-[320px] flex items-center justify-center my-4"
-              >
-                <motion.button
-                  onClick={() => setActiveView('chat')}
-                  whileTap={{ scale: [1, 0.92, 1.06, 1] }}
-                  className="relative"
+              {/* Desktop: side-by-side layout */}
+              <div className="flex-1 flex flex-col lg:flex-row lg:gap-8 lg:items-start">
+                {/* Hero orb */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.6, ease }}
+                  className="min-h-[180px] max-h-[280px] lg:min-h-[300px] lg:max-h-[400px] flex items-center justify-center my-4 lg:my-0 lg:sticky lg:top-24 lg:w-1/3 shrink-0"
                 >
-                  <DeloresAvatar moodLevel={currentMood} size="lg" isListening={isListening} />
-                  <motion.div
-                    animate={{ opacity: [0.08, 0.2, 0.08], scale: [1.3, 1.6, 1.3] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute inset-0 -z-10 rounded-full blur-3xl"
-                    style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.15), transparent 70%)' }}
-                  />
-                </motion.button>
-              </motion.div>
-
-              {/* Activity cards — horizontal list */}
-              <div className="space-y-3 pb-24">
-                {activities.map((activity, i) => (
                   <motion.button
-                    key={activity.title}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + i * 0.08, duration: 0.4, ease }}
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setActiveView(activity.action)}
-                    className="w-full flex items-center gap-3 p-4 rounded-2xl border border-border bg-background/70 backdrop-blur-xl shadow-sm hover:shadow-md transition-all text-left"
+                    onClick={() => setActiveView('chat')}
+                    whileTap={{ scale: [1, 0.92, 1.06, 1] }}
+                    className="relative"
                   >
-                    {/* Icon circle */}
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-2"
-                      style={{ borderColor: activity.color }}
-                    >
-                      <DeloresAvatar moodLevel={i + 1} size="sm" isListening={false} />
-                    </div>
-
-                    {/* Text + progress */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-foreground">{activity.title}</h3>
-                      <p className="text-xs text-muted-foreground">{activity.subtitle}</p>
-                      <div className="mt-2">
-                        <Progress
-                          value={activity.progress}
-                          className="h-1.5 bg-muted"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Action button */}
-                    <div className="shrink-0">
-                      {activity.unlocked ? (
-                        <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold shadow-sm"
-                        >
-                          Begin <Play className="w-3 h-3 fill-current" />
-                        </motion.div>
-                      ) : (
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted">
-                          <Lock className="w-3.5 h-3.5 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
+                    <DeloresAvatar moodLevel={currentMood} size="lg" isListening={isListening} />
+                    <motion.div
+                      animate={{ opacity: [0.08, 0.2, 0.08], scale: [1.3, 1.6, 1.3] }}
+                      transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                      className="absolute inset-0 -z-10 rounded-full blur-3xl"
+                      style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.15), transparent 70%)' }}
+                    />
                   </motion.button>
-                ))}
+                </motion.div>
+
+                {/* Activity cards — vertical on mobile, 2-col grid on desktop */}
+                <div className="space-y-3 pb-24 lg:pb-8 lg:flex-1 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+                  {activities.map((activity, i) => (
+                    <motion.button
+                      key={activity.title}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + i * 0.06, duration: 0.4, ease }}
+                      whileHover={{ y: -2, boxShadow: '0 8px 25px -8px hsl(var(--primary) / 0.15)' }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setActiveView(activity.action)}
+                      className="w-full flex items-center gap-3 p-4 rounded-2xl border border-border bg-background/70 backdrop-blur-xl shadow-sm hover:shadow-md transition-all text-left"
+                    >
+                      <div
+                        className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 border-2"
+                        style={{ borderColor: activity.color }}
+                      >
+                        <DeloresAvatar moodLevel={i + 1} size="sm" isListening={false} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-foreground">{activity.title}</h3>
+                        <p className="text-xs text-muted-foreground">{activity.subtitle}</p>
+                        <div className="mt-2">
+                          <Progress value={activity.progress} className="h-1.5 bg-muted" />
+                        </div>
+                      </div>
+                      <div className="shrink-0">
+                        {activity.unlocked ? (
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold shadow-sm"
+                          >
+                            Begin <Play className="w-3 h-3 fill-current" />
+                          </motion.div>
+                        ) : (
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-muted">
+                            <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
               </div>
             </motion.div>
 
@@ -265,7 +282,7 @@ const Delores = () => {
               transition={{ duration: 0.35, ease }}
               className="flex-1 px-5 pb-24 overflow-y-auto"
             >
-              <div className="border border-border bg-background/70 backdrop-blur-xl rounded-2xl p-5 shadow-sm">
+              <div className="border border-border bg-background/70 backdrop-blur-xl rounded-2xl p-5 shadow-sm max-w-3xl mx-auto">
                 {activeView === 'mood' && (
                   <MoodCheckIn onComplete={() => setActiveView(null)} onMoodChange={setCurrentMood} />
                 )}
