@@ -27,7 +27,8 @@ const sizes = {
 };
 
 const DeloresAvatar = ({ moodLevel, size = 'md', isListening = false }: DeloresAvatarProps) => {
-  const config = moodConfig[moodLevel ?? 3];
+  const clampedMood = Math.min(5, Math.max(1, moodLevel ?? 3));
+  const config = moodConfig[clampedMood];
   const s = sizes[size];
   const listeningSpeed = isListening ? config.breathe * 0.4 : config.breathe;
 
