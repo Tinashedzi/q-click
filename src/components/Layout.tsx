@@ -20,8 +20,8 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const isDelores = location.pathname === '/delores';
-  const isOasis = location.pathname === '/oasis';
-  const hideChrome = isHome || isDelores || isOasis;
+  // Delores and Home manage their own chrome; all others get standard layout
+  const hideChrome = isHome || isDelores;
   const [journalOpen, setJournalOpen] = useState(false);
 
   return (
@@ -55,7 +55,7 @@ const Layout = ({ children }: LayoutProps) => {
         </AnimatePresence>
       </main>
 
-      {/* Global CitadelNav — only on chrome pages */}
+      {/* Global CitadelNav — shown on all standard pages */}
       {!hideChrome && (
         <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4">
           <CitadelNav onJournalOpen={() => setJournalOpen(true)} />

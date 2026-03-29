@@ -12,64 +12,23 @@ import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
-import deloresBg from '@/assets/delores-bg.png';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const activities = [
-  {
-    title: 'Deep Breathing Basics',
-    subtitle: 'AI Narrated',
-    progress: 35,
-    unlocked: true,
-    action: 'focus',
-    color: 'hsl(var(--primary))',
-  },
-  {
-    title: 'Managing Stress',
-    subtitle: 'Calm your mind',
-    progress: 60,
-    unlocked: true,
-    action: 'mood',
-    color: 'hsl(var(--secondary))',
-  },
-  {
-    title: 'Mindful Movement Flow',
-    subtitle: 'Gentle body movements',
-    progress: 45,
-    unlocked: true,
-    action: 'matrix',
-    color: 'hsl(183 50% 45%)',
-  },
-  {
-    title: 'Daily Journal',
-    subtitle: 'Reflect & grow',
-    progress: 20,
-    unlocked: true,
-    action: 'journal',
-    color: 'hsl(var(--primary))',
-  },
-  {
-    title: 'Emotional Dashboard',
-    subtitle: 'See your patterns',
-    progress: 70,
-    unlocked: true,
-    action: 'dashboard',
-    color: 'hsl(var(--secondary))',
-  },
-  {
-    title: 'Streak Calendar',
-    subtitle: 'Stay consistent',
-    progress: 50,
-    unlocked: true,
-    action: 'calendar',
-    color: 'hsl(183 50% 45%)',
-  },
+  { title: 'Deep Breathing Basics', subtitle: 'AI Narrated', progress: 35, unlocked: true, action: 'focus' },
+  { title: 'Managing Stress', subtitle: 'Calm your mind', progress: 60, unlocked: true, action: 'mood' },
+  { title: 'Mindful Movement Flow', subtitle: 'Gentle body movements', progress: 45, unlocked: true, action: 'matrix' },
+  { title: 'Daily Journal', subtitle: 'Reflect & grow', progress: 20, unlocked: true, action: 'journal' },
+  { title: 'Emotional Dashboard', subtitle: 'See your patterns', progress: 70, unlocked: true, action: 'dashboard' },
+  { title: 'Streak Calendar', subtitle: 'Stay consistent', progress: 50, unlocked: true, action: 'calendar' },
 ];
 
 const Delores = () => {
   const navigate = useNavigate();
   const { profile } = useAuth();
+  const isMobile = useIsMobile();
   const [currentMood, setCurrentMood] = useState<number | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -80,17 +39,21 @@ const Delores = () => {
     return () => clearTimeout(t);
   }, []);
 
-  const returnHome = useCallback(() => {
-    navigate('/');
-  }, [navigate]);
+  const returnHome = useCallback(() => navigate('/'), [navigate]);
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col overflow-hidden">
-      {/* BG Image */}
-      <div className="fixed inset-0 z-0">
-        <img src={deloresBg} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-white/20" />
-      </div>
+    <div className="relative w-full min-h-screen flex flex-col overflow-hidden bg-background">
+      {/* Soft radial background */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(ellipse 80% 60% at 30% 20%, hsl(var(--primary) / 0.04), transparent),
+            radial-gradient(ellipse 60% 50% at 70% 80%, hsl(var(--secondary) / 0.04), transparent),
+            hsl(var(--background))
+          `,
+        }}
+      />
 
       {/* Loading */}
       <AnimatePresence>
@@ -185,21 +148,22 @@ const Delores = () => {
                 <p className="text-sm text-muted-foreground">Your AI Wellness Coach</p>
               </motion.div>
 
-              {/* Desktop: side-by-side layout */}
+              {/* Desktop: side-by-side | Mobile: vertical */}
               <div className="flex-1 flex flex-col lg:flex-row lg:gap-8 lg:items-start">
                 {/* Hero orb */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.6, ease }}
-                  className="min-h-[180px] max-h-[280px] lg:min-h-[300px] lg:max-h-[400px] flex items-center justify-center my-4 lg:my-0 lg:sticky lg:top-24 lg:w-1/3 shrink-0"
+                  className="flex items-center justify-center my-4 lg:my-0 lg:sticky lg:top-24 lg:w-1/3 shrink-0"
+                  style={{ minHeight: isMobile ? 160 : 280 }}
                 >
                   <motion.button
                     onClick={() => setActiveView('chat')}
                     whileTap={{ scale: [1, 0.92, 1.06, 1] }}
                     className="relative"
                   >
-                    <DeloresAvatar moodLevel={currentMood} size="lg" isListening={isListening} />
+                    <DeloresAvatar moodLevel={currentMood} size={isMobile ? 'md' : 'lg'} isListening={isListening} />
                     <motion.div
                       animate={{ opacity: [0.08, 0.2, 0.08], scale: [1.3, 1.6, 1.3] }}
                       transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
@@ -209,7 +173,7 @@ const Delores = () => {
                   </motion.button>
                 </motion.div>
 
-                {/* Activity cards — vertical on mobile, 2-col grid on desktop */}
+                {/* Activity cards */}
                 <div className="space-y-3 pb-24 lg:pb-8 lg:flex-1 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                   {activities.map((activity, i) => (
                     <motion.button
@@ -222,11 +186,8 @@ const Delores = () => {
                       onClick={() => setActiveView(activity.action)}
                       className="w-full flex items-center gap-3 p-4 rounded-2xl border border-border bg-background/70 backdrop-blur-xl shadow-sm hover:shadow-md transition-all text-left"
                     >
-                      <div
-                        className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 border-2"
-                        style={{ borderColor: activity.color }}
-                      >
-                        <DeloresAvatar moodLevel={i + 1} size="sm" isListening={false} />
+                      <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 border-2 border-primary/20 bg-primary/5">
+                        <DeloresAvatar moodLevel={Math.min(5, i + 1)} size="sm" isListening={false} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-foreground">{activity.title}</h3>
@@ -283,9 +244,7 @@ const Delores = () => {
               className="flex-1 px-5 pb-24 overflow-y-auto"
             >
               <div className="border border-border bg-background/70 backdrop-blur-xl rounded-2xl p-5 shadow-sm max-w-3xl mx-auto">
-                {activeView === 'mood' && (
-                  <MoodCheckIn onComplete={() => setActiveView(null)} onMoodChange={setCurrentMood} />
-                )}
+                {activeView === 'mood' && <MoodCheckIn onComplete={() => setActiveView(null)} onMoodChange={setCurrentMood} />}
                 {activeView === 'dashboard' && <EmotionalDashboard />}
                 {activeView === 'matrix' && <EmotionalMatrix />}
                 {activeView === 'journal' && <JournalEntry onComplete={() => setActiveView(null)} />}
