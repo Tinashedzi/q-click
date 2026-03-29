@@ -5,7 +5,7 @@ import {
   Compass, FlaskConical, Timer, BookOpen,
   Menu, X, Library as LibraryIcon, Video, User,
   SlidersHorizontal, Info, HelpCircle, Eye, EyeOff,
-  Sparkles, ChevronRight, Heart,
+  Sparkles, ChevronRight, Heart, ArrowRight,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ const pathways = [
     title: 'Discover',
     description: 'Explore ideas that shift perspective',
     path: '/oasis',
+    gradient: 'from-primary/10 to-primary/5',
   },
   {
     icon: FlaskConical,
@@ -26,6 +27,7 @@ const pathways = [
     description: 'Build experiments & simulations',
     path: '/forge?tab=lab',
     notification: true,
+    gradient: 'from-secondary/10 to-secondary/5',
   },
   {
     icon: Timer,
@@ -33,12 +35,14 @@ const pathways = [
     description: 'Pomodoro & mental check-in',
     path: '/delores',
     delores: true,
+    gradient: 'from-accent/10 to-accent/5',
   },
   {
     icon: BookOpen,
     title: 'Assignments',
     description: 'Deep-dive into knowledge',
     path: '/glossa',
+    gradient: 'from-muted to-muted/50',
   },
 ];
 
@@ -50,37 +54,15 @@ const menuItems = [
   { icon: Info, label: 'About', hover: 'Q-Click Info', path: '/' },
 ];
 
-const ONBOARDING_KEY = 'qclick-pathway-onboarding-v1';
+const ONBOARDING_KEY = 'qclick-pathway-onboarding-v2';
 
-/* ─── FlowingText ─── */
-const FlowingText = ({ text, show }: { text: string; show: boolean }) => {
-  const words = text.split(' ');
-  return (
-    <AnimatePresence>
-      {show && (
-        <motion.p
-          className="text-xs text-muted-foreground mt-1.5 flex flex-wrap gap-x-1 leading-relaxed"
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-        >
-          {words.map((w, i) => (
-            <motion.span
-              key={i}
-              variants={{
-                hidden: { opacity: 0, y: 6, filter: 'blur(3px)' },
-                visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
-              }}
-              transition={{ delay: i * 0.05, duration: 0.25, ease }}
-            >
-              {w}
-            </motion.span>
-          ))}
-        </motion.p>
-      )}
-    </AnimatePresence>
-  );
-};
+const TOUR_STEPS = [
+  { title: 'Welcome to Q-Click!', body: 'Your personal learning sanctuary. Tap any pathway to begin exploring.', emoji: '✨' },
+  { title: 'Discover', body: 'Explore curated ideas and AI-generated quests that shift your perspective.', emoji: '🧭' },
+  { title: 'Sandbox', body: 'Build experiments, collide concepts, and run interactive simulations.', emoji: '🧪' },
+  { title: 'Focus', body: 'Check in with Delris — your AI wellness coach for mindfulness & focus.', emoji: '⏱️' },
+  { title: 'Assignments', body: 'Dive deep into language, meaning, and structured learning paths.', emoji: '📖' },
+];
 
 const Index = () => {
   const navigate = useNavigate();
@@ -91,34 +73,34 @@ const Index = () => {
   const [bgVideo, setBgVideo] = useState(true);
   const [hovered, setHovered] = useState<number | null>(null);
   const [expanded, setExpanded] = useState<number | null>(null);
-  const [showOnboard, setShowOnboard] = useState(false);
-  const [obStep, setObStep] = useState(0);
+  const [showTour, setShowTour] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
   const [menuHover, setMenuHover] = useState<number | null>(null);
   const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
 
   useEffect(() => {
     if (!localStorage.getItem(ONBOARDING_KEY)) {
-      const t = setTimeout(() => setShowOnboard(true), 1200);
+      const t = setTimeout(() => setShowTour(true), 1200);
       return () => clearTimeout(t);
     }
   }, []);
 
-  const finishOb = useCallback(() => {
-    setShowOnboard(false);
+  const finishTour = useCallback(() => {
+    setShowTour(false);
     localStorage.setItem(ONBOARDING_KEY, '1');
   }, []);
 
-  const restartOb = useCallback(() => {
+  const restartTour = useCallback(() => {
     localStorage.removeItem(ONBOARDING_KEY);
-    setObStep(0);
-    setShowOnboard(true);
+    setTourStep(0);
+    setShowTour(true);
     setMenuOpen(false);
   }, []);
 
-  const nextOb = useCallback(() => {
-    if (obStep < pathways.length - 1) setObStep(s => s + 1);
-    else finishOb();
-  }, [obStep, finishOb]);
+  const nextTour = useCallback(() => {
+    if (tourStep < TOUR_STEPS.length - 1) setTourStep(s => s + 1);
+    else finishTour();
+  }, [tourStep, finishTour]);
 
   const smoothNavigate = useCallback((path: string) => {
     setNavigatingTo(path);
@@ -179,6 +161,7 @@ const Index = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.4 }}
             className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60 backdrop-blur-xl"
+            id="wp-counter"
           >
             <Sparkles className="w-3 h-3 text-primary" />
             <span className="text-[10px] font-semibold text-foreground">128</span>
@@ -197,13 +180,6 @@ const Index = () => {
                 {(profile?.display_name || 'U')[0].toUpperCase()}
               </span>
             )}
-            <motion.div
-              animate={{ y: [0, 2, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -bottom-0.5 left-1/2 -translate-x-1/2"
-            >
-              <ChevronRight className="w-2.5 h-2.5 text-muted-foreground/40 rotate-90" />
-            </motion.div>
           </motion.button>
 
           <AnimatePresence>
@@ -235,23 +211,22 @@ const Index = () => {
 
       {/* ═══ CENTER — LOGO + PATHWAYS ═══ */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
-        {/* Logo */}
+        {/* Logo + Welcome */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1, duration: 0.8, ease }}
-          className="relative mb-14 group cursor-pointer"
-          onClick={() => smoothNavigate('/delores')}
+          className="relative mb-10 flex flex-col items-center"
         >
           <motion.div
             animate={{ scale: [1, 1.04, 1], rotate: [0, 1, -1, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center relative"
+            className="w-28 h-28 sm:w-36 sm:h-36 flex items-center justify-center relative"
           >
             <img
               src="/images/qclick-logo.svg"
               alt="Q-Click"
-              className="w-36 h-36 sm:w-44 sm:h-44 object-contain relative z-10 drop-shadow-[0_0_30px_hsl(var(--primary)/0.3)] brightness-125"
+              className="w-24 h-24 sm:w-32 sm:h-32 object-contain relative z-10 drop-shadow-[0_0_30px_hsl(var(--primary)/0.3)] brightness-125"
             />
           </motion.div>
           <motion.div
@@ -259,16 +234,22 @@ const Index = () => {
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             className="absolute inset-0 -z-10 rounded-full bg-primary/10 blur-3xl"
           />
-          <motion.div
-            className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap"
-            initial={{ opacity: 0 }}
-            whileHover={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5, ease }}
+            className="mt-4 text-xl sm:text-2xl font-semibold text-foreground tracking-tight text-center"
           >
-            <span className="text-[10px] text-primary/60 font-medium tracking-wider flex items-center gap-1">
-              <Heart className="w-2.5 h-2.5" /> Check in
-            </span>
-          </motion.div>
+            Welcome to Q-Click
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="text-xs text-muted-foreground mt-1"
+          >
+            Your learning sanctuary
+          </motion.p>
         </motion.div>
 
         {/* MOBILE: 1×4 icon row */}
@@ -280,9 +261,11 @@ const Index = () => {
         >
           {pathways.map((p, i) => {
             const isExp = expanded === i;
+            const isTourTarget = showTour && tourStep === i + 1;
             return (
-              <div key={p.path} className="flex flex-col items-center">
+              <div key={p.path} className="flex flex-col items-center relative">
                 <motion.button
+                  id={`pathway-mobile-${i}`}
                   onClick={() => isExp ? smoothNavigate(p.path) : setExpanded(i)}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -302,16 +285,14 @@ const Index = () => {
                       transition={{ duration: 2, repeat: Infinity }}
                     />
                   )}
-                  {showOnboard && obStep === i && (
+                  {isTourTarget && (
                     <motion.div
                       className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary"
                       animate={{ scale: [1, 1.6, 1], opacity: [1, 0.3, 1] }}
                       transition={{ duration: 1.4, repeat: Infinity }}
                     />
                   )}
-                  <motion.div animate={isExp ? { scale: [1, 1.1, 1] } : {}} transition={{ duration: 0.3 }}>
-                    <p.icon className={cn('w-5 h-5 transition-colors duration-300', isExp ? 'text-primary' : 'text-muted-foreground')} />
-                  </motion.div>
+                  <p.icon className={cn('w-5 h-5 transition-colors duration-300', isExp ? 'text-primary' : 'text-muted-foreground')} />
                 </motion.button>
                 <span className={cn('text-[9px] mt-1.5 font-medium transition-colors duration-300', isExp ? 'text-primary' : 'text-muted-foreground/60')}>
                   {p.title}
@@ -326,12 +307,6 @@ const Index = () => {
                       className="mt-2 w-28 rounded-xl border border-border bg-background/80 backdrop-blur-xl p-2 text-center overflow-hidden"
                     >
                       <p className="text-[9px] text-muted-foreground leading-relaxed">{p.description}</p>
-                      {p.delores && (
-                        <div className="mt-1 flex items-center justify-center gap-1">
-                          <Heart className="w-2 h-2 text-secondary/70" />
-                          <span className="text-[8px] text-secondary/60">Wellness</span>
-                        </div>
-                      )}
                       <motion.span
                         className="inline-block mt-1.5 text-[8px] text-primary/70 font-medium"
                         animate={{ x: [0, 2, 0] }}
@@ -347,27 +322,32 @@ const Index = () => {
           })}
         </motion.div>
 
-        {/* DESKTOP: 2×2 grid */}
+        {/* DESKTOP: 2×2 grid cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.6, ease }}
-          className="hidden md:grid grid-cols-2 gap-3 w-full max-w-sm"
+          className="hidden md:grid grid-cols-2 gap-3 w-full max-w-lg"
         >
           {pathways.map((p, i) => {
             const isH = hovered === i;
+            const isTourTarget = showTour && tourStep === i + 1;
             return (
               <motion.button
                 key={p.path}
+                id={`pathway-desktop-${i}`}
                 onClick={() => smoothNavigate(p.path)}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + i * 0.08, duration: 0.5, ease }}
-                whileHover={{ scale: 1.04, y: -4 }}
-                whileTap={{ scale: 0.96 }}
-                className="relative rounded-2xl border border-border bg-background/60 backdrop-blur-xl p-5 text-left transition-all duration-500 overflow-hidden hover:shadow-md hover:border-primary/20"
+                whileHover={{ scale: 1.03, y: -3 }}
+                whileTap={{ scale: 0.97 }}
+                className={cn(
+                  'relative rounded-2xl border bg-background/70 backdrop-blur-xl p-5 text-left transition-all duration-300 overflow-hidden hover:shadow-lg group',
+                  isTourTarget ? 'border-primary/40 ring-2 ring-primary/20' : 'border-border hover:border-primary/20'
+                )}
               >
                 {p.notification && (
                   <motion.div
@@ -379,39 +359,35 @@ const Index = () => {
                     <span className="text-[8px] text-primary/70 font-medium">NEW</span>
                   </motion.div>
                 )}
-                {showOnboard && obStep === i && (
-                  <motion.div
-                    className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary"
-                    animate={{ scale: [1, 1.6, 1], opacity: [1, 0.3, 1] }}
-                    transition={{ duration: 1.4, repeat: Infinity }}
-                  />
-                )}
                 <div className="flex items-start gap-3">
                   <div className={cn(
-                    'w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-all duration-300',
+                    'w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-all duration-300',
                     isH ? 'border-primary/20 bg-primary/10' : 'border-border bg-muted'
                   )}>
-                    <p.icon className={cn('w-4 h-4 transition-colors duration-300', isH ? 'text-primary' : 'text-muted-foreground')} />
+                    <p.icon className={cn('w-4.5 h-4.5 transition-colors duration-300', isH ? 'text-primary' : 'text-muted-foreground')} />
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <h3 className="text-sm font-semibold text-foreground leading-tight">
                       {p.title}
-                      {p.subtitle && <span className="text-muted-foreground font-normal text-xs"> {p.subtitle}</span>}
+                      {p.subtitle && <span className="text-muted-foreground font-normal text-xs ml-1">{p.subtitle}</span>}
                     </h3>
-                    <FlowingText text={p.description} show={isH} />
-                    {p.delores && isH && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="mt-1.5 flex items-center gap-1"
-                      >
-                        <Heart className="w-2.5 h-2.5 text-secondary/70" />
-                        <span className="text-[9px] text-secondary/60">Wellness</span>
-                      </motion.div>
-                    )}
+                    <p className={cn(
+                      'text-xs text-muted-foreground mt-1 leading-relaxed transition-opacity duration-300',
+                      isH ? 'opacity-100' : 'opacity-70'
+                    )}>
+                      {p.description}
+                    </p>
                   </div>
                 </div>
+                {/* Hover arrow */}
+                <motion.div
+                  className="absolute bottom-4 right-4"
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={isH ? { opacity: 1, x: 0 } : { opacity: 0, x: -4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ArrowRight className="w-4 h-4 text-primary" />
+                </motion.div>
               </motion.button>
             );
           })}
@@ -456,7 +432,7 @@ const Index = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-              className="fixed left-0 top-0 bottom-0 z-50 w-60 border-r border-border bg-background/95 backdrop-blur-xl p-5 flex flex-col"
+              className="fixed left-0 top-0 bottom-0 z-50 w-64 border-r border-border bg-background/95 backdrop-blur-xl p-5 flex flex-col"
             >
               <div className="flex items-center justify-between mb-8">
                 <span className="text-xs font-semibold text-foreground tracking-tight uppercase">Menu</span>
@@ -500,7 +476,7 @@ const Index = () => {
                 transition={{ delay: 0.3 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={restartOb}
+                onClick={restartTour}
                 className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-border bg-muted/50 hover:bg-muted transition-colors"
               >
                 <HelpCircle className="w-3.5 h-3.5 text-primary/70" />
@@ -511,49 +487,64 @@ const Index = () => {
         )}
       </AnimatePresence>
 
-      {/* ═══ ONBOARDING ═══ */}
+      {/* ═══ ONBOARDING TOUR ═══ */}
       <AnimatePresence>
-        {showOnboard && (
-          <motion.div
-            key={obStep}
-            initial={{ opacity: 0, y: 12, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -12, scale: 0.96 }}
-            transition={{ duration: 0.3, ease }}
-            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 w-[260px] rounded-2xl p-3.5 border border-border bg-background/90 backdrop-blur-xl shadow-float"
-          >
-            <div className="flex items-start gap-2.5">
-              <div className="w-7 h-7 rounded-lg border border-border bg-muted flex items-center justify-center shrink-0">
-                {(() => { const I = pathways[obStep].icon; return <I className="w-3.5 h-3.5 text-primary" />; })()}
+        {showTour && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[90] bg-foreground/10 backdrop-blur-[2px]"
+              onClick={finishTour}
+            />
+            {/* Tour card */}
+            <motion.div
+              key={tourStep}
+              initial={{ opacity: 0, y: 16, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.95 }}
+              transition={{ duration: 0.35, ease }}
+              className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] w-[290px] rounded-2xl border border-border bg-background/95 backdrop-blur-xl p-4 shadow-float"
+            >
+              <div className="flex items-start gap-3 mb-3">
+                <span className="text-xl">{TOUR_STEPS[tourStep].emoji}</span>
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground">{TOUR_STEPS[tourStep].title}</h4>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{TOUR_STEPS[tourStep].body}</p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-xs font-semibold text-foreground">{pathways[obStep].title}</h4>
-                <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{pathways[obStep].description}</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between mt-2.5 pt-2.5 border-t border-border">
-              <div className="flex gap-0.5">
-                {pathways.map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      'h-0.5 rounded-full transition-all duration-300',
-                      i === obStep ? 'w-4 bg-primary' : i < obStep ? 'w-1 bg-primary/30' : 'w-1 bg-border'
+              <div className="flex items-center justify-between pt-3 border-t border-border">
+                <div className="flex gap-1">
+                  {TOUR_STEPS.map((_, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        'h-1 rounded-full transition-all duration-300',
+                        i === tourStep ? 'w-5 bg-primary' : i < tourStep ? 'w-1.5 bg-primary/40' : 'w-1.5 bg-border'
+                      )}
+                    />
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={finishTour} className="text-[10px] text-muted-foreground/60 hover:text-foreground transition-colors">Skip</button>
+                  <button
+                    onClick={nextTour}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-[11px] font-medium hover:bg-primary/90 transition-colors"
+                  >
+                    {tourStep < TOUR_STEPS.length - 1 ? (
+                      <>Next <ChevronRight className="w-3 h-3" /></>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3 h-3" /> Let's Go
+                      </>
                     )}
-                  />
-                ))}
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <button onClick={finishOb} className="text-[9px] text-muted-foreground/60 hover:text-foreground transition-colors">Skip</button>
-                <button
-                  onClick={nextOb}
-                  className="px-2 py-0.5 rounded-md text-[9px] font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                >
-                  {obStep < pathways.length - 1 ? 'Next' : 'Done'}
-                </button>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </motion.div>
