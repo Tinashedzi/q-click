@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import Header from './Header';
 import TabNav from './TabNav';
-import CitadelNav from './citadel/CitadelNav';
+import BottomNav from './BottomNav';
 import JournalOverlay from './JournalOverlay';
 
 interface LayoutProps {
@@ -20,19 +20,18 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const isDelores = location.pathname === '/delores';
-  // Delores and Home manage their own chrome; all others get standard layout
+  // Home and Delores manage their own chrome
   const hideChrome = isHome || isDelores;
   const [journalOpen, setJournalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Clean warm gradient background */}
       <div
         className="fixed inset-0 pointer-events-none z-0"
         style={{
           background: `
-            radial-gradient(ellipse 80% 60% at 20% 10%, hsl(var(--britannica-green) / 0.03), transparent),
-            radial-gradient(ellipse 60% 50% at 80% 80%, hsl(var(--britannica-blue) / 0.03), transparent),
+            radial-gradient(ellipse 80% 60% at 20% 10%, hsl(var(--primary) / 0.03), transparent),
+            radial-gradient(ellipse 60% 50% at 80% 80%, hsl(var(--secondary) / 0.03), transparent),
             hsl(var(--background))
           `,
         }}
@@ -55,12 +54,8 @@ const Layout = ({ children }: LayoutProps) => {
         </AnimatePresence>
       </main>
 
-      {/* Global CitadelNav — shown on all standard pages */}
-      {!hideChrome && (
-        <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4">
-          <CitadelNav onJournalOpen={() => setJournalOpen(true)} />
-        </div>
-      )}
+      {/* Bottom nav on standard pages */}
+      {!hideChrome && <BottomNav />}
 
       <JournalOverlay isOpen={journalOpen} onClose={() => setJournalOpen(false)} />
     </div>
