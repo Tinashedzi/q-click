@@ -18,9 +18,9 @@ const GameForge = () => {
 
   const saveGame = () => {
     if (!selected || !gameName) return;
-    const saved = JSON.parse(localStorage.getItem('sensage-forge-games') || '[]');
+    const saved = JSON.parse(localStorage.getItem('qclick-forge-games') || '[]');
     saved.push({ template: selected, name: gameName, createdAt: new Date().toISOString() });
-    localStorage.setItem('sensage-forge-games', JSON.stringify(saved));
+    localStorage.setItem('qclick-forge-games', JSON.stringify(saved));
     setGameName('');
     setSelected(null);
   };

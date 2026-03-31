@@ -13,9 +13,9 @@ const GovernmentPortal = () => {
   const filtered = filter === 'all' ? governmentResources : governmentResources.filter(r => r.category === filter);
 
   const saveToLibrary = (r: typeof governmentResources[0]) => {
-    const saved = JSON.parse(localStorage.getItem('sensage-library-items') || '[]');
+    const saved = JSON.parse(localStorage.getItem('qclick-library-items') || '[]');
     saved.push({ id: `gov-${r.id}`, title: r.title, source: 'government', description: r.description, savedAt: new Date().toISOString() });
-    localStorage.setItem('sensage-library-items', JSON.stringify(saved));
+    localStorage.setItem('qclick-library-items', JSON.stringify(saved));
   };
 
   return (

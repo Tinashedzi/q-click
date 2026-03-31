@@ -71,7 +71,7 @@ const JournalOverlay = ({ isOpen, onClose }: JournalOverlayProps) => {
   };
 
   const sendToForge = (entry: JournalEntry) => {
-    localStorage.setItem('sensage-forge-source', JSON.stringify(entry));
+    localStorage.setItem('qclick-forge-source', JSON.stringify(entry));
     onClose();
     navigate('/forge');
   };

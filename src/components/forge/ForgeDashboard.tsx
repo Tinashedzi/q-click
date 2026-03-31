@@ -13,10 +13,10 @@ const ForgeDashboard = () => {
   const [creations, setCreations] = useState<Creation[]>([]);
 
   useEffect(() => {
-    const concepts = JSON.parse(localStorage.getItem('sensage-forge-concepts') || '[]').map((c: any) => ({ type: 'Concept', name: c.topic, createdAt: c.createdAt }));
-    const scripts = JSON.parse(localStorage.getItem('sensage-forge-scripts') || '[]').map((s: any) => ({ type: 'Script', name: s.concept, createdAt: s.createdAt }));
-    const games = JSON.parse(localStorage.getItem('sensage-forge-games') || '[]').map((g: any) => ({ type: 'Game', name: g.name, createdAt: g.createdAt }));
-    const paths = JSON.parse(localStorage.getItem('sensage-forge-paths') || '[]').map((p: any) => ({ type: 'Path', name: p.name, createdAt: p.createdAt }));
+    const concepts = JSON.parse(localStorage.getItem('qclick-forge-concepts') || '[]').map((c: any) => ({ type: 'Concept', name: c.topic, createdAt: c.createdAt }));
+    const scripts = JSON.parse(localStorage.getItem('qclick-forge-scripts') || '[]').map((s: any) => ({ type: 'Script', name: s.concept, createdAt: s.createdAt }));
+    const games = JSON.parse(localStorage.getItem('qclick-forge-games') || '[]').map((g: any) => ({ type: 'Game', name: g.name, createdAt: g.createdAt }));
+    const paths = JSON.parse(localStorage.getItem('qclick-forge-paths') || '[]').map((p: any) => ({ type: 'Path', name: p.name, createdAt: p.createdAt }));
     setCreations([...concepts, ...scripts, ...games, ...paths].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
   }, []);
 

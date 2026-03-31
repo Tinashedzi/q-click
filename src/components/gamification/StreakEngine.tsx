@@ -5,8 +5,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 const StreakEngine = () => {
-  const [streak] = useState(() => parseInt(localStorage.getItem('sensage-gamification-streak') || '7'));
-  const [freezes] = useState(() => parseInt(localStorage.getItem('sensage-gamification-freezes') || '2'));
+  const [streak] = useState(() => parseInt(localStorage.getItem('qclick-gamification-streak') || '7'));
+  const [freezes] = useState(() => parseInt(localStorage.getItem('qclick-gamification-freezes') || '2'));
   const petMood = streak >= 14 ? 'thriving' : streak >= 7 ? 'happy' : streak >= 3 ? 'okay' : 'sleepy';
   const petEmoji = { thriving: '🐉', happy: '🦊', okay: '🐣', sleepy: '😴' }[petMood];
 

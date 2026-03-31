@@ -31,9 +31,9 @@ const GutenbergSearch = () => {
   };
 
   const saveToLibrary = (book: GutenbergBook) => {
-    const saved = JSON.parse(localStorage.getItem('sensage-library-items') || '[]');
+    const saved = JSON.parse(localStorage.getItem('qclick-library-items') || '[]');
     saved.push({ id: `gutenberg-${book.id}`, title: book.title, source: 'gutenberg', description: book.authors.map(a => a.name).join(', '), savedAt: new Date().toISOString() });
-    localStorage.setItem('sensage-library-items', JSON.stringify(saved));
+    localStorage.setItem('qclick-library-items', JSON.stringify(saved));
   };
 
   return (

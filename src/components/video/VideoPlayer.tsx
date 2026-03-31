@@ -4,10 +4,10 @@ import { Play, Pause, SkipBack, SkipForward, Bookmark, Maximize, Gauge } from 'l
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import type { SensageVideo } from '@/data/sampleVideos';
+import type { QClickVideo } from '@/data/sampleVideos';
 
 interface VideoPlayerProps {
-  video: SensageVideo;
+  video: QClickVideo;
 }
 
 const VideoPlayer = ({ video }: VideoPlayerProps) => {

@@ -128,18 +128,18 @@ export function getDeloresResponse(moodLevel: number): DeloresResponse {
 }
 
 export function getMoodEntries(): MoodEntry[] {
-  const stored = localStorage.getItem('sensage-mood-entries');
+  const stored = localStorage.getItem('qclick-mood-entries');
   return stored ? JSON.parse(stored) : [];
 }
 
 export function saveMoodEntry(entry: MoodEntry): void {
   const entries = getMoodEntries();
   entries.push(entry);
-  localStorage.setItem('sensage-mood-entries', JSON.stringify(entries));
+  localStorage.setItem('qclick-mood-entries', JSON.stringify(entries));
 }
 
 export function clearMoodEntries(): void {
-  localStorage.removeItem('sensage-mood-entries');
+  localStorage.removeItem('qclick-mood-entries');
 }
 
 export function exportMoodEntries(): string {

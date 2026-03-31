@@ -1,4 +1,4 @@
-export interface SensageVideo {
+export interface QClickVideo {
   id: string;
   title: string;
   description: string;
@@ -13,7 +13,7 @@ export interface SensageVideo {
   bookmarked: boolean;
 }
 
-export const sampleVideos: SensageVideo[] = [
+export const sampleVideos: QClickVideo[] = [
   {
     id: 'v1',
     title: "The River's Journey",
@@ -87,7 +87,7 @@ export const sampleVideos: SensageVideo[] = [
 ];
 
 export function getBookmarkedVideos(): string[] {
-  const stored = localStorage.getItem('sensage-bookmarked-videos');
+  const stored = localStorage.getItem('qclick-bookmarked-videos');
   return stored ? JSON.parse(stored) : [];
 }
 
@@ -96,11 +96,11 @@ export function toggleBookmark(videoId: string): boolean {
   const idx = bookmarks.indexOf(videoId);
   if (idx >= 0) {
     bookmarks.splice(idx, 1);
-    localStorage.setItem('sensage-bookmarked-videos', JSON.stringify(bookmarks));
+    localStorage.setItem('qclick-bookmarked-videos', JSON.stringify(bookmarks));
     return false;
   } else {
     bookmarks.push(videoId);
-    localStorage.setItem('sensage-bookmarked-videos', JSON.stringify(bookmarks));
+    localStorage.setItem('qclick-bookmarked-videos', JSON.stringify(bookmarks));
     return true;
   }
 }
