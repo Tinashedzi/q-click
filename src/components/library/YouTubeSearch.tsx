@@ -6,9 +6,9 @@ import { curatedPlaylists } from '@/data/libraryData';
 
 const YouTubeSearch = () => {
   const saveToLibrary = (playlist: typeof curatedPlaylists[0]) => {
-    const saved = JSON.parse(localStorage.getItem('sensage-library-items') || '[]');
+    const saved = JSON.parse(localStorage.getItem('qclick-library-items') || '[]');
     saved.push({ id: `yt-${playlist.id}`, title: playlist.title, source: 'youtube', description: `${playlist.channel} · ${playlist.videoCount} videos`, savedAt: new Date().toISOString() });
-    localStorage.setItem('sensage-library-items', JSON.stringify(saved));
+    localStorage.setItem('qclick-library-items', JSON.stringify(saved));
   };
 
   return (

@@ -54,7 +54,7 @@ const EmotionalDashboard = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'sensage-emotional-data.json';
+    a.download = 'qclick-emotional-data.json';
     a.click();
     URL.revokeObjectURL(url);
   };

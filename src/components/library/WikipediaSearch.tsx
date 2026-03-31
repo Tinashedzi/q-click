@@ -30,9 +30,9 @@ const WikipediaSearch = () => {
   };
 
   const saveToLibrary = (item: WikiResult) => {
-    const saved = JSON.parse(localStorage.getItem('sensage-library-items') || '[]');
+    const saved = JSON.parse(localStorage.getItem('qclick-library-items') || '[]');
     saved.push({ id: `wiki-${item.pageid}`, title: item.title, source: 'wikipedia', description: item.snippet.replace(/<[^>]*>/g, ''), savedAt: new Date().toISOString() });
-    localStorage.setItem('sensage-library-items', JSON.stringify(saved));
+    localStorage.setItem('qclick-library-items', JSON.stringify(saved));
   };
 
   return (

@@ -32,7 +32,7 @@ const Auth = () => {
           className="text-center mt-6 mb-10"
         >
           <h1 className="text-5xl sm:text-6xl font-serif text-foreground tracking-tight silk-text">
-            Sensage
+            QClick
           </h1>
           <p className="text-sm text-muted-foreground mt-2 italic font-serif tracking-wide">
             the architecture of thought

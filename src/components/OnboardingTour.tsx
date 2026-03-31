@@ -34,7 +34,7 @@ const TOUR_STEPS: TourStep[] = [
   },
 ];
 
-const STORAGE_KEY = 'sensage-onboarding-v2';
+const STORAGE_KEY = 'qclick-onboarding-v2';
 
 const OnboardingTour = () => {
   const [active, setActive] = useState(false);

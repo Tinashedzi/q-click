@@ -18,13 +18,13 @@ const PersonalLibrary = () => {
   const [items, setItems] = useState<LibraryItem[]>([]);
 
   useEffect(() => {
-    setItems(JSON.parse(localStorage.getItem('sensage-library-items') || '[]'));
+    setItems(JSON.parse(localStorage.getItem('qclick-library-items') || '[]'));
   }, []);
 
   const removeItem = (id: string) => {
     const updated = items.filter(i => i.id !== id);
     setItems(updated);
-    localStorage.setItem('sensage-library-items', JSON.stringify(updated));
+    localStorage.setItem('qclick-library-items', JSON.stringify(updated));
   };
 
   return (

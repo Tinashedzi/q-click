@@ -39,9 +39,9 @@ const ScriptForge = () => {
     a.click();
     URL.revokeObjectURL(url);
 
-    const saved = JSON.parse(localStorage.getItem('sensage-forge-scripts') || '[]');
+    const saved = JSON.parse(localStorage.getItem('qclick-forge-scripts') || '[]');
     saved.push({ concept: conceptName, createdAt: new Date().toISOString() });
-    localStorage.setItem('sensage-forge-scripts', JSON.stringify(saved));
+    localStorage.setItem('qclick-forge-scripts', JSON.stringify(saved));
   };
 
   return (

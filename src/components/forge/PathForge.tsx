@@ -27,9 +27,9 @@ const PathForge = () => {
 
   const savePath = () => {
     if (!pathName || steps.length === 0) return;
-    const saved = JSON.parse(localStorage.getItem('sensage-forge-paths') || '[]');
+    const saved = JSON.parse(localStorage.getItem('qclick-forge-paths') || '[]');
     saved.push({ name: pathName, steps, createdAt: new Date().toISOString() });
-    localStorage.setItem('sensage-forge-paths', JSON.stringify(saved));
+    localStorage.setItem('qclick-forge-paths', JSON.stringify(saved));
     setPathName('');
     setSteps([]);
   };

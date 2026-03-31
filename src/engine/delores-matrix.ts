@@ -1,7 +1,7 @@
 import type { DetectedSignals, EmotionalState, EmotionalRecommendation, InteractionEvent, RecommendationAction } from '@/types/delores-matrix';
 
-const STORAGE_KEY = 'sensage-emotional-matrix';
-const EVENTS_KEY = 'sensage-interaction-events';
+const STORAGE_KEY = 'qclick-emotional-matrix';
+const EVENTS_KEY = 'qclick-interaction-events';
 const MAX_EVENTS = 200;
 const MAX_SNAPSHOTS = 50;
 
