@@ -135,7 +135,7 @@ const RubricGenerator = () => {
           size="sm"
         >
           <Sparkles className="w-3.5 h-3.5" />
-          {generating ? 'Generating…' : 'Generate Rubric'}
+          {generating ? 'Generating…' : 'Generate Rubric (1⚡)'}
         </Button>
       </div>
 
