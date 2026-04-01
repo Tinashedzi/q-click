@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_credits: {
+        Row: {
+          created_at: string
+          daily_credits: number
+          daily_used: number
+          id: string
+          last_reset_date: string
+          monthly_bonus: number
+          monthly_used: number
+          referral_code: string
+          referral_credits: number
+          referred_by: string | null
+          total_referrals: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_credits?: number
+          daily_used?: number
+          id?: string
+          last_reset_date?: string
+          monthly_bonus?: number
+          monthly_used?: number
+          referral_code?: string
+          referral_credits?: number
+          referred_by?: string | null
+          total_referrals?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_credits?: number
+          daily_used?: number
+          id?: string
+          last_reset_date?: string
+          monthly_bonus?: number
+          monthly_used?: number
+          referral_code?: string
+          referral_credits?: number
+          referred_by?: string | null
+          total_referrals?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       evidence_entries: {
         Row: {
           content: string | null
