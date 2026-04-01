@@ -74,6 +74,8 @@ const QuestGenerator = () => {
 
   const generateQuest = async () => {
     if (!topic.trim()) return;
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
     setGenerating(true);
     setQuest(null);
 
