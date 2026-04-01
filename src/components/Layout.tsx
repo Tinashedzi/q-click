@@ -14,12 +14,19 @@ const pageVariants = {
   exit: { opacity: 0, y: -8, scale: 0.99 },
 };
 
+const fixedChromePageVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+};
+
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isDelores = location.pathname === '/delores';
   const isHome = location.pathname === '/';
   // Delores manages its own full-screen chrome; Home has its own top bar but shares bottom nav
   const isFullScreen = isDelores;
+  const activePageVariants = isHome ? fixedChromePageVariants : pageVariants;
   const [journalOpen, setJournalOpen] = useState(false);
 
   return (
@@ -42,7 +49,7 @@ const Layout = ({ children }: LayoutProps) => {
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
-            variants={pageVariants}
+            variants={activePageVariants}
             initial="initial"
             animate="animate"
             exit="exit"

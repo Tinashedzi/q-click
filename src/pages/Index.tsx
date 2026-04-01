@@ -96,12 +96,13 @@ const Index = () => {
 
   return (
     <motion.div
-      className="relative w-full min-h-screen flex flex-col"
-      animate={navigatingTo ? { opacity: 0, scale: 0.96, filter: 'blur(8px)' } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
-      transition={{ duration: 0.4, ease }}
+      className="relative w-full min-h-screen"
+      animate={navigatingTo ? { opacity: 0 } : { opacity: 1 }}
+      transition={{ duration: 0.25, ease }}
     >
       {/* ═══ FULLSCREEN VIDEO WALLPAPER ═══ */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div className="absolute inset-0 bg-background" />
         {videoEnabled ? (
           <>
             <img
@@ -109,7 +110,7 @@ const Index = () => {
               alt=""
               className={cn(
                 'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
-                videoReady ? 'opacity-0' : 'opacity-100'
+                videoReady ? 'opacity-35' : 'opacity-100'
               )}
             />
             <video
@@ -120,24 +121,25 @@ const Index = () => {
               muted
               playsInline
               preload="auto"
-              onCanPlayThrough={() => setVideoReady(true)}
+              onLoadedData={() => setVideoReady(true)}
+              onCanPlay={() => setVideoReady(true)}
               className={cn(
-                'absolute inset-0 w-full h-full object-cover transition-opacity duration-1000',
+                'absolute inset-0 w-full h-full object-contain md:object-cover transition-opacity duration-1000',
                 videoReady ? 'opacity-100' : 'opacity-0'
               )}
-              style={{ filter: 'brightness(1.15) contrast(1.05)' }}
+              style={{ filter: 'brightness(1.28) contrast(1.08)', objectPosition: 'center center' }}
             />
           </>
         ) : (
           <img src="/images/home-hero-study.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
         )}
-        {/* Subtle overlay for readability */}
-        <div className="absolute inset-0 bg-background/20" />
+        <div className="absolute inset-0 bg-background/10" />
       </div>
 
       {/* ═══ FIXED TOP BAR (never scrolls) ═══ */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-background/70 backdrop-blur-xl border-b border-border/30">
-        <div className="flex items-center justify-between px-5 py-3">
+      <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
+        <div className="pointer-events-auto border-b border-border/30 bg-background/70 backdrop-blur-xl">
+          <div className="flex items-center justify-between px-5 py-3">
           <motion.button
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
@@ -185,12 +187,13 @@ const Index = () => {
                 <User className="w-4 h-4 text-foreground" />
               )}
             </motion.button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* ═══ SCROLLABLE CONTENT ═══ */}
-      <div className="relative z-10 flex flex-col pt-[68px] pb-24">
+      <div className="relative z-10 flex min-h-screen flex-col pt-[68px] pb-24">
 
         {/* Logo + tagline */}
         <div className="flex flex-col items-center py-6">
@@ -261,23 +264,25 @@ const Index = () => {
 
 
         {/* ═══ DELORES FLOATING BUTTON ═══ */}
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8, duration: 0.4, ease }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => smoothNavigate('/delores')}
-          className="fixed bottom-24 right-5 z-30 w-14 h-14 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl flex items-center justify-center shadow-lg pointer-events-auto"
-          title="Talk to Delris"
-        >
-          <Heart className="w-6 h-6 text-primary" />
-          <motion.div
-            className="absolute inset-0 rounded-full border-2 border-primary/30"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-            transition={{ duration: 2.5, repeat: Infinity }}
-          />
-        </motion.button>
+        <div className="fixed bottom-24 right-5 z-30 pointer-events-none">
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 0.4, ease }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => smoothNavigate('/delores')}
+            className="pointer-events-auto w-14 h-14 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl flex items-center justify-center shadow-lg"
+            title="Talk to Delris"
+          >
+            <Heart className="w-6 h-6 text-primary" />
+            <motion.div
+              className="absolute inset-0 rounded-full border-2 border-primary/30"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+            />
+          </motion.button>
+        </div>
 
         {/* ═══ FIND A TUTOR ═══ */}
         <div className="px-5 mt-6">
