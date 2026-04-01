@@ -23,13 +23,21 @@ const TIERS = {
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, subscription, refreshSubscription } = useAuth();
-  const { credits } = useCredits();
+  const { credits, fetchCredits } = useCredits();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
   useEffect(() => {
     refreshSubscription();
-  }, [refreshSubscription]);
+    // Handle post-credit-purchase
+    if (searchParams.get('credits_purchased') === 'true') {
+      toast.success('🎉 50 bonus credits added to your account!');
+      fetchCredits();
+      // Clean URL
+      window.history.replaceState({}, '', '/pricing');
+    }
+  }, [refreshSubscription, searchParams, fetchCredits]);
 
   const activeTier = subscription.subscribed
     ? Object.entries(TIERS).find(([, v]) => v.product_id === subscription.productId)?.[0] ?? null
