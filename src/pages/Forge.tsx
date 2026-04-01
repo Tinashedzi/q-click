@@ -72,85 +72,93 @@ const Forge = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-4xl pb-28">
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Hammer className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground tracking-tight">The Forge</h1>
-            <p className="text-xs text-muted-foreground tracking-wide">Infinite Sandbox — build, collide, experiment</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Tab pills */}
-      <div className="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-hide">
-        <div className="flex gap-1.5 min-w-max">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  'relative flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap',
-                  isActive ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
-                )}
-              >
-                {isActive && (
-                  <motion.div layoutId="forge-tab-bg" className="absolute inset-0 rounded-full bg-primary" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
-                )}
-                <span className="relative flex items-center gap-2">
-                  <tab.icon className="w-4 h-4" />
-                  {tab.label}
-                  {tab.id === 'canvas' && canvasNodes.length > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center">{canvasNodes.length}</span>
-                  )}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+    <div className="relative min-h-screen">
+      {/* Background wallpaper */}
+      <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
+        <img src="/images/bg-forge.png" alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-background/85 backdrop-blur-[2px]" />
       </div>
 
-      {/* Content in glass cards */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="rounded-2xl bg-background/70 backdrop-blur-xl border border-border p-5 shadow-sm">
-            {['collision', 'canvas', 'spatial'].includes(activeTab) && (
-              <ForgeInstructions tab={activeTab} />
-            )}
-            {activeTab === 'collision' && (
-              <>
-                <ConceptCollision onExperimentSelect={handleExperimentSelect} onAddToCanvas={handleAddToCanvas} />
-                {currentTopic && <ForgeToQuest topic={currentTopic} />}
-              </>
-            )}
-            {activeTab === 'canvas' && <ConceptCanvas nodes={canvasNodes} onNodesChange={setCanvasNodes} edges={canvasEdges} onEdgesChange={setCanvasEdges} />}
-            {activeTab === 'experiment' && <ExperimentLab prefilledTopic={currentTopic} />}
-            {activeTab === 'concept' && (
-              <>
-                <ConceptForge />
-                <ForgeToQuest topic={currentTopic || undefined} />
-              </>
-            )}
-            {activeTab === 'bio' && <BioDigitalForge onAddToCanvas={handleAddToCanvas} prefillTopic={currentTopic || undefined} />}
-            {activeTab === 'spatial' && <SpatialForge onAddToCanvas={handleAddToCanvas} prefillTopic={currentTopic || undefined} />}
-            {activeTab === 'script' && <ScriptForge />}
-            {activeTab === 'game' && <GameForge />}
-            {activeTab === 'path' && <PathForge />}
-            {activeTab === 'dashboard' && <ForgeDashboard />}
+      <div className="relative z-10 container mx-auto px-4 py-6 max-w-4xl pb-28">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <Hammer className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground tracking-tight">The Forge</h1>
+              <p className="text-xs text-muted-foreground tracking-wide">Infinite Sandbox — build, collide, experiment</p>
+            </div>
           </div>
         </motion.div>
-      </AnimatePresence>
+
+        {/* Tab pills */}
+        <div className="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1.5 min-w-max">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={cn(
+                    'relative flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap',
+                    isActive ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                  )}
+                >
+                  {isActive && (
+                    <motion.div layoutId="forge-tab-bg" className="absolute inset-0 rounded-full bg-primary" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />
+                  )}
+                  <span className="relative flex items-center gap-2">
+                    <tab.icon className="w-4 h-4" />
+                    {tab.label}
+                    {tab.id === 'canvas' && canvasNodes.length > 0 && (
+                      <span className="w-4 h-4 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center">{canvasNodes.length}</span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Content in glass cards */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="rounded-2xl bg-background/70 backdrop-blur-xl border border-border p-5 shadow-sm">
+              {['collision', 'canvas', 'spatial'].includes(activeTab) && (
+                <ForgeInstructions tab={activeTab} />
+              )}
+              {activeTab === 'collision' && (
+                <>
+                  <ConceptCollision onExperimentSelect={handleExperimentSelect} onAddToCanvas={handleAddToCanvas} />
+                  {currentTopic && <ForgeToQuest topic={currentTopic} />}
+                </>
+              )}
+              {activeTab === 'canvas' && <ConceptCanvas nodes={canvasNodes} onNodesChange={setCanvasNodes} edges={canvasEdges} onEdgesChange={setCanvasEdges} />}
+              {activeTab === 'experiment' && <ExperimentLab prefilledTopic={currentTopic} />}
+              {activeTab === 'concept' && (
+                <>
+                  <ConceptForge />
+                  <ForgeToQuest topic={currentTopic || undefined} />
+                </>
+              )}
+              {activeTab === 'bio' && <BioDigitalForge onAddToCanvas={handleAddToCanvas} prefillTopic={currentTopic || undefined} />}
+              {activeTab === 'spatial' && <SpatialForge onAddToCanvas={handleAddToCanvas} prefillTopic={currentTopic || undefined} />}
+              {activeTab === 'script' && <ScriptForge />}
+              {activeTab === 'game' && <GameForge />}
+              {activeTab === 'path' && <PathForge />}
+              {activeTab === 'dashboard' && <ForgeDashboard />}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

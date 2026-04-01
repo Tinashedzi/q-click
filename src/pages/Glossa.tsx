@@ -30,8 +30,8 @@ const Glossa = () => {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6"
       >
-        <h2 className="text-3xl font-serif text-foreground mb-1">Glossa</h2>
-        <p className="text-muted-foreground text-sm">Assessment Engine — set goals, collect evidence, generate rubrics, track growth</p>
+        <h2 className="text-3xl font-serif text-foreground mb-1">Assignment Engine</h2>
+        <p className="text-muted-foreground text-sm">Set goals, collect evidence, generate rubrics, track growth</p>
       </motion.div>
 
       {/* Tab Nav */}
