@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, SimulationNodeDatum, SimulationLinkDatum } from 'd3-force';
 import { concepts, Concept } from '@/data/concepts';
+import { useCreditGate } from '@/hooks/useCreditGate';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 
 interface GraphNode extends SimulationNodeDatum {
   id: string;
@@ -22,6 +24,7 @@ const MeaningWeb = ({ focusConcept, onSelectConcept }: MeaningWebProps) => {
   const [nodes, setNodes] = useState<GraphNode[]>([]);
   const [links, setLinks] = useState<GraphLink[]>([]);
   const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
 
   useEffect(() => {
     const container = svgRef.current?.parentElement;
@@ -61,56 +64,40 @@ const MeaningWeb = ({ focusConcept, onSelectConcept }: MeaningWebProps) => {
     });
 
     sim.alpha(1).restart();
-
     return () => { sim.stop(); };
   }, [dimensions]);
 
+  const handleNodeClick = async (id: string) => {
+    const ok = await useCredit();
+    if (!ok) return;
+    onSelectConcept?.(id);
+  };
+
   return (
-    <div className="w-full h-[400px] rounded-xl border border-border/60 bg-card overflow-hidden">
-      <svg ref={svgRef} width={dimensions.width} height={dimensions.height} className="w-full h-full">
-        {/* Links */}
-        {links.map((link, i) => {
-          const s = link.source as GraphNode;
-          const t = link.target as GraphNode;
-          return (
-            <line
-              key={i}
-              x1={s.x} y1={s.y} x2={t.x} y2={t.y}
-              stroke="hsl(var(--border))"
-              strokeWidth={1.5}
-              strokeOpacity={0.6}
-            />
-          );
-        })}
-        {/* Nodes */}
-        {nodes.map((node) => {
-          const isFocus = focusConcept === node.id;
-          return (
-            <g
-              key={node.id}
-              transform={`translate(${node.x},${node.y})`}
-              onClick={() => onSelectConcept?.(node.id)}
-              className="cursor-pointer"
-            >
-              <circle
-                r={isFocus ? 18 : 12}
-                fill={isFocus ? 'hsl(var(--celadon-jade))' : 'hsl(var(--card))'}
-                stroke={isFocus ? 'hsl(var(--celadon-jade))' : 'hsl(var(--border))'}
-                strokeWidth={isFocus ? 2.5 : 1.5}
-                className="transition-all duration-300"
-              />
-              <text
-                textAnchor="middle"
-                dy={isFocus ? 30 : 24}
-                className="text-[10px] fill-current text-muted-foreground font-medium pointer-events-none select-none"
-              >
-                {node.label}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-    </div>
+    <>
+      <div className="w-full h-[400px] rounded-xl border border-border/60 bg-card overflow-hidden relative">
+        <p className="absolute top-2 right-3 text-[10px] text-muted-foreground z-10">Click a node (1⚡)</p>
+        <svg ref={svgRef} width={dimensions.width} height={dimensions.height} className="w-full h-full">
+          {links.map((link, i) => {
+            const s = link.source as GraphNode;
+            const t = link.target as GraphNode;
+            return (
+              <line key={i} x1={s.x} y1={s.y} x2={t.x} y2={t.y} stroke="hsl(var(--border))" strokeWidth={1.5} strokeOpacity={0.6} />
+            );
+          })}
+          {nodes.map((node) => {
+            const isFocus = focusConcept === node.id;
+            return (
+              <g key={node.id} transform={`translate(${node.x},${node.y})`} onClick={() => handleNodeClick(node.id)} className="cursor-pointer">
+                <circle r={isFocus ? 18 : 12} fill={isFocus ? 'hsl(var(--celadon-jade))' : 'hsl(var(--card))'} stroke={isFocus ? 'hsl(var(--celadon-jade))' : 'hsl(var(--border))'} strokeWidth={isFocus ? 2.5 : 1.5} className="transition-all duration-300" />
+                <text textAnchor="middle" dy={isFocus ? 30 : 24} className="text-[10px] fill-current text-muted-foreground font-medium pointer-events-none select-none">{node.label}</text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+      <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
+    </>
   );
 };
 
