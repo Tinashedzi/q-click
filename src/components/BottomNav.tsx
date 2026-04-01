@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Beaker, Heart, BarChart3 } from 'lucide-react';
+import { Home, Compass, Beaker, Heart, BarChart3, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
