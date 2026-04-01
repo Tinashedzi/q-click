@@ -113,26 +113,28 @@ const Index = () => {
           )}
         />
 
-        {/* Video background */}
+        {/* Video background — smaller, centered, full opacity */}
         {videoEnabled && (
-          <video
-            ref={videoRef}
-            src="/videos/qclick-intro.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            onCanPlayThrough={() => setVideoReady(true)}
-            className={cn(
-              'absolute inset-0 w-full h-full object-cover transition-opacity duration-1000',
-              videoReady ? 'opacity-100' : 'opacity-0'
-            )}
-          />
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+            <video
+              ref={videoRef}
+              src="/videos/qclick-intro.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onCanPlayThrough={() => setVideoReady(true)}
+              className={cn(
+                'w-[60%] max-w-[480px] aspect-square rounded-3xl object-cover transition-opacity duration-1000 shadow-2xl',
+                videoReady ? 'opacity-100' : 'opacity-0'
+              )}
+            />
+          </div>
         )}
 
         {/* Gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/70 to-background/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background/95" />
       </div>
 
       {/* ═══ SCROLLABLE CONTENT ═══ */}

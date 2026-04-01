@@ -7,6 +7,7 @@ const items = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/oasis', label: 'Oasis', icon: Compass },
   { path: '/forge', label: 'Forge', icon: Beaker },
+  { path: '/glossa', label: 'Glossa', icon: BookOpen },
   { path: '/delores', label: 'Delris', icon: Heart },
   { path: '/gamification', label: 'Progress', icon: BarChart3 },
 ];
