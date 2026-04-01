@@ -16,6 +16,7 @@ import { Progress as ProgressBar } from '@/components/ui/progress';
 import { categories, getVideosByCategory, type VideoItem } from '@/data/videoFeed';
 import VideoPlayerModal from '@/components/VideoPlayerModal';
 import CreditBar from '@/components/credits/CreditBar';
+import CognitiveDNARadar from '@/components/onboarding/CognitiveDNARadar';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -264,6 +265,11 @@ const Index = () => {
               </motion.button>
             ))}
           </div>
+        </div>
+
+      {/* ═══ COGNITIVE DNA RADAR ═══ */}
+        <div className="px-5 mt-6">
+          <CognitiveDNARadar />
         </div>
 
       {/* ═══ P-NET GAMES + LABS LINK ═══ */}
