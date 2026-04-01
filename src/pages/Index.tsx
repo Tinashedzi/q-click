@@ -26,7 +26,7 @@ const characters = [
 
 const pathways = [
   { title: 'Discover', subtitle: 'Master Concepts', desc: 'Connect the dots in your learning.', path: '/oasis', cta: 'Continue', progress: 20, icon: BookOpen },
-  { title: 'Focus', subtitle: 'Mindfulness', desc: 'Breathe, reflect, grow.', path: '/delores', cta: 'Begin', progress: 60, icon: Heart },
+  { title: 'Small Doses', subtitle: 'with Deloris', desc: 'Breathe, reflect, grow.', path: '/delores', cta: 'Begin', progress: 60, icon: Heart },
   { title: 'Sandbox', subtitle: 'Forge Labs', desc: 'Build & experiment.', path: '/forge', cta: 'Open Lab', progress: 35, icon: Beaker },
   { title: 'Quests', subtitle: 'Projects', desc: 'Real-world challenges.', path: '/oasis', cta: 'Explore', progress: 0, icon: Target, locked: true },
 ];
@@ -42,11 +42,11 @@ const menuItems = [
 const ONBOARDING_KEY = 'qclick-onboarding-v5';
 
 const TOUR_STEPS = [
-  { title: 'Welcome to Q-Click', body: 'Your personal learning sanctuary. Tap any pathway to begin your journey.', emoji: '✨' },
-  { title: 'Four Pathways', body: 'Discover concepts, Focus on wellbeing, Build in the Sandbox, or take on Quests.', emoji: '🧭' },
-  { title: 'Daily Insight Feed', body: 'Tap any video to watch curated content from top educational channels.', emoji: '🎬' },
-  { title: 'Forge Labs', body: 'Your infinite sandbox — collide concepts, run experiments, build with AI.', emoji: '🔬' },
-  { title: 'Go Pro', body: 'Upgrade for unlimited AI, concept maps, personalised paths & more.', emoji: '🔓' },
+  { title: 'Welcome to Q-Click', body: 'Your personal learning sanctuary. Swipe through pathways to discover, build, and grow.', emoji: '✨' },
+  { title: 'Discover & Focus', body: 'Tap Oasis to explore concepts, or Small Doses with Deloris for mindfulness exercises.', emoji: '🧭' },
+  { title: 'Build & Experiment', body: 'Open the Forge to collide concepts, run PhET simulations, and create with AI.', emoji: '🔬' },
+  { title: 'Track & Assign', body: 'Use the Assignment Engine to set goals, generate rubrics, and track your growth.', emoji: '📋' },
+  { title: 'Daily Insight Feed', body: 'Scroll down for curated video content from top educational channels.', emoji: '🎬' },
 ];
 
 const Index = () => {
@@ -271,7 +271,7 @@ const Index = () => {
             whileTap={{ scale: 0.9 }}
             onClick={() => smoothNavigate('/delores')}
             className="pointer-events-auto w-14 h-14 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl flex items-center justify-center shadow-lg"
-            title="Talk to Delris"
+            title="Talk to Deloris"
           >
             <Heart className="w-6 h-6 text-primary" />
             <motion.div
@@ -522,7 +522,7 @@ const Index = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -12, scale: 0.95 }}
               transition={{ duration: 0.35, ease }}
-              className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] w-[290px] rounded-2xl border border-border bg-background/95 backdrop-blur-xl p-4 shadow-lg"
+              className="fixed bottom-24 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto z-[100] max-w-[290px] mx-auto rounded-2xl border border-border bg-background/95 backdrop-blur-xl p-4 shadow-lg"
             >
               <div className="flex items-start gap-3 mb-3">
                 <span className="text-xl">{TOUR_STEPS[tourStep].emoji}</span>

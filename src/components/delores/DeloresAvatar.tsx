@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 
 /**
- * AI Voice-assistant style orb avatar for Delores.
- * Reacts to mood with color shifts, breathing speed, and particle intensity.
+ * AI Voice-assistant style orb avatar for Deloris.
+ * Uses a warm amber-gold palette for a calming, inviting feel.
  */
 
 interface DeloresAvatarProps {
@@ -12,11 +12,11 @@ interface DeloresAvatarProps {
 }
 
 const moodConfig: Record<number, { breathe: number; color1: string; color2: string; color3: string; pulseOpacity: number }> = {
-  1: { breathe: 8, color1: 'hsl(200 60% 75%)', color2: 'hsl(210 50% 80%)', color3: 'hsl(190 45% 78%)', pulseOpacity: 0.35 },
-  2: { breathe: 6.5, color1: 'hsl(195 55% 70%)', color2: 'hsl(180 50% 75%)', color3: 'hsl(210 45% 72%)', pulseOpacity: 0.4 },
-  3: { breathe: 5, color1: 'hsl(183 60% 65%)', color2: 'hsl(200 50% 72%)', color3: 'hsl(170 45% 70%)', pulseOpacity: 0.5 },
-  4: { breathe: 3.5, color1: 'hsl(170 55% 62%)', color2: 'hsl(183 50% 68%)', color3: 'hsl(160 45% 65%)', pulseOpacity: 0.55 },
-  5: { breathe: 2.5, color1: 'hsl(160 50% 58%)', color2: 'hsl(170 55% 62%)', color3: 'hsl(150 45% 60%)', pulseOpacity: 0.6 },
+  1: { breathe: 8, color1: 'hsl(35 70% 65%)', color2: 'hsl(25 60% 72%)', color3: 'hsl(40 55% 70%)', pulseOpacity: 0.35 },
+  2: { breathe: 6.5, color1: 'hsl(32 65% 60%)', color2: 'hsl(28 58% 68%)', color3: 'hsl(38 52% 66%)', pulseOpacity: 0.4 },
+  3: { breathe: 5, color1: 'hsl(30 72% 58%)', color2: 'hsl(22 60% 65%)', color3: 'hsl(36 55% 62%)', pulseOpacity: 0.5 },
+  4: { breathe: 3.5, color1: 'hsl(28 68% 55%)', color2: 'hsl(20 62% 60%)', color3: 'hsl(34 58% 58%)', pulseOpacity: 0.55 },
+  5: { breathe: 2.5, color1: 'hsl(25 75% 52%)', color2: 'hsl(18 65% 56%)', color3: 'hsl(32 60% 54%)', pulseOpacity: 0.6 },
 };
 
 const sizes = {
