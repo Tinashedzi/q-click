@@ -252,7 +252,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
                 <p className="text-[10px] text-muted-foreground mb-2">{p.subtitle}</p>
-                <Progress value={p.progress} className="h-1 bg-muted" />
+                <ProgressBar value={p.progress} className="h-1 bg-muted" />
                 <div className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-primary">
                   {p.cta} <ChevronRight className="w-3 h-3" />
                 </div>
@@ -333,7 +333,7 @@ const Index = () => {
                 <p className="text-xs text-muted-foreground leading-relaxed">{char.desc}</p>
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center gap-2 flex-1">
-                    <Progress value={char.progress} className="h-1 flex-1 bg-muted" />
+                    <ProgressBar value={char.progress} className="h-1 flex-1 bg-muted" />
                     <span className="text-[9px] text-muted-foreground">{char.progress}%</span>
                   </div>
                 </div>
