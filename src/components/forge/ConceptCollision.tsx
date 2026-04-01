@@ -25,9 +25,14 @@ const ConceptCollision = ({ onExperimentSelect, onAddToCanvas }: {
   const [colliding, setColliding] = useState(false);
   const [result, setResult] = useState<CollisionResult | null>(null);
   const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
 
   const collide = async () => {
     if (!conceptA.trim() || !conceptB.trim()) return;
+
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
+
     setColliding(true);
     setResult(null);
     setErrorType(null);
