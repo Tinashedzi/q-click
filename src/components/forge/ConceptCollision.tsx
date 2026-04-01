@@ -4,8 +4,10 @@ import { Zap, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import CreditExhaustedFallback from './CreditExhaustedFallback';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useCreditGate } from '@/hooks/useCreditGate';
 
 interface CollisionResult {
   theme: string;
@@ -23,9 +25,14 @@ const ConceptCollision = ({ onExperimentSelect, onAddToCanvas }: {
   const [colliding, setColliding] = useState(false);
   const [result, setResult] = useState<CollisionResult | null>(null);
   const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
 
   const collide = async () => {
     if (!conceptA.trim() || !conceptB.trim()) return;
+
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
+
     setColliding(true);
     setResult(null);
     setErrorType(null);
@@ -96,11 +103,12 @@ const ConceptCollision = ({ onExperimentSelect, onAddToCanvas }: {
         {colliding ? (
           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Colliding with AI…</>
         ) : (
-          <><Zap className="w-4 h-4 mr-2" /> Collide</>
+          <><Zap className="w-4 h-4 mr-2" /> Collide (1⚡)</>
         )}
       </Button>
 
       {errorType && <CreditExhaustedFallback type={errorType} onRetry={collide} />}
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
 
       {/* Results */}
       <AnimatePresence>

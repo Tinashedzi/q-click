@@ -1,10 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2, Settings } from 'lucide-react';
+import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2, Settings, Share2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCredits } from '@/contexts/CreditsContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import ReferralCard from '@/components/credits/ReferralCard';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -22,9 +24,9 @@ const TIERS = {
 const Pricing = () => {
   const navigate = useNavigate();
   const { user, subscription, refreshSubscription } = useAuth();
+  const { credits } = useCredits();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
-  // Refresh on mount (e.g. returning from checkout)
   useEffect(() => {
     refreshSubscription();
   }, [refreshSubscription]);
@@ -40,12 +42,14 @@ const Pricing = () => {
       period: '',
       desc: 'Start your cognitive journey',
       features: [
+        '5 AI credits/day (resets at midnight)',
         'Daily Insight Feed (3 videos/day)',
         'Basic Oasis quests',
         'Mood check-ins with Delris',
-        'Community leaderboard',
         '1 Forge experiment/day',
+        'Earn credits via referrals',
       ],
+      creditInfo: '5 daily credits',
       cta: activeTier ? 'Free Plan' : 'Current Plan',
       isCurrentPlan: !activeTier,
       icon: Zap,
@@ -57,14 +61,17 @@ const Pricing = () => {
       period: '/month',
       desc: 'Unlock your full potential',
       features: [
+        '50 AI credits/day + 200 monthly bonus',
         'Unlimited video feed & library',
         'Unlimited AI quests & concept maps',
         'Advanced Forge Labs (Bio, Spatial, Game)',
         'Personalised learning paths',
         'Emotional Intelligence dashboard',
         'Priority AI responses',
+        'Double referral rewards (4 credits each)',
         'Export & share projects',
       ],
+      creditInfo: '50 daily + 200 monthly',
       cta: activeTier === 'pro' ? 'Your Plan' : 'Start 7-Day Free Trial',
       isCurrentPlan: activeTier === 'pro',
       highlight: true,
@@ -77,6 +84,7 @@ const Pricing = () => {
       period: '/month',
       desc: 'For schools & learning groups',
       features: [
+        '200 AI credits/day + 1000 monthly bonus',
         'Everything in Pro',
         'Up to 50 learner seats',
         'Teacher dashboard & analytics',
@@ -84,6 +92,7 @@ const Pricing = () => {
         'Dedicated support',
         'White-label options',
       ],
+      creditInfo: '200 daily + 1000 monthly',
       cta: activeTier === 'institution' ? 'Your Plan' : 'Subscribe',
       isCurrentPlan: activeTier === 'institution',
       icon: Crown,
@@ -97,20 +106,15 @@ const Pricing = () => {
       navigate('/auth');
       return;
     }
-
     const priceId = TIERS[tier as keyof typeof TIERS]?.price_id;
     if (!priceId) return;
-
     setLoadingTier(tier);
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { priceId },
       });
-
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
+      if (data?.url) window.open(data.url, '_blank');
     } catch (e: any) {
       toast.error(e.message || 'Failed to start checkout');
     } finally {
@@ -140,8 +144,26 @@ const Pricing = () => {
         </button>
         <h1 className="text-3xl font-semibold text-foreground tracking-tight text-center">Choose Your Path</h1>
         <p className="text-sm text-muted-foreground mt-2 text-center max-w-md mx-auto">
-          Upgrade to unlock the full Q-Click experience. Cancel anytime.
+          Every AI feature costs 1 credit. Free users get 5/day. Upgrade for more.
         </p>
+      </motion.div>
+
+      {/* Current credits banner */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="mb-6 p-4 rounded-2xl border border-border/40 bg-muted/20 flex items-center justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <Zap className="w-5 h-5 text-primary" />
+          <div>
+            <p className="text-sm font-medium text-foreground">Your AI Credits</p>
+            <p className="text-xs text-muted-foreground">
+              {credits.remaining} remaining • Resets at midnight
+            </p>
+          </div>
+        </div>
+        <div className="text-2xl font-bold text-primary">{credits.remaining}</div>
       </motion.div>
 
       <div className="grid gap-5 md:grid-cols-3">
@@ -179,9 +201,15 @@ const Pricing = () => {
               </div>
             </div>
 
-            <div className="mb-4">
+            <div className="mb-2">
               <span className="text-3xl font-bold text-foreground">{plan.price}</span>
               {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
+            </div>
+
+            {/* Credit allocation badge */}
+            <div className="mb-4 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 inline-flex items-center gap-1.5 w-fit">
+              <Zap className="w-3 h-3 text-primary" />
+              <span className="text-xs font-medium text-primary">{plan.creditInfo}</span>
             </div>
 
             {subscription.subscribed && plan.isCurrentPlan && subscription.subscriptionEnd && (
@@ -223,12 +251,7 @@ const Pricing = () => {
       </div>
 
       {subscription.subscribed && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="flex justify-center mt-6"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="flex justify-center mt-6">
           <motion.button
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.97 }}
@@ -240,6 +263,11 @@ const Pricing = () => {
           </motion.button>
         </motion.div>
       )}
+
+      {/* Referral section */}
+      <div className="mt-8">
+        <ReferralCard />
+      </div>
 
       <motion.p
         initial={{ opacity: 0 }}

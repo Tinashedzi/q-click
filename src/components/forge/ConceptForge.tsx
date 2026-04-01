@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CreditExhaustedFallback from './CreditExhaustedFallback';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useCreditGate } from '@/hooks/useCreditGate';
 
 interface GeneratedConcept {
   topic: string;
@@ -21,9 +23,15 @@ const ConceptForge = () => {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<GeneratedConcept | null>(null);
   const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
 
   const generateConcept = async () => {
     if (!topic.trim()) return;
+
+    // Check credits first
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
+
     setGenerating(true);
     setResult(null);
     setErrorType(null);
@@ -71,11 +79,13 @@ const ConceptForge = () => {
           ) : (
             <Sparkles className="w-4 h-4" />
           )}
-          {generating ? 'Forging...' : 'Forge'}
+          {generating ? 'Forging...' : 'Forge (1⚡)'}
         </Button>
       </div>
 
       {errorType && <CreditExhaustedFallback type={errorType} onRetry={generateConcept} />}
+
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
 
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
