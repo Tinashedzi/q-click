@@ -42,11 +42,11 @@ const menuItems = [
 const ONBOARDING_KEY = 'qclick-onboarding-v5';
 
 const TOUR_STEPS = [
-  { title: 'Welcome to Q-Click', body: 'Your personal learning sanctuary. Tap any pathway to begin your journey.', emoji: '✨' },
-  { title: 'Four Pathways', body: 'Discover concepts, Focus on wellbeing, Build in the Sandbox, or take on Quests.', emoji: '🧭' },
-  { title: 'Daily Insight Feed', body: 'Tap any video to watch curated content from top educational channels.', emoji: '🎬' },
-  { title: 'Forge Labs', body: 'Your infinite sandbox — collide concepts, run experiments, build with AI.', emoji: '🔬' },
-  { title: 'Go Pro', body: 'Upgrade for unlimited AI, concept maps, personalised paths & more.', emoji: '🔓' },
+  { title: 'Welcome to Q-Click', body: 'Your personal learning sanctuary. Swipe through pathways to discover, build, and grow.', emoji: '✨' },
+  { title: 'Discover & Focus', body: 'Tap Oasis to explore concepts, or Small Doses with Deloris for mindfulness exercises.', emoji: '🧭' },
+  { title: 'Build & Experiment', body: 'Open the Forge to collide concepts, run PhET simulations, and create with AI.', emoji: '🔬' },
+  { title: 'Track & Assign', body: 'Use the Assignment Engine to set goals, generate rubrics, and track your growth.', emoji: '📋' },
+  { title: 'Daily Insight Feed', body: 'Scroll down for curated video content from top educational channels.', emoji: '🎬' },
 ];
 
 const Index = () => {
