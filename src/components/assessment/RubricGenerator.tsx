@@ -220,6 +220,7 @@ const RubricGenerator = () => {
           })}
         </div>
       )}
+      <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
     </div>
   );
 };

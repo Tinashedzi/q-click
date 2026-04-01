@@ -196,6 +196,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   };
 
   return (
+    <>
     <div className="flex flex-col h-full">
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-4">
         <AnimatePresence>
@@ -274,11 +275,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         </form>
       </div>
     </div>
-  );
-};
-
-      <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
-    </div>
+    <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
+    </>
   );
 };
 
