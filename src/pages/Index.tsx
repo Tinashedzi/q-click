@@ -122,10 +122,10 @@ const Index = () => {
               preload="auto"
               onCanPlayThrough={() => setVideoReady(true)}
               className={cn(
-                'absolute inset-0 w-full h-full object-contain transition-opacity duration-1000 brightness-110',
+                'absolute inset-0 w-full h-full object-cover transition-opacity duration-1000',
                 videoReady ? 'opacity-100' : 'opacity-0'
               )}
-              style={{ background: 'hsl(var(--background))' }}
+              style={{ filter: 'brightness(1.15) contrast(1.05)' }}
             />
           </>
         ) : (
