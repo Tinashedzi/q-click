@@ -26,7 +26,7 @@ const characters = [
 
 const pathways = [
   { title: 'Discover', subtitle: 'Master Concepts', desc: 'Connect the dots in your learning.', path: '/oasis', cta: 'Continue', progress: 20, icon: BookOpen },
-  { title: 'Focus', subtitle: 'Mindfulness', desc: 'Breathe, reflect, grow.', path: '/delores', cta: 'Begin', progress: 60, icon: Heart },
+  { title: 'Small Doses', subtitle: 'with Deloris', desc: 'Breathe, reflect, grow.', path: '/delores', cta: 'Begin', progress: 60, icon: Heart },
   { title: 'Sandbox', subtitle: 'Forge Labs', desc: 'Build & experiment.', path: '/forge', cta: 'Open Lab', progress: 35, icon: Beaker },
   { title: 'Quests', subtitle: 'Projects', desc: 'Real-world challenges.', path: '/oasis', cta: 'Explore', progress: 0, icon: Target, locked: true },
 ];
