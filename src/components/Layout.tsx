@@ -1,8 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
-import Header from './Header';
-import TabNav from './TabNav';
 import BottomNav from './BottomNav';
 import JournalOverlay from './JournalOverlay';
 
@@ -20,26 +18,27 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const isDelores = location.pathname === '/delores';
-  // Home and Delores manage their own chrome
-  const hideChrome = isHome || isDelores;
+  // Home and Delores manage their own full-screen chrome
+  const isFullScreen = isHome || isDelores;
   const [journalOpen, setJournalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative">
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          background: `
-            radial-gradient(ellipse 80% 60% at 20% 10%, hsl(var(--primary) / 0.03), transparent),
-            radial-gradient(ellipse 60% 50% at 80% 80%, hsl(var(--secondary) / 0.03), transparent),
-            hsl(var(--background))
-          `,
-        }}
-      />
+      {/* Subtle ambient gradient for non-fullscreen pages */}
+      {!isFullScreen && (
+        <div
+          className="fixed inset-0 pointer-events-none z-0"
+          style={{
+            background: `
+              radial-gradient(ellipse 80% 60% at 20% 10%, hsl(var(--primary) / 0.03), transparent),
+              radial-gradient(ellipse 60% 50% at 80% 80%, hsl(var(--secondary) / 0.03), transparent),
+              hsl(var(--background))
+            `,
+          }}
+        />
+      )}
 
-      {!hideChrome && <Header />}
-      {!hideChrome && <TabNav />}
-      <main className={`${hideChrome ? '' : 'pt-14 md:pt-[6.25rem]'} pb-20 relative z-10`}>
+      <main className={`${isFullScreen ? '' : 'pt-4'} pb-20 relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
@@ -54,8 +53,8 @@ const Layout = ({ children }: LayoutProps) => {
         </AnimatePresence>
       </main>
 
-      {/* Bottom nav on standard pages */}
-      {!hideChrome && <BottomNav />}
+      {/* Bottom nav on ALL pages except home (has its own) and delores (has its own) */}
+      {!isFullScreen && <BottomNav />}
 
       <JournalOverlay isOpen={journalOpen} onClose={() => setJournalOpen(false)} />
     </div>
