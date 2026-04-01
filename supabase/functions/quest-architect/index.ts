@@ -27,9 +27,26 @@ serve(async (req) => {
   }
 
   try {
-    const { topic, belt_level, mode } = await req.json();
+    const { topic, belt_level, mode, cognitive_dna } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    // Build DNA-aware difficulty hint
+    let difficultyHint = '';
+    if (cognitive_dna) {
+      const isHardMode = cognitive_dna.risk_resilience?.includes('High Grit') || cognitive_dna.emotional_baseline?.includes('High Challenge');
+      const isEasyMode = cognitive_dna.risk_resilience?.includes('Fixed Mindset') || cognitive_dna.emotional_baseline?.includes('High Empathy');
+      difficultyHint = isHardMode
+        ? ' Make this quest challenging with ambitious tasks and tight deadlines.'
+        : isEasyMode
+        ? ' Make this quest gentle with supportive guidance and manageable steps.'
+        : ' Balance challenge and support in this quest.';
+      
+      if (cognitive_dna.motivational_drivers?.includes('Application')) difficultyHint += ' Emphasize practical, real-world applications.';
+      if (cognitive_dna.motivational_drivers?.includes('Mastery')) difficultyHint += ' Include deep-dive research tasks.';
+      if (cognitive_dna.social_dynamics?.includes('Collaborative')) difficultyHint += ' Include group activities.';
+      if (cognitive_dna.social_dynamics?.includes('Lone Wolf') || cognitive_dna.social_dynamics?.includes('Independent')) difficultyHint += ' Focus on solo exploration tasks.';
+    }
 
     if (mode === "generate") {
       // Non-streaming structured quest generation
@@ -45,7 +62,7 @@ serve(async (req) => {
             { role: "system", content: SYSTEM_PROMPT },
             {
               role: "user",
-              content: `Generate a PBL quest about: "${topic || "the future of sustainable cities"}". Belt level: ${belt_level || "white"} (beginner). Return the quest using the suggest_quest tool.`,
+              content: `Generate a PBL quest about: "${topic || "the future of sustainable cities"}". Belt level: ${belt_level || "white"} (beginner).${difficultyHint} Return the quest using the suggest_quest tool.`,
             },
           ],
           tools: [
