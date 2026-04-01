@@ -244,7 +244,7 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.5, ease }}
           className="mx-5 mt-4 rounded-2xl border border-accent/20 bg-background/80 backdrop-blur-xl p-4 cursor-pointer"
-          onClick={() => smoothNavigate('/forge')}
+          onClick={() => { setNavigatingTo('/forge'); setTimeout(() => navigate('/forge', { state: { targetTab: 'experiment' } }), 350); }}
         >
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
