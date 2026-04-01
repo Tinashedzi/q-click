@@ -594,11 +594,11 @@ const Index = () => {
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
                   <Lock className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">Upgrade to Q-Click Pro</h3>
+                <h3 className="text-lg font-semibold text-foreground">Upgrade to Intern or Inventor</h3>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                   Unlock advanced concept maps, unlimited AI quests, personalised learning paths, and full Forge Labs access.
                 </p>
-                <p className="text-xs text-muted-foreground mt-2">Starting at <span className="font-semibold text-foreground">$9.99/month</span></p>
+                <p className="text-xs text-muted-foreground mt-2">Starting at <span className="font-semibold text-foreground">$4.99/month</span></p>
                 <div className="flex flex-col gap-2 mt-5">
                   <button
                     onClick={() => { setShowPaywall(false); smoothNavigate('/pricing'); }}
