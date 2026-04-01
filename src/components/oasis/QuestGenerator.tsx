@@ -61,7 +61,7 @@ const QuestGenerator = () => {
   const [activeStage, setActiveStage] = useState(0);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
-  const { session } = useAuth();
+  const { session, profile } = useAuth();
   const location = useLocation();
 
   // Accept prefilled topic from Forge navigation
