@@ -131,8 +131,8 @@ const Index = () => {
         ) : (
           <img src="/images/home-hero-study.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
         )}
-        {/* Overlay for readability */}
-        <div className="absolute inset-0 bg-background/40" />
+        {/* Subtle overlay for readability */}
+        <div className="absolute inset-0 bg-background/20" />
       </div>
 
       {/* ═══ FIXED TOP BAR (never scrolls) ═══ */}
