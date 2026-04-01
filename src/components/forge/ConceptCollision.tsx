@@ -108,6 +108,7 @@ const ConceptCollision = ({ onExperimentSelect, onAddToCanvas }: {
       </Button>
 
       {errorType && <CreditExhaustedFallback type={errorType} onRetry={collide} />}
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
 
       {/* Results */}
       <AnimatePresence>
