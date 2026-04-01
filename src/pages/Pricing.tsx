@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2 } from 'lucide-react';
@@ -19,68 +19,77 @@ const TIERS = {
   },
 };
 
-const plans = [
-  {
-    name: 'Explorer',
-    price: 'Free',
-    period: '',
-    desc: 'Start your cognitive journey',
-    features: [
-      'Daily Insight Feed (3 videos/day)',
-      'Basic Oasis quests',
-      'Mood check-ins with Delris',
-      'Community leaderboard',
-      '1 Forge experiment/day',
-    ],
-    cta: 'Current Plan',
-    active: true,
-    icon: Zap,
-    tier: null as string | null,
-  },
-  {
-    name: 'Pro',
-    price: '$9.99',
-    period: '/month',
-    desc: 'Unlock your full potential',
-    features: [
-      'Unlimited video feed & library',
-      'Unlimited AI quests & concept maps',
-      'Advanced Forge Labs (Bio, Spatial, Game)',
-      'Personalised learning paths',
-      'Emotional Intelligence dashboard',
-      'Priority AI responses',
-      'Export & share projects',
-    ],
-    cta: 'Start 7-Day Free Trial',
-    active: false,
-    highlight: true,
-    icon: Sparkles,
-    tier: 'pro',
-  },
-  {
-    name: 'Institution',
-    price: '$49.99',
-    period: '/month',
-    desc: 'For schools & learning groups',
-    features: [
-      'Everything in Pro',
-      'Up to 50 learner seats',
-      'Teacher dashboard & analytics',
-      'Custom rubric & assessment tools',
-      'Dedicated support',
-      'White-label options',
-    ],
-    cta: 'Subscribe',
-    active: false,
-    icon: Crown,
-    tier: 'institution',
-  },
-];
-
 const Pricing = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, subscription, refreshSubscription } = useAuth();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
+
+  // Refresh on mount (e.g. returning from checkout)
+  useEffect(() => {
+    refreshSubscription();
+  }, [refreshSubscription]);
+
+  const activeTier = subscription.subscribed
+    ? Object.entries(TIERS).find(([, v]) => v.product_id === subscription.productId)?.[0] ?? null
+    : null;
+
+  const plans = [
+    {
+      name: 'Explorer',
+      price: 'Free',
+      period: '',
+      desc: 'Start your cognitive journey',
+      features: [
+        'Daily Insight Feed (3 videos/day)',
+        'Basic Oasis quests',
+        'Mood check-ins with Delris',
+        'Community leaderboard',
+        '1 Forge experiment/day',
+      ],
+      cta: activeTier ? 'Free Plan' : 'Current Plan',
+      isCurrentPlan: !activeTier,
+      icon: Zap,
+      tier: null as string | null,
+    },
+    {
+      name: 'Pro',
+      price: '$9.99',
+      period: '/month',
+      desc: 'Unlock your full potential',
+      features: [
+        'Unlimited video feed & library',
+        'Unlimited AI quests & concept maps',
+        'Advanced Forge Labs (Bio, Spatial, Game)',
+        'Personalised learning paths',
+        'Emotional Intelligence dashboard',
+        'Priority AI responses',
+        'Export & share projects',
+      ],
+      cta: activeTier === 'pro' ? 'Your Plan' : 'Start 7-Day Free Trial',
+      isCurrentPlan: activeTier === 'pro',
+      highlight: true,
+      icon: Sparkles,
+      tier: 'pro',
+    },
+    {
+      name: 'Institution',
+      price: '$49.99',
+      period: '/month',
+      desc: 'For schools & learning groups',
+      features: [
+        'Everything in Pro',
+        'Up to 50 learner seats',
+        'Teacher dashboard & analytics',
+        'Custom rubric & assessment tools',
+        'Dedicated support',
+        'White-label options',
+      ],
+      cta: activeTier === 'institution' ? 'Your Plan' : 'Subscribe',
+      isCurrentPlan: activeTier === 'institution',
+      icon: Crown,
+      tier: 'institution',
+    },
+  ];
 
   const handleSubscribe = useCallback(async (tier: string) => {
     if (!user) {
@@ -129,12 +138,19 @@ const Pricing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.1, duration: 0.5, ease }}
             className={`rounded-2xl border p-6 flex flex-col ${
-              plan.highlight
+              plan.isCurrentPlan
+                ? 'border-green-500 bg-green-500/5 shadow-lg relative'
+                : plan.highlight
                 ? 'border-primary bg-primary/5 shadow-lg relative'
                 : 'border-border bg-background/70 backdrop-blur-xl'
             }`}
           >
-            {plan.highlight && (
+            {plan.isCurrentPlan && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-green-600 text-white text-[10px] font-bold uppercase tracking-wider">
+                Your Plan
+              </span>
+            )}
+            {plan.highlight && !plan.isCurrentPlan && (
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider">
                 Most Popular
               </span>
@@ -154,10 +170,16 @@ const Pricing = () => {
               {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
             </div>
 
+            {subscription.subscribed && plan.isCurrentPlan && subscription.subscriptionEnd && (
+              <p className="text-xs text-muted-foreground mb-3">
+                Renews {new Date(subscription.subscriptionEnd).toLocaleDateString()}
+              </p>
+            )}
+
             <ul className="space-y-2 mb-6 flex-1">
               {plan.features.map((f) => (
                 <li key={f} className="flex items-start gap-2 text-sm text-foreground">
-                  <Check className={`w-4 h-4 mt-0.5 shrink-0 ${plan.highlight ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <Check className={`w-4 h-4 mt-0.5 shrink-0 ${plan.isCurrentPlan ? 'text-green-600' : plan.highlight ? 'text-primary' : 'text-muted-foreground'}`} />
                   {f}
                 </li>
               ))}
@@ -167,14 +189,14 @@ const Pricing = () => {
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               className={`w-full py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
-                plan.highlight
+                plan.isCurrentPlan
+                  ? 'bg-green-600/10 text-green-700 border border-green-500/30 cursor-default'
+                  : plan.highlight
                   ? 'bg-primary text-primary-foreground shadow-sm'
-                  : plan.active
-                  ? 'bg-muted text-muted-foreground cursor-default'
                   : 'bg-foreground/5 text-foreground border border-border hover:bg-foreground/10'
               }`}
-              disabled={plan.active || loadingTier === plan.tier}
-              onClick={() => plan.tier && handleSubscribe(plan.tier)}
+              disabled={plan.isCurrentPlan || loadingTier === plan.tier}
+              onClick={() => plan.tier && !plan.isCurrentPlan && handleSubscribe(plan.tier)}
             >
               {loadingTier === plan.tier ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>

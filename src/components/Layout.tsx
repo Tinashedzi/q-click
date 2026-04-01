@@ -16,10 +16,10 @@ const pageVariants = {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
-  const isHome = location.pathname === '/';
   const isDelores = location.pathname === '/delores';
-  // Home and Delores manage their own full-screen chrome
-  const isFullScreen = isHome || isDelores;
+  const isHome = location.pathname === '/';
+  // Delores manages its own full-screen chrome; Home has its own top bar but shares bottom nav
+  const isFullScreen = isDelores;
   const [journalOpen, setJournalOpen] = useState(false);
 
   return (
@@ -38,7 +38,7 @@ const Layout = ({ children }: LayoutProps) => {
         />
       )}
 
-      <main className={`${isFullScreen ? '' : 'pt-4'} pb-20 relative z-10`}>
+      <main className={`${(isFullScreen || isHome) ? '' : 'pt-4'} pb-20 relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}

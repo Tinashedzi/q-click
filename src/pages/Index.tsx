@@ -6,7 +6,7 @@ import {
   Menu, X, ChevronRight, Sparkles, Play,
   Lock, Flame, Trophy, User, Beaker,
   Library as LibraryIcon, Video, SlidersHorizontal,
-  HelpCircle, Eye, EyeOff, Crown,
+  HelpCircle, Eye, EyeOff, Crown, Gamepad2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -50,7 +50,7 @@ const TOUR_STEPS = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, subscription } = useAuth();
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -73,7 +73,6 @@ const Index = () => {
     }
   }, []);
 
-  // Try to play video on mount
   useEffect(() => {
     if (videoEnabled && videoRef.current) {
       videoRef.current.play().catch(() => {});
@@ -101,74 +100,42 @@ const Index = () => {
       animate={navigatingTo ? { opacity: 0, scale: 0.96, filter: 'blur(8px)' } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
       transition={{ duration: 0.4, ease }}
     >
-      {/* ═══ FIXED BACKGROUND: Video or Image ═══ */}
-      <div className="fixed inset-0 z-0">
-        {/* Fallback image — always present, 100% cover */}
-        <img
-          src="/images/home-hero-study.png"
-          alt=""
-          className={cn(
-            'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
-            videoReady && videoEnabled ? 'opacity-0' : 'opacity-100'
-          )}
-        />
-
-        {/* Video background — smaller, centered, full opacity */}
-        {videoEnabled && (
-          <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-            <video
-              ref={videoRef}
-              src="/videos/qclick-intro.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              onCanPlayThrough={() => setVideoReady(true)}
-              className={cn(
-                'w-[60%] max-w-[480px] aspect-square rounded-3xl object-cover transition-opacity duration-1000 shadow-2xl',
-                videoReady ? 'opacity-100' : 'opacity-0'
-              )}
-            />
-          </div>
-        )}
-
-        {/* Gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background/95" />
-      </div>
-
-      {/* ═══ SCROLLABLE CONTENT ═══ */}
-      <div className="relative z-10 flex flex-col min-h-screen">
-
-        {/* Top bar */}
-        <motion.div
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5, ease }}
-          className="flex items-center justify-between px-5 pt-5"
-        >
+      {/* ═══ FIXED TOP BAR (never scrolls) ═══ */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="flex items-center justify-between px-5 py-3">
           <motion.button
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
             onClick={() => setMenuOpen(true)}
-            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-border bg-background/60 backdrop-blur-xl"
+            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-border bg-background/60"
           >
             <Menu className="w-4 h-4 text-foreground" />
           </motion.button>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60 backdrop-blur-xl">
+            {/* Upgrade badge */}
+            {!subscription.subscribed && (
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => smoothNavigate('/pricing')}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-primary/10 border border-primary/20"
+              >
+                <Crown className="w-3 h-3 text-primary" />
+                <span className="text-[10px] font-semibold text-primary">Upgrade</span>
+              </motion.button>
+            )}
+            <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60">
               <Flame className="w-3 h-3 text-orange-500" />
               <span className="text-[10px] font-semibold text-foreground">7 days</span>
             </div>
-            <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60 backdrop-blur-xl">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60">
               <Trophy className="w-3 h-3 text-primary" />
               <span className="text-[10px] font-semibold text-foreground">1280</span>
             </div>
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setVideoEnabled(v => !v)}
-              className="w-8 h-8 rounded-xl flex items-center justify-center border border-border bg-background/60 backdrop-blur-xl"
+              className="w-8 h-8 rounded-xl flex items-center justify-center border border-border bg-background/60"
               title={videoEnabled ? 'Disable background video' : 'Enable background video'}
             >
               {videoEnabled ? <Eye className="w-3 h-3 text-foreground" /> : <EyeOff className="w-3 h-3 text-muted-foreground" />}
@@ -176,7 +143,7 @@ const Index = () => {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => smoothNavigate('/gamification')}
-              className="w-10 h-10 rounded-full border-2 border-primary/20 bg-background/60 backdrop-blur-xl flex items-center justify-center overflow-hidden"
+              className="w-10 h-10 rounded-full border-2 border-primary/20 bg-background/60 flex items-center justify-center overflow-hidden"
             >
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -185,50 +152,61 @@ const Index = () => {
               )}
             </motion.button>
           </div>
-        </motion.div>
+        </div>
+      </div>
 
-        {/* Hero: Q Logo only */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.8, ease }}
-          className="flex flex-col items-center mt-6 mb-4"
-        >
-          <motion.div
-            animate={{ scale: [1, 1.04, 1] }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-20 h-20 sm:w-24 sm:h-24"
-          >
+      {/* ═══ FIXED VIDEO (stays in place, feed scrolls under) ═══ */}
+      <div className="fixed top-[60px] left-0 right-0 z-30 flex flex-col items-center bg-background/90 backdrop-blur-sm pb-3 pt-3">
+        {videoEnabled ? (
+          <div className="relative w-[55%] max-w-[320px] aspect-[9/16] rounded-3xl overflow-hidden shadow-2xl">
             <img
-              src="/images/qclick-logo-new.svg"
-              alt="Q-Click"
-              className="w-full h-full object-contain drop-shadow-xl"
+              src="/images/home-hero-study.png"
+              alt=""
+              className={cn(
+                'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
+                videoReady ? 'opacity-0' : 'opacity-100'
+              )}
             />
-          </motion.div>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="text-xs text-muted-foreground mt-2 italic tracking-wide"
-          >
-            the architecture of thought
-          </motion.p>
-        </motion.div>
+            <video
+              ref={videoRef}
+              src="/videos/qclick-logo-splash.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onCanPlayThrough={() => setVideoReady(true)}
+              className={cn(
+                'absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 brightness-110',
+                videoReady ? 'opacity-100' : 'opacity-0'
+              )}
+            />
+          </div>
+        ) : (
+          <div className="w-[55%] max-w-[320px] aspect-[9/16] rounded-3xl overflow-hidden shadow-lg">
+            <img src="/images/home-hero-study.png" alt="" className="w-full h-full object-cover" />
+          </div>
+        )}
 
-        {/* ═══ HOW IT WORKS — quick guide ═══ */}
+        {/* Logo + tagline below video */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.5, ease }}
-          className="mx-5 mb-4 p-3 rounded-2xl border border-border bg-background/60 backdrop-blur-xl"
+          animate={{ scale: [1, 1.04, 1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-14 h-14 mt-2"
         >
-          <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
-            <span className="font-semibold text-foreground">Your journey:</span> Pick a pathway below → watch curated videos → build in Forge Labs → track progress
-          </p>
+          <img src="/images/qclick-logo-new.svg" alt="Q-Click" className="w-full h-full object-contain drop-shadow-xl" />
         </motion.div>
+        <p className="text-[10px] text-muted-foreground italic tracking-wide mt-0.5">the architecture of thought</p>
+      </div>
+
+      {/* ═══ SCROLLABLE FEED (pushed below fixed video) ═══ */}
+      {/* Spacer for fixed top bar + video area (approx 60px bar + 9:16 video + logo) */}
+      <div className="h-[calc(60px+55vw*16/9+80px)] max-h-[calc(60px+320px*16/9*0.55+80px)] shrink-0" style={{ minHeight: 420 }} />
+
+      <div className="relative z-10 flex flex-col pb-24">
 
         {/* ═══ PATHWAY CARDS ═══ */}
-        <div className="px-5">
+        <div className="px-5 mt-2">
           <div className={cn('grid gap-3', isMobile ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4')}>
             {pathways.map((p, i) => (
               <motion.button
@@ -260,12 +238,33 @@ const Index = () => {
           </div>
         </div>
 
+        {/* ═══ INTERACTIVE GAMES LINK ═══ */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55, duration: 0.5, ease }}
+          className="mx-5 mt-4 rounded-2xl border border-accent/20 bg-accent/5 backdrop-blur-xl p-4 cursor-pointer"
+          onClick={() => smoothNavigate('/glossa')}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+              <Gamepad2 className="w-5 h-5 text-accent-foreground" />
+            </div>
+            <div className="flex-1">
+              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Interactive</span>
+              <h3 className="text-sm font-semibold text-foreground">P-Net Games</h3>
+              <p className="text-[11px] text-muted-foreground">Word puzzles, pattern matching & concept games</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-primary shrink-0" />
+          </div>
+        </motion.div>
+
         {/* ═══ FORGE LABS BANNER ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.65, duration: 0.5, ease }}
-          className="mx-5 mt-5 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-xl p-4 cursor-pointer"
+          className="mx-5 mt-3 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-xl p-4 cursor-pointer"
           onClick={() => smoothNavigate('/forge')}
         >
           <div className="flex items-center gap-3">
@@ -289,7 +288,7 @@ const Index = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => smoothNavigate('/delores')}
-          className="fixed bottom-24 right-5 z-30 w-14 h-14 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl flex items-center justify-center shadow-lg"
+          className="fixed bottom-24 right-5 z-30 w-14 h-14 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl flex items-center justify-center shadow-lg pointer-events-auto"
           title="Talk to Delris"
         >
           <Heart className="w-6 h-6 text-primary" />
@@ -402,33 +401,35 @@ const Index = () => {
         </div>
 
         {/* ═══ PRO UPSELL ═══ */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.5, ease }}
-          className="mx-5 mb-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-xl p-5 relative overflow-hidden"
-        >
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Sparkles className="w-6 h-6 text-primary" />
+        {!subscription.subscribed && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.5, ease }}
+            className="mx-5 mb-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-xl p-5 relative overflow-hidden"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Sparkles className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Premium</span>
+                <h3 className="text-base font-semibold text-foreground mt-0.5">Upgrade to Q-Click Pro</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  Advanced concept maps, unlimited AI quests, personalized learning paths.
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => smoothNavigate('/pricing')}
+                  className="mt-3 px-5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold shadow-sm"
+                >
+                  View Plans & Pricing
+                </motion.button>
+              </div>
             </div>
-            <div className="flex-1">
-              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Premium</span>
-              <h3 className="text-base font-semibold text-foreground mt-0.5">Upgrade to Q-Click Pro</h3>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Advanced concept maps, unlimited AI quests, personalized learning paths.
-              </p>
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => smoothNavigate('/pricing')}
-                className="mt-3 px-5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold shadow-sm"
-              >
-                View Plans & Pricing
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* ═══ QUICK STATS ═══ */}
         <div className="px-5 mb-6">
@@ -454,7 +455,7 @@ const Index = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-5 pb-24 text-center">
+        <div className="px-5 pb-8 text-center">
           <p className="text-[10px] text-muted-foreground">Q-Click v1.0 · Developer Preview</p>
         </div>
       </div>
