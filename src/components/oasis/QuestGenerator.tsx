@@ -86,7 +86,7 @@ const QuestGenerator = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ topic, belt_level: beltLevel, mode: 'generate' }),
+        body: JSON.stringify({ topic, belt_level: beltLevel, mode: 'generate', cognitive_dna: (profile?.preferences as any)?.cognitive_dna }),
       });
 
       if (resp.status === 429) {
