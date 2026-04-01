@@ -70,6 +70,10 @@ const Index = () => {
   const filteredVideos = getVideosByCategory(selectedCat);
 
   useEffect(() => {
+    updateStreak();
+  }, [updateStreak]);
+
+  useEffect(() => {
     if (!localStorage.getItem(ONBOARDING_KEY)) {
       const t = setTimeout(() => setShowTour(true), 1400);
       return () => clearTimeout(t);
