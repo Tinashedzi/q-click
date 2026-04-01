@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import DeloresAvatar from './DeloresAvatar';
 import { useCreditGate } from '@/hooks/useCreditGate';
 import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Message {
   id: string;
