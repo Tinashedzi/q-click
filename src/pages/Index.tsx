@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   BookOpen, Brain, Target, Zap, Heart,
-  Menu, X, ChevronRight, Sparkles, Play,
+  Menu, X, ChevronRight, ChevronDown, Sparkles, Play,
   Lock, Flame, Trophy, User, Beaker,
   Library as LibraryIcon, Video, SlidersHorizontal,
   HelpCircle, Eye, EyeOff, Crown, Gamepad2,
