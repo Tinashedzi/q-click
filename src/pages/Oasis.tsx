@@ -17,7 +17,7 @@ const Oasis = () => {
       {/* Background wallpaper */}
       <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
         <img src="/images/bg-oasis.png" alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-background/30 backdrop-blur-[1px]" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-6 max-w-3xl">

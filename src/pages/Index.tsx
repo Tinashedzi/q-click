@@ -5,13 +5,14 @@ import {
   BookOpen, Brain, Target, Zap, Heart,
   Menu, X, ChevronRight, ChevronDown, Sparkles, Play,
   Lock, Flame, Trophy, User, Beaker,
-  Library as LibraryIcon, Video, SlidersHorizontal,
-  HelpCircle, Eye, EyeOff, Crown, Gamepad2,
+  Library as LibraryIcon, Video,
+  HelpCircle, Eye, EyeOff, Crown, Gamepad2, Settings,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProgress } from '@/contexts/ProgressContext';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Progress } from '@/components/ui/progress';
+import { Progress as ProgressBar } from '@/components/ui/progress';
 import { categories, getVideosByCategory, type VideoItem } from '@/data/videoFeed';
 import VideoPlayerModal from '@/components/VideoPlayerModal';
 import CreditBar from '@/components/credits/CreditBar';
@@ -36,7 +37,7 @@ const menuItems = [
   { icon: Video, label: 'Video Feed', path: '/video' },
   { icon: User, label: 'Profile', path: '/gamification' },
   { icon: Crown, label: 'Upgrade to Pro', path: '/pricing' },
-  { icon: SlidersHorizontal, label: 'Preferences', path: '/gamification' },
+  { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 const ONBOARDING_KEY = 'qclick-onboarding-v5';
@@ -51,7 +52,8 @@ const TOUR_STEPS = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const { profile, subscription } = useAuth();
+  const { profile, subscription, signOut } = useAuth();
+  const { progress, updateStreak } = useProgress();
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -66,6 +68,10 @@ const Index = () => {
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
   const filteredVideos = getVideosByCategory(selectedCat);
+
+  useEffect(() => {
+    updateStreak();
+  }, [updateStreak]);
 
   useEffect(() => {
     if (!localStorage.getItem(ONBOARDING_KEY)) {
@@ -111,7 +117,7 @@ const Index = () => {
               alt=""
               className={cn(
                 'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
-                videoReady ? 'opacity-35' : 'opacity-100'
+                videoReady ? 'opacity-0' : 'opacity-100'
               )}
             />
             <video
@@ -134,7 +140,7 @@ const Index = () => {
         ) : (
           <img src="/images/home-hero-study.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
         )}
-        <div className="absolute inset-0 bg-background/10" />
+        <div className="absolute inset-0 bg-background/5" />
       </div>
 
       {/* ═══ FIXED TOP BAR (never scrolls) ═══ */}
@@ -163,8 +169,8 @@ const Index = () => {
             )}
             <CreditBar />
             <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60">
-              <Flame className="w-3 h-3 text-orange-500" />
-              <span className="text-[10px] font-semibold text-foreground">7 days</span>
+              <Flame className="w-3 h-3 text-destructive" />
+              <span className="text-[10px] font-semibold text-foreground">{progress.streak_days}</span>
             </div>
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -251,7 +257,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
                 <p className="text-[10px] text-muted-foreground mb-2">{p.subtitle}</p>
-                <Progress value={p.progress} className="h-1 bg-muted" />
+                <ProgressBar value={p.progress} className="h-1 bg-muted" />
                 <div className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-primary">
                   {p.cta} <ChevronRight className="w-3 h-3" />
                 </div>
@@ -332,7 +338,7 @@ const Index = () => {
                 <p className="text-xs text-muted-foreground leading-relaxed">{char.desc}</p>
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center gap-2 flex-1">
-                    <Progress value={char.progress} className="h-1 flex-1 bg-muted" />
+                    <ProgressBar value={char.progress} className="h-1 flex-1 bg-muted" />
                     <span className="text-[9px] text-muted-foreground">{char.progress}%</span>
                   </div>
                 </div>
