@@ -128,6 +128,7 @@ const OasisChat = () => {
   };
 
   return (
+    <>
     <div className="flex flex-col h-[60vh] max-h-[600px]">
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-4">
         <AnimatePresence>
