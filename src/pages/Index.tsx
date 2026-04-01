@@ -267,6 +267,11 @@ const Index = () => {
           </div>
         </div>
 
+      {/* ═══ COGNITIVE DNA RADAR ═══ */}
+        <div className="px-5 mt-6">
+          <CognitiveDNARadar />
+        </div>
+
       {/* ═══ P-NET GAMES + LABS LINK ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
