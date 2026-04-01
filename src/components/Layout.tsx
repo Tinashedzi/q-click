@@ -38,7 +38,7 @@ const Layout = ({ children }: LayoutProps) => {
         />
       )}
 
-      <main className={`${isFullScreen ? '' : 'pt-4'} pb-20 relative z-10`}>
+      <main className={`${(isFullScreen || isHome) ? '' : 'pt-4'} pb-20 relative z-10`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
