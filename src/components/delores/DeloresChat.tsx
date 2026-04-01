@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useSpeech } from '@/hooks/useSpeech';
 import ReactMarkdown from 'react-markdown';
 import DeloresAvatar from './DeloresAvatar';
+import { useCreditGate } from '@/hooks/useCreditGate';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 
 interface Message {
   id: string;
