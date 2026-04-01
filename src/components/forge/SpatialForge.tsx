@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import { Box, Loader2, Layers, Lightbulb, LayoutGrid } from 'lucide-react';
 import SpatialScene from './SpatialScene';
 import CreditExhaustedFallback from './CreditExhaustedFallback';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useCreditGate } from '@/hooks/useCreditGate';
 
 interface SpatialResult {
   title: string;
@@ -26,9 +28,14 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SpatialResult | null>(null);
   const [errorType, setErrorType] = useState<'credits' | 'rate-limit' | null>(null);
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
 
   const explore = async () => {
     if (!query.trim()) return;
+
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
+
     setLoading(true);
     setResult(null);
     setErrorType(null);
@@ -88,12 +95,13 @@ const SpatialForge = ({ onAddToCanvas, prefillTopic }: SpatialForgeProps) => {
           />
           <Button onClick={explore} disabled={loading || !query.trim()}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Layers className="w-4 h-4" />}
-            {loading ? 'Mapping…' : 'Map'}
+            {loading ? 'Mapping…' : 'Map (1⚡)'}
           </Button>
         </div>
       </div>
 
       {errorType && <CreditExhaustedFallback type={errorType} onRetry={explore} />}
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
 
       {result && (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
