@@ -208,6 +208,25 @@ const Pricing = () => {
         ))}
       </div>
 
+      {subscription.subscribed && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="flex justify-center mt-6"
+        >
+          <motion.button
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={handleManageSubscription}
+            className="flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-background/80 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+          >
+            <Settings className="w-4 h-4" />
+            Manage Subscription
+          </motion.button>
+        </motion.div>
+      )}
+
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
