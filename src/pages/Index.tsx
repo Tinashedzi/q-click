@@ -193,8 +193,8 @@ const Index = () => {
       {/* ═══ SCROLLABLE CONTENT ═══ */}
       <div className="relative z-10 flex min-h-screen flex-col pt-[68px] pb-24">
 
-        {/* Logo + tagline */}
-        <div className="flex flex-col items-center py-6">
+        {/* Logo + tagline — pushed down so wallpaper fills most of the viewport */}
+        <div className="flex flex-col items-center justify-end flex-1 min-h-[calc(100vh-160px)]">
           <motion.div
             animate={{ scale: [1, 1.04, 1] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
@@ -203,17 +203,39 @@ const Index = () => {
             <img src="/images/qclick-logo-new.svg" alt="Q-Click" className="w-full h-full object-contain drop-shadow-xl" />
           </motion.div>
           <p className="text-[10px] text-muted-foreground italic tracking-wide mt-1">the architecture of thought</p>
+
+          {/* ═══ SCROLL DOWN INDICATOR ═══ */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="flex flex-col items-center py-6 cursor-pointer"
+            onClick={() => {
+              document.getElementById('below-fold')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            <span className="text-[10px] text-muted-foreground mb-1">Explore more</span>
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            </motion.div>
+          </motion.div>
         </div>
 
+        {/* ═══ BELOW-FOLD CONTENT ═══ */}
+        <div id="below-fold">
+
         {/* ═══ PATHWAY CARDS ═══ */}
-        <div className="px-5 mt-2">
+        <div className="px-5 mt-6">
           <div className={cn('grid gap-3', isMobile ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4')}>
             {pathways.map((p, i) => (
               <motion.button
                 key={p.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + i * 0.08, duration: 0.5, ease }}
+                transition={{ delay: 0.1 + i * 0.08, duration: 0.5, ease }}
                 whileHover={{ y: -3, boxShadow: '0 8px 25px -8px hsl(var(--primary) / 0.15)' }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => p.locked ? setShowPaywall(true) : smoothNavigate(p.path)}
@@ -237,28 +259,6 @@ const Index = () => {
             ))}
           </div>
         </div>
-
-        {/* ═══ SCROLL DOWN INDICATOR ═══ */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="flex flex-col items-center py-6 cursor-pointer"
-          onClick={() => {
-            document.getElementById('below-fold')?.scrollIntoView({ behavior: 'smooth' });
-          }}
-        >
-          <span className="text-[10px] text-muted-foreground mb-1">Explore more</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <ChevronDown className="w-5 h-5 text-muted-foreground" />
-          </motion.div>
-        </motion.div>
-
-        {/* ═══ BELOW-FOLD CONTENT ═══ */}
-        <div id="below-fold">
 
       {/* ═══ P-NET GAMES + LABS LINK ═══ */}
         <motion.div
