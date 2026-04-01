@@ -45,7 +45,15 @@ export const useAICredits = () => {
   }, [user]);
 
   useEffect(() => {
-    fetchCredits();
+    fetchCredits().then(() => {
+      // Auto-redeem stored referral code from landing page
+      const storedCode = localStorage.getItem('qclick_referral_code');
+      if (storedCode && user) {
+        redeemReferral(storedCode).then(() => {
+          localStorage.removeItem('qclick_referral_code');
+        });
+      }
+    });
   }, [fetchCredits]);
 
   // Auto-refresh every 30s
