@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   BookOpen, Brain, Target, Zap, Heart,
-  Menu, X, ChevronRight, Sparkles, Play,
+  Menu, X, ChevronRight, ChevronDown, Sparkles, Play,
   Lock, Flame, Trophy, User, Beaker,
   Library as LibraryIcon, Video, SlidersHorizontal,
   HelpCircle, Eye, EyeOff, Crown, Gamepad2,
@@ -238,6 +238,28 @@ const Index = () => {
           </div>
         </div>
 
+        {/* ═══ SCROLL DOWN INDICATOR ═══ */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+          className="flex flex-col items-center py-6 cursor-pointer"
+          onClick={() => {
+            document.getElementById('below-fold')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        >
+          <span className="text-[10px] text-muted-foreground mb-1">Explore more</span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ChevronDown className="w-5 h-5 text-muted-foreground" />
+          </motion.div>
+        </motion.div>
+
+        {/* ═══ BELOW-FOLD CONTENT ═══ */}
+        <div id="below-fold">
+
       {/* ═══ P-NET GAMES + LABS LINK ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -396,8 +418,8 @@ const Index = () => {
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Premium</span>
-                <h3 className="text-base font-semibold text-foreground mt-0.5">Upgrade to Q-Click Pro</h3>
+                <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Level Up</span>
+                <h3 className="text-base font-semibold text-foreground mt-0.5">Become an Intern or Inventor</h3>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                   Advanced concept maps, unlimited AI quests, personalized learning paths.
                 </p>
@@ -441,6 +463,7 @@ const Index = () => {
         <div className="px-5 pb-8 text-center">
           <p className="text-[10px] text-muted-foreground">Q-Click v1.0 · Developer Preview</p>
         </div>
+        </div>{/* close below-fold */}
       </div>
 
       {/* ═══ VIDEO PLAYER MODAL ═══ */}
@@ -571,11 +594,11 @@ const Index = () => {
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
                   <Lock className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground">Upgrade to Q-Click Pro</h3>
+                <h3 className="text-lg font-semibold text-foreground">Upgrade to Intern or Inventor</h3>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                   Unlock advanced concept maps, unlimited AI quests, personalised learning paths, and full Forge Labs access.
                 </p>
-                <p className="text-xs text-muted-foreground mt-2">Starting at <span className="font-semibold text-foreground">$9.99/month</span></p>
+                <p className="text-xs text-muted-foreground mt-2">Starting at <span className="font-semibold text-foreground">$4.99/month</span></p>
                 <div className="flex flex-col gap-2 mt-5">
                   <button
                     onClick={() => { setShowPaywall(false); smoothNavigate('/pricing'); }}
