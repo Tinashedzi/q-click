@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2, Settings, Share2, CreditCard } from 'lucide-react';
+import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2, Settings, CreditCard, Rocket } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,13 +11,13 @@ import ReferralCard from '@/components/credits/ReferralCard';
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const TIERS = {
-  pro: {
+  intern: {
+    price_id: 'price_1THLY2C5aAzFbeKdPCjt6PKN',
+    product_id: 'prod_UFrGz5xlLFUR7u',
+  },
+  inventor: {
     price_id: 'price_1THFVgC5aAzFbeKd8qN1S0G5',
     product_id: 'prod_UFl1ztk4G68QX9',
-  },
-  institution: {
-    price_id: 'price_1THFW8C5aAzFbeKdKcaIctRJ',
-    product_id: 'prod_UFl2GwiNBP4644',
   },
 };
 
@@ -30,11 +30,9 @@ const Pricing = () => {
 
   useEffect(() => {
     refreshSubscription();
-    // Handle post-credit-purchase
     if (searchParams.get('credits_purchased') === 'true') {
       toast.success('🎉 50 bonus credits added to your account!');
       fetchCredits();
-      // Clean URL
       window.history.replaceState({}, '', '/pricing');
     }
   }, [refreshSubscription, searchParams, fetchCredits]);
@@ -53,7 +51,7 @@ const Pricing = () => {
         '5 AI credits/day (resets at midnight)',
         'Daily Insight Feed (3 videos/day)',
         'Basic Oasis quests',
-        'Mood check-ins with Delris',
+        'Mood check-ins with Deloris',
         '1 Forge experiment/day',
         'Earn credits via referrals',
       ],
@@ -64,47 +62,45 @@ const Pricing = () => {
       tier: null as string | null,
     },
     {
-      name: 'Pro',
+      name: 'Intern',
+      price: '$4.99',
+      period: '/month',
+      desc: 'Level up your learning',
+      features: [
+        '20 AI credits/day + 100 monthly bonus',
+        'Unlimited video feed & library',
+        'Unlimited AI quests & concept maps',
+        'Basic Forge Labs access',
+        'Emotional Intelligence dashboard',
+        'Double referral rewards (4 credits each)',
+      ],
+      creditInfo: '20 daily + 100 monthly',
+      cta: activeTier === 'intern' ? 'Your Plan' : 'Start 7-Day Free Trial',
+      isCurrentPlan: activeTier === 'intern',
+      highlight: false,
+      icon: Rocket,
+      tier: 'intern',
+    },
+    {
+      name: 'Inventor',
       price: '$9.99',
       period: '/month',
       desc: 'Unlock your full potential',
       features: [
         '50 AI credits/day + 200 monthly bonus',
-        'Unlimited video feed & library',
-        'Unlimited AI quests & concept maps',
+        'Everything in Intern',
         'Advanced Forge Labs (Bio, Spatial, Game)',
         'Personalised learning paths',
-        'Emotional Intelligence dashboard',
         'Priority AI responses',
-        'Double referral rewards (4 credits each)',
         'Export & share projects',
+        'Custom rubric & assessment tools',
       ],
       creditInfo: '50 daily + 200 monthly',
-      cta: activeTier === 'pro' ? 'Your Plan' : 'Start 7-Day Free Trial',
-      isCurrentPlan: activeTier === 'pro',
+      cta: activeTier === 'inventor' ? 'Your Plan' : 'Start 7-Day Free Trial',
+      isCurrentPlan: activeTier === 'inventor',
       highlight: true,
-      icon: Sparkles,
-      tier: 'pro',
-    },
-    {
-      name: 'Institution',
-      price: '$49.99',
-      period: '/month',
-      desc: 'For schools & learning groups',
-      features: [
-        '200 AI credits/day + 1000 monthly bonus',
-        'Everything in Pro',
-        'Up to 50 learner seats',
-        'Teacher dashboard & analytics',
-        'Custom rubric & assessment tools',
-        'Dedicated support',
-        'White-label options',
-      ],
-      creditInfo: '200 daily + 1000 monthly',
-      cta: activeTier === 'institution' ? 'Your Plan' : 'Subscribe',
-      isCurrentPlan: activeTier === 'institution',
       icon: Crown,
-      tier: 'institution',
+      tier: 'inventor',
     },
   ];
 
@@ -231,7 +227,6 @@ const Pricing = () => {
               {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
             </div>
 
-            {/* Credit allocation badge */}
             <div className="mb-4 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 inline-flex items-center gap-1.5 w-fit">
               <Zap className="w-3 h-3 text-primary" />
               <span className="text-xs font-medium text-primary">{plan.creditInfo}</span>

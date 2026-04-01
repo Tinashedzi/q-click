@@ -463,6 +463,7 @@ const Index = () => {
         <div className="px-5 pb-8 text-center">
           <p className="text-[10px] text-muted-foreground">Q-Click v1.0 · Developer Preview</p>
         </div>
+        </div>{/* close below-fold */}
       </div>
 
       {/* ═══ VIDEO PLAYER MODAL ═══ */}
