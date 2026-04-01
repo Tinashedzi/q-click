@@ -18,6 +18,7 @@ import Gamification from "./pages/Gamification";
 import Library from "./pages/Library";
 import Pricing from "./pages/Pricing";
 import Placeholder from "./pages/Placeholder";
+import Referral from "./pages/Referral";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
