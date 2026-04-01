@@ -6,12 +6,13 @@ import {
   Menu, X, ChevronRight, ChevronDown, Sparkles, Play,
   Lock, Flame, Trophy, User, Beaker,
   Library as LibraryIcon, Video, SlidersHorizontal,
-  HelpCircle, Eye, EyeOff, Crown, Gamepad2,
+  HelpCircle, Eye, EyeOff, Crown, Gamepad2, Settings,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProgress } from '@/contexts/ProgressContext';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Progress } from '@/components/ui/progress';
+import { Progress as ProgressBar } from '@/components/ui/progress';
 import { categories, getVideosByCategory, type VideoItem } from '@/data/videoFeed';
 import VideoPlayerModal from '@/components/VideoPlayerModal';
 import CreditBar from '@/components/credits/CreditBar';
