@@ -38,8 +38,8 @@ const CognitiveDNARadar = () => {
     if (!dna) return null;
     return Object.entries(DIMENSION_SHORT).map(([key, label]) => ({
       dimension: label,
-      score: traitToScore((dna as Record<string, string>)[key] || ''),
-      trait: (dna as Record<string, string>)[key] || '',
+      score: traitToScore((dna as unknown as Record<string, string>)[key] || ''),
+      trait: (dna as unknown as Record<string, string>)[key] || '',
       fullMark: 10,
     }));
   }, [dna]);
