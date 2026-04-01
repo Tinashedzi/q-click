@@ -1,8 +1,23 @@
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, Zap, Crown, ChevronLeft } from 'lucide-react';
+import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const ease = [0.22, 1, 0.36, 1] as const;
+
+const TIERS = {
+  pro: {
+    price_id: 'price_1THFVgC5aAzFbeKd8qN1S0G5',
+    product_id: 'prod_UFl1ztk4G68QX9',
+  },
+  institution: {
+    price_id: 'price_1THFW8C5aAzFbeKdKcaIctRJ',
+    product_id: 'prod_UFl2GwiNBP4644',
+  },
+};
 
 const plans = [
   {
@@ -20,6 +35,7 @@ const plans = [
     cta: 'Current Plan',
     active: true,
     icon: Zap,
+    tier: null as string | null,
   },
   {
     name: 'Pro',
@@ -39,6 +55,7 @@ const plans = [
     active: false,
     highlight: true,
     icon: Sparkles,
+    tier: 'pro',
   },
   {
     name: 'Institution',
@@ -53,14 +70,44 @@ const plans = [
       'Dedicated support',
       'White-label options',
     ],
-    cta: 'Contact Us',
+    cta: 'Subscribe',
     active: false,
     icon: Crown,
+    tier: 'institution',
   },
 ];
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+
+  const handleSubscribe = useCallback(async (tier: string) => {
+    if (!user) {
+      toast.error('Please sign in first to subscribe.');
+      navigate('/auth');
+      return;
+    }
+
+    const priceId = TIERS[tier as keyof typeof TIERS]?.price_id;
+    if (!priceId) return;
+
+    setLoadingTier(tier);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to start checkout');
+    } finally {
+      setLoadingTier(null);
+    }
+  }, [user, navigate]);
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl pb-28">
@@ -119,16 +166,21 @@ const Pricing = () => {
             <motion.button
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
-              className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
+              className={`w-full py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
                 plan.highlight
                   ? 'bg-primary text-primary-foreground shadow-sm'
                   : plan.active
                   ? 'bg-muted text-muted-foreground cursor-default'
                   : 'bg-foreground/5 text-foreground border border-border hover:bg-foreground/10'
               }`}
-              disabled={plan.active}
+              disabled={plan.active || loadingTier === plan.tier}
+              onClick={() => plan.tier && handleSubscribe(plan.tier)}
             >
-              {plan.cta}
+              {loadingTier === plan.tier ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+              ) : (
+                plan.cta
+              )}
             </motion.button>
           </motion.div>
         ))}
