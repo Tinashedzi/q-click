@@ -78,6 +78,8 @@ interface DeloresChatProps {
 }
 
 const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresChatProps) => {
+  const { profile } = useAuth();
+  const cognitiveDna = useMemo(() => (profile?.preferences as any)?.cognitive_dna, [profile]);
   const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [messages, setMessages] = useState<Message[]>([
     {
