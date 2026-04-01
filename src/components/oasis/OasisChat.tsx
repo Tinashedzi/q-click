@@ -26,6 +26,7 @@ const suggestedQuestions = [
 ];
 
 const OasisChat = () => {
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
