@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useCreditGate } from '@/hooks/useCreditGate';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 
 interface RubricCriteria {
   name: string;
