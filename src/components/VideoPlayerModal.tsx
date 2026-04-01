@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Heart, Sparkles, MessageCircle } from 'lucide-react';
+import { X, Heart, Sparkles, MessageCircle, Bookmark } from 'lucide-react';
 import type { VideoItem } from '@/data/videoFeed';
+import { useProgress } from '@/contexts/ProgressContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface VideoPlayerModalProps {
   video: VideoItem | null;
@@ -20,6 +22,19 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
   const [wisdomEarned, setWisdomEarned] = useState(0);
   const [deloresComment, setDeloresComment] = useState('');
   const [showComment, setShowComment] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const { user } = useAuth();
+
+  // Try to use progress context, but handle case where it's not available
+  let addPoints: ((p: number) => Promise<void>) | null = null;
+  let updateStreak: (() => Promise<void>) | null = null;
+  try {
+    const progress = useProgress();
+    addPoints = progress.addPoints;
+    updateStreak = progress.updateStreak;
+  } catch {
+    // Not inside ProgressProvider — skip DB updates
+  }
 
   useEffect(() => {
     if (!video) return;
@@ -31,14 +46,39 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
       setShowComment(true);
     }, 8000);
 
-    const pointsTimer = setTimeout(() => {
+    const pointsTimer = setTimeout(async () => {
       setWisdomEarned(15);
+      if (addPoints) {
+        try {
+          await addPoints(15);
+          if (updateStreak) await updateStreak();
+        } catch (e) {
+          console.error('Failed to persist WP:', e);
+        }
+      }
     }, 15000);
 
     return () => {
       clearTimeout(commentTimer);
       clearTimeout(pointsTimer);
     };
+  }, [video]);
+
+  const handleSave = () => {
+    if (!video) return;
+    const savedVideos = JSON.parse(localStorage.getItem('qclick-saved-videos') || '[]');
+    if (saved) {
+      localStorage.setItem('qclick-saved-videos', JSON.stringify(savedVideos.filter((id: string) => id !== video.id)));
+    } else {
+      localStorage.setItem('qclick-saved-videos', JSON.stringify([...savedVideos, video.id]));
+    }
+    setSaved(!saved);
+  };
+
+  useEffect(() => {
+    if (!video) return;
+    const savedVideos = JSON.parse(localStorage.getItem('qclick-saved-videos') || '[]');
+    setSaved(savedVideos.includes(video.id));
   }, [video]);
 
   if (!video) return null;
@@ -60,7 +100,6 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
           className="w-full max-w-2xl rounded-2xl border border-border bg-background overflow-hidden shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Video embed */}
           <div className="relative aspect-video bg-foreground/5">
             {video.youtubeId ? (
               <iframe
@@ -76,7 +115,6 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
               </div>
             )}
 
-            {/* Close button */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={onClose}
@@ -85,7 +123,6 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
               <X className="w-4 h-4 text-foreground" />
             </motion.button>
 
-            {/* Wisdom points earned */}
             <AnimatePresence>
               {wisdomEarned > 0 && (
                 <motion.div
@@ -94,25 +131,31 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
                   className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-xs font-semibold shadow-lg"
                 >
                   <Sparkles className="w-3 h-3" />
-                  +{wisdomEarned} WP earned
+                  +{wisdomEarned} WP earned{user ? ' & saved' : ''}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Info bar */}
           <div className="p-4 border-t border-border">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-semibold text-foreground line-clamp-1">{video.title}</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">{video.channel} · {video.duration} · {video.level}</p>
               </div>
-              <button className="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Heart className="w-4 h-4 text-primary" />
-              </button>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={handleSave}
+                  className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${saved ? 'bg-primary/20' : 'bg-primary/10'}`}
+                >
+                  <Bookmark className={`w-4 h-4 ${saved ? 'text-primary fill-primary' : 'text-primary'}`} />
+                </button>
+                <button className="shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Heart className="w-4 h-4 text-primary" />
+                </button>
+              </div>
             </div>
 
-            {/* Delores AI commentary */}
             <AnimatePresence>
               {showComment && (
                 <motion.div

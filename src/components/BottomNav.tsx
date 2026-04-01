@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Beaker, Heart, BarChart3 } from 'lucide-react';
+import { Home, Compass, Beaker, Heart, BarChart3, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -7,6 +7,7 @@ const items = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/oasis', label: 'Oasis', icon: Compass },
   { path: '/forge', label: 'Forge', icon: Beaker },
+  { path: '/glossa', label: 'Glossa', icon: BookOpen },
   { path: '/delores', label: 'Delris', icon: Heart },
   { path: '/gamification', label: 'Progress', icon: BarChart3 },
 ];
