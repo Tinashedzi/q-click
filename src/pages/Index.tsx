@@ -271,7 +271,7 @@ const Index = () => {
             whileTap={{ scale: 0.9 }}
             onClick={() => smoothNavigate('/delores')}
             className="pointer-events-auto w-14 h-14 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl flex items-center justify-center shadow-lg"
-            title="Talk to Delris"
+            title="Talk to Deloris"
           >
             <Heart className="w-6 h-6 text-primary" />
             <motion.div
