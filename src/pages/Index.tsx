@@ -238,6 +238,28 @@ const Index = () => {
           </div>
         </div>
 
+        {/* ═══ SCROLL DOWN INDICATOR ═══ */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+          className="flex flex-col items-center py-6 cursor-pointer"
+          onClick={() => {
+            document.getElementById('below-fold')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        >
+          <span className="text-[10px] text-muted-foreground mb-1">Explore more</span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ChevronDown className="w-5 h-5 text-muted-foreground" />
+          </motion.div>
+        </motion.div>
+
+        {/* ═══ BELOW-FOLD CONTENT ═══ */}
+        <div id="below-fold">
+
       {/* ═══ P-NET GAMES + LABS LINK ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
