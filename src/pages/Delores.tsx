@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { Settings, ChevronLeft, Play, Lock } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
@@ -13,6 +12,7 @@ import JournalEntry from '@/components/delores/JournalEntry';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
 import { useIsMobile } from '@/hooks/use-mobile';
+import BottomNav from '@/components/BottomNav';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -26,7 +26,6 @@ const activities = [
 ];
 
 const Delores = () => {
-  const navigate = useNavigate();
   const { profile } = useAuth();
   const isMobile = useIsMobile();
   const [currentMood, setCurrentMood] = useState<number | null>(null);
@@ -39,18 +38,16 @@ const Delores = () => {
     return () => clearTimeout(t);
   }, []);
 
-  const returnHome = useCallback(() => navigate('/'), [navigate]);
-
   return (
     <div className="relative w-full min-h-screen flex flex-col overflow-hidden">
-      {/* Fixed BG illustration with soft overlay */}
+      {/* Fixed BG — meditation hero */}
       <div className="fixed inset-0 z-0">
         <img
-          src="/images/home-hero-botanical.png"
+          src="/images/meditation-hero.png"
           alt=""
           className="w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-white/75" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background/90" />
       </div>
 
       {/* Loading */}
@@ -254,21 +251,8 @@ const Delores = () => {
         </AnimatePresence>
       </motion.div>
 
-      {/* Floating Home Button */}
-      <motion.div
-        animate={{ opacity: loading ? 0 : 1 }}
-        transition={{ delay: 0.3 }}
-        className="fixed bottom-5 left-0 right-0 z-30 flex justify-center pointer-events-none"
-      >
-        <motion.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          onClick={returnHome}
-          className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center border border-border bg-background/80 backdrop-blur-xl shadow-sm hover:shadow-md transition-all"
-        >
-          <img src="/images/qclick-logo-new.svg" alt="Home" className="w-7 h-7 object-contain" />
-        </motion.button>
-      </motion.div>
+      {/* Bottom Nav */}
+      <BottomNav />
     </div>
   );
 };
