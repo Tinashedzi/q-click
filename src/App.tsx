@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,13 +22,27 @@ import Placeholder from "./pages/Placeholder";
 import Referral from "./pages/Referral";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import CognitiveDNAFlow from "./components/onboarding/CognitiveDNAFlow";
 
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
-  const { session, loading } = useAuth();
+  const { session, loading, profile } = useAuth();
+  const [showDNA, setShowDNA] = useState(false);
+  const [dnaChecked, setDnaChecked] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading && profile) {
+      const prefs = profile.preferences as any;
+      const hasDNA = prefs?.cognitive_dna;
+      setShowDNA(!hasDNA);
+      setDnaChecked(true);
+    } else if (!loading && !profile) {
+      setDnaChecked(true);
+    }
+  }, [loading, profile]);
+
+  if (loading || !dnaChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
@@ -37,6 +52,10 @@ const AppRoutes = () => {
 
   if (!session) {
     return <Auth />;
+  }
+
+  if (showDNA) {
+    return <CognitiveDNAFlow onComplete={() => setShowDNA(false)} />;
   }
 
   return (
