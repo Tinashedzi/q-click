@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   BookOpen, Brain, Target, Zap, Heart,
   Menu, X, ChevronRight, Sparkles, Play,
-  Lock, Flame, Trophy, User,
+  Lock, Flame, Trophy, User, Beaker,
   Library as LibraryIcon, Video, SlidersHorizontal,
-  Info, HelpCircle,
+  HelpCircle, Eye, EyeOff,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -19,51 +19,17 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 /* ─── Characters / Learning Paths ─── */
 const characters = [
-  { name: 'Xavier', role: 'Logical Architect', icon: Brain, color: 'text-blue-600', bg: 'bg-blue-50', desc: 'Master logic, coding, and systems thinking', progress: 35 },
-  { name: 'Nosi', role: 'Research Lead', icon: Target, color: 'text-green-600', bg: 'bg-green-50', desc: 'Deep research, critical analysis, and scientific method', progress: 20 },
-  { name: 'Oditi', role: 'Pattern Detective', icon: Zap, color: 'text-purple-600', bg: 'bg-purple-50', desc: 'Spot connections, solve puzzles, see the unseen', progress: 10 },
+  { name: 'Xavier', role: 'Logical Architect', icon: Brain, color: 'text-blue-600', bg: 'bg-blue-50', desc: 'Master logic, coding & systems thinking', progress: 35 },
+  { name: 'Nosi', role: 'Research Lead', icon: Target, color: 'text-green-600', bg: 'bg-green-50', desc: 'Deep research, critical analysis & method', progress: 20 },
+  { name: 'Oditi', role: 'Pattern Detective', icon: Zap, color: 'text-purple-600', bg: 'bg-purple-50', desc: 'Spot connections, solve puzzles', progress: 10 },
 ];
 
-/* ─── Pathway cards matching mockups ─── */
+/* ─── Pathway cards ─── */
 const pathways = [
-  {
-    title: 'Master Concepts',
-    subtitle: 'Assignments',
-    desc: 'Connect the dots in your learning paths.',
-    path: '/glossa',
-    cta: 'Continue',
-    progress: 20,
-    icon: BookOpen,
-  },
-  {
-    title: 'Mindfulness & Vitality',
-    subtitle: 'Delores',
-    desc: 'Grasp Concept – Connect the Dots!',
-    path: '/delores',
-    cta: 'Begin',
-    progress: 60,
-    icon: Heart,
-    pro: true,
-  },
-  {
-    title: 'Embodied Medicine',
-    subtitle: 'Forge',
-    desc: 'Build, experiment, and engineer breakthroughs.',
-    path: '/forge',
-    cta: 'Explore Concepts',
-    progress: 35,
-    icon: Brain,
-  },
-  {
-    title: 'Project Quests',
-    subtitle: 'Oasis',
-    desc: 'Unlock Forge Pro for advanced concept map visualization.',
-    path: '/oasis',
-    cta: 'Explore',
-    progress: 0,
-    icon: Target,
-    locked: true,
-  },
+  { title: 'Discover', subtitle: 'Master Concepts', desc: 'Connect the dots in your learning.', path: '/oasis', cta: 'Continue', progress: 20, icon: BookOpen },
+  { title: 'Focus', subtitle: 'Mindfulness', desc: 'Breathe, reflect, grow.', path: '/delores', cta: 'Begin', progress: 60, icon: Heart },
+  { title: 'Sandbox', subtitle: 'Forge Labs', desc: 'Build & experiment.', path: '/forge', cta: 'Open Lab', progress: 35, icon: Beaker },
+  { title: 'Quests', subtitle: 'Projects', desc: 'Real-world challenges.', path: '/oasis', cta: 'Explore', progress: 0, icon: Target, locked: true },
 ];
 
 const menuItems = [
@@ -71,22 +37,23 @@ const menuItems = [
   { icon: Video, label: 'Video Feed', path: '/video' },
   { icon: User, label: 'Profile', path: '/gamification' },
   { icon: SlidersHorizontal, label: 'Preferences', path: '/gamification' },
-  { icon: Info, label: 'About Q-Click', path: '/' },
 ];
 
-const ONBOARDING_KEY = 'qclick-onboarding-v3';
+const ONBOARDING_KEY = 'qclick-onboarding-v4';
 
 const TOUR_STEPS = [
-  { title: 'Welcome to Q-Click!', body: 'Your personal learning sanctuary. Explore pathways, track progress, and grow.', emoji: '✨' },
-  { title: 'Learning Paths', body: 'Choose a character guide — Xavier, Nosi, or Oditi — to shape your journey.', emoji: '🧭' },
-  { title: 'Video Feed', body: 'Watch curated content from top educational channels worldwide.', emoji: '🎬' },
-  { title: 'Forge Pro', body: 'Upgrade for AI-powered concept maps, unlimited quests, and more.', emoji: '🔓' },
+  { title: 'Welcome to Q-Click', body: 'Your personal learning sanctuary. Let\'s take a quick look around.', emoji: '✨' },
+  { title: 'Pathways', body: 'Discover, Focus, Sandbox, and Quests — four ways to learn.', emoji: '🧭' },
+  { title: 'Video Feed', body: 'Watch curated content from top educational channels.', emoji: '🎬' },
+  { title: 'Forge Labs', body: 'Build concepts, run experiments, create with AI.', emoji: '🔬' },
+  { title: 'Go Pro', body: 'Upgrade for unlimited AI, concept maps & more.', emoji: '🔓' },
 ];
 
 const Index = () => {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const isMobile = useIsMobile();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTour, setShowTour] = useState(false);
@@ -94,13 +61,14 @@ const Index = () => {
   const [navigatingTo, setNavigatingTo] = useState<string | null>(null);
   const [selectedCat, setSelectedCat] = useState('All');
   const [showPaywall, setShowPaywall] = useState(false);
-  const [imgLoaded, setImgLoaded] = useState(false);
+  const [videoEnabled, setVideoEnabled] = useState(true);
+  const [videoReady, setVideoReady] = useState(false);
 
   const filteredVideos = getVideosByCategory(selectedCat);
 
   useEffect(() => {
     if (!localStorage.getItem(ONBOARDING_KEY)) {
-      const t = setTimeout(() => setShowTour(true), 1200);
+      const t = setTimeout(() => setShowTour(true), 1400);
       return () => clearTimeout(t);
     }
   }, []);
@@ -122,41 +90,52 @@ const Index = () => {
 
   return (
     <motion.div
-      className="relative w-full min-h-screen flex flex-col bg-background"
+      className="relative w-full min-h-screen flex flex-col"
       animate={navigatingTo ? { opacity: 0, scale: 0.96, filter: 'blur(8px)' } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
       transition={{ duration: 0.4, ease }}
     >
-      {/* ═══ HERO SECTION ═══ */}
-      <div className="relative w-full" style={{ minHeight: isMobile ? 320 : 420 }}>
-        {/* Background image with fallback */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: imgLoaded ? 1 : 0 }}
-          transition={{ duration: 1.2 }}
-          className="absolute inset-0 z-0"
-        >
-          <img
-            src="/images/home-hero-study.png"
-            alt=""
-            className="w-full h-full object-cover object-top"
-            onLoad={() => setImgLoaded(true)}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
-        </motion.div>
+      {/* ═══ FIXED BACKGROUND: Video or Image ═══ */}
+      <div className="fixed inset-0 z-0">
+        {/* Fallback image — always present */}
+        <img
+          src="/images/home-hero-study.png"
+          alt=""
+          className={cn(
+            'absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700',
+            videoReady && videoEnabled ? 'opacity-0' : 'opacity-100'
+          )}
+        />
 
-        {/* Fallback gradient while loading */}
-        {!imgLoaded && (
-          <div className="absolute inset-0 z-0" style={{
-            background: 'radial-gradient(ellipse 80% 60% at 50% 30%, hsl(var(--primary) / 0.08), hsl(var(--background)))',
-          }} />
+        {/* Video background */}
+        {videoEnabled && (
+          <video
+            ref={videoRef}
+            src="/videos/qclick-intro.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            onCanPlay={() => setVideoReady(true)}
+            className={cn(
+              'absolute inset-0 w-full h-full object-cover transition-opacity duration-1000',
+              videoReady ? 'opacity-100' : 'opacity-0'
+            )}
+          />
         )}
+
+        {/* Gradient overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/80 to-white" />
+      </div>
+
+      {/* ═══ SCROLLABLE CONTENT ═══ */}
+      <div className="relative z-10 flex flex-col min-h-screen">
 
         {/* Top bar */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5, ease }}
-          className="relative z-20 flex items-center justify-between px-5 pt-5"
+          className="flex items-center justify-between px-5 pt-5"
         >
           <motion.button
             whileHover={{ scale: 1.08 }}
@@ -164,18 +143,27 @@ const Index = () => {
             onClick={() => setMenuOpen(true)}
             className="w-10 h-10 rounded-2xl flex items-center justify-center border border-border bg-background/60 backdrop-blur-xl"
           >
-            <Menu className="w-4 h-4 text-muted-foreground" />
+            <Menu className="w-4 h-4 text-foreground" />
           </motion.button>
 
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60 backdrop-blur-xl">
               <Flame className="w-3 h-3 text-orange-500" />
-              <span className="text-[10px] font-semibold text-foreground">7 day streak</span>
+              <span className="text-[10px] font-semibold text-foreground">7 days</span>
             </div>
             <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60 backdrop-blur-xl">
               <Trophy className="w-3 h-3 text-primary" />
-              <span className="text-[10px] font-semibold text-foreground">1280 WP</span>
+              <span className="text-[10px] font-semibold text-foreground">1280</span>
             </div>
+            {/* Video toggle */}
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setVideoEnabled(v => !v)}
+              className="w-8 h-8 rounded-xl flex items-center justify-center border border-border bg-background/60 backdrop-blur-xl"
+              title={videoEnabled ? 'Disable video' : 'Enable video'}
+            >
+              {videoEnabled ? <Eye className="w-3 h-3 text-foreground" /> : <EyeOff className="w-3 h-3 text-muted-foreground" />}
+            </motion.button>
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => smoothNavigate('/gamification')}
@@ -184,35 +172,87 @@ const Index = () => {
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-4 h-4 text-muted-foreground" />
+                <User className="w-4 h-4 text-foreground" />
               )}
             </motion.button>
           </div>
         </motion.div>
 
-        {/* Logo + Title */}
+        {/* Hero: Q Logo only (no text) */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6, ease }}
-          className="relative z-10 flex flex-col items-center mt-6"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.8, ease }}
+          className="flex flex-col items-center mt-8 mb-6"
         >
           <motion.div
-            animate={{ scale: [1, 1.03, 1] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-20 h-20 sm:w-24 sm:h-24"
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-24 h-24 sm:w-28 sm:h-28"
           >
             <img
-              src="/images/qclick-hero-logo.png"
+              src="/images/qclick-logo-new.svg"
               alt="Q-Click"
-              className="w-full h-full object-contain drop-shadow-lg"
+              className="w-full h-full object-contain drop-shadow-xl"
             />
           </motion.div>
-          <h1 className="mt-3 text-2xl sm:text-3xl font-semibold text-foreground tracking-tight">Q-Click</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">The Architecture of Thought</p>
         </motion.div>
 
-        {/* Delores floating button */}
+        {/* ═══ PATHWAY CARDS ═══ */}
+        <div className="px-5">
+          <div className={cn('grid gap-3', isMobile ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4')}>
+            {pathways.map((p, i) => (
+              <motion.button
+                key={p.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + i * 0.08, duration: 0.5, ease }}
+                whileHover={{ y: -3, boxShadow: '0 8px 25px -8px hsl(var(--primary) / 0.15)' }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => p.locked ? setShowPaywall(true) : smoothNavigate(p.path)}
+                className="relative w-full rounded-2xl border border-border bg-background/80 backdrop-blur-xl p-4 text-left shadow-sm hover:shadow-md transition-all overflow-hidden group"
+              >
+                {p.locked && (
+                  <span className="absolute top-3 right-3">
+                    <Lock className="w-3.5 h-3.5 text-muted-foreground" />
+                  </span>
+                )}
+                <div className="w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center mb-2">
+                  <p.icon className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
+                <p className="text-[10px] text-muted-foreground mb-2">{p.subtitle}</p>
+                <Progress value={p.progress} className="h-1 bg-muted" />
+                <div className="mt-2 flex items-center gap-1 text-[11px] font-semibold text-primary">
+                  {p.cta} <ChevronRight className="w-3 h-3" />
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        {/* ═══ FORGE LABS BANNER ═══ */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.65, duration: 0.5, ease }}
+          className="mx-5 mt-5 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-xl p-4 cursor-pointer"
+          onClick={() => smoothNavigate('/forge')}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Beaker className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Labs</span>
+              <h3 className="text-sm font-semibold text-foreground">Forge Labs</h3>
+              <p className="text-[11px] text-muted-foreground">Build concepts, run experiments, create with AI</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-primary shrink-0" />
+          </div>
+        </motion.div>
+
+        {/* ═══ DELORES FLOATING BUTTON ═══ */}
         <motion.button
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -220,216 +260,168 @@ const Index = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => smoothNavigate('/delores')}
-          className="absolute bottom-4 right-4 z-20 w-12 h-12 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl flex items-center justify-center shadow-lg"
+          className="fixed bottom-24 right-5 z-30 w-14 h-14 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl flex items-center justify-center shadow-lg"
           title="Talk to Delris"
         >
-          <Heart className="w-5 h-5 text-primary" />
+          <Heart className="w-6 h-6 text-primary" />
           <motion.div
             className="absolute inset-0 rounded-full border-2 border-primary/30"
             animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
             transition={{ duration: 2.5, repeat: Infinity }}
           />
         </motion.button>
-      </div>
 
-      {/* ═══ PATHWAY CARDS ═══ */}
-      <div className="px-5 -mt-4 relative z-10">
-        <div className={cn(
-          'grid gap-3',
-          isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-4'
-        )}>
-          {pathways.map((p, i) => (
-            <motion.button
-              key={p.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + i * 0.08, duration: 0.5, ease }}
-              whileHover={{ y: -3, boxShadow: '0 8px 25px -8px hsl(var(--primary) / 0.15)' }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => p.locked ? setShowPaywall(true) : smoothNavigate(p.path)}
-              className="relative w-full rounded-2xl border border-border bg-background/80 backdrop-blur-xl p-4 text-left shadow-sm hover:shadow-md transition-all overflow-hidden group"
-            >
-              {p.pro && (
-                <span className="absolute top-3 right-3 text-[8px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">Pro</span>
-              )}
-              {p.locked && (
-                <span className="absolute top-3 right-3">
-                  <Lock className="w-3.5 h-3.5 text-muted-foreground" />
-                </span>
-              )}
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center">
-                  <p.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">{p.title}</h3>
-                  <p className="text-[10px] text-muted-foreground">{p.subtitle}</p>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed mb-3">{p.desc}</p>
-              <div className="flex items-center justify-between">
-                <Progress value={p.progress} className="h-1.5 flex-1 mr-3 bg-muted" />
-                <span className="text-[10px] text-muted-foreground font-medium">{p.progress}%</span>
-              </div>
-              <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-primary">
-                {p.cta} <ChevronRight className="w-3 h-3" />
-              </div>
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* ═══ FORGE PRO UPSELL ═══ */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7, duration: 0.5, ease }}
-        className="mx-5 mt-6 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 p-5 relative overflow-hidden"
-      >
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <Sparkles className="w-6 h-6 text-primary" />
+        {/* ═══ LEARNING PATHS ═══ */}
+        <div className="px-5 mt-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-semibold text-foreground">Your Paths</h2>
+            <button className="text-xs text-primary font-medium flex items-center gap-0.5">All <ChevronRight className="w-3 h-3" /></button>
           </div>
-          <div className="flex-1">
-            <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Premium</span>
-            <h3 className="text-base font-semibold text-foreground mt-0.5">Unlock Forge Pro</h3>
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-              Get advanced concept map visualization, unlimited AI quests, and personalized learning paths.
-            </p>
-            <div className="flex items-center gap-3 mt-3">
-              <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Zap className="w-3 h-3" /> Concept Collisions</span>
-              <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Brain className="w-3 h-3" /> 10x Learning Speed</span>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setShowPaywall(true)}
-              className="mt-3 px-5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold shadow-sm"
-            >
-              Try Forge Pro
-            </motion.button>
+          <div className={cn('grid gap-3', isMobile ? 'grid-cols-1' : 'grid-cols-3')}>
+            {characters.map((char, i) => (
+              <motion.div
+                key={char.name}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 + i * 0.08, duration: 0.4, ease }}
+                className={cn('rounded-2xl border border-border p-4 cursor-pointer hover:shadow-md transition-all group', char.bg)}
+                onClick={() => smoothNavigate('/oasis')}
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-9 h-9 rounded-full bg-background/80 flex items-center justify-center">
+                    <char.icon className={cn('w-5 h-5', char.color)} />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground">{char.name}</h4>
+                    <p className="text-[10px] text-muted-foreground">{char.role}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{char.desc}</p>
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center gap-2 flex-1">
+                    <Progress value={char.progress} className="h-1 flex-1 bg-muted" />
+                    <span className="text-[9px] text-muted-foreground">{char.progress}%</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </motion.div>
 
-      {/* ═══ LEARNING PATHS ═══ */}
-      <div className="px-5 mt-8">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-foreground">Your Learning Paths</h2>
-          <button className="text-xs text-primary font-medium flex items-center gap-0.5">See All <ChevronRight className="w-3 h-3" /></button>
-        </div>
-        <div className={cn('grid gap-3', isMobile ? 'grid-cols-1' : 'grid-cols-3')}>
-          {characters.map((char, i) => (
-            <motion.div
-              key={char.name}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + i * 0.08, duration: 0.4, ease }}
-              className={cn('rounded-2xl border border-border p-4 cursor-pointer hover:shadow-md transition-all group', char.bg)}
-              onClick={() => smoothNavigate('/oasis')}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-9 h-9 rounded-full bg-background/80 flex items-center justify-center">
-                  <char.icon className={cn('w-5 h-5', char.color)} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground">{char.name}</h4>
-                  <p className="text-[10px] text-muted-foreground">{char.role}</p>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">{char.desc}</p>
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-2 flex-1">
-                  <span className="text-[9px] text-muted-foreground font-medium">Mastery</span>
-                  <Progress value={char.progress} className="h-1 flex-1 bg-muted" />
-                  <span className="text-[9px] text-muted-foreground">{char.progress}%</span>
-                </div>
-              </div>
-              <div className="mt-2 text-xs text-primary font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                Continue Quest <ChevronRight className="w-3 h-3" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* ═══ VIDEO FEED ═══ */}
-      <div className="px-5 mt-8">
-        <h2 className="text-base font-semibold text-foreground mb-3">Daily Insight Feed</h2>
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-none">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCat(cat)}
-              className={cn(
-                'px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all',
-                selectedCat === cat
-                  ? 'bg-foreground text-background'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              )}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        <div className={cn('grid gap-3 pb-6', isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3')}>
-          {filteredVideos.map((video, i) => (
-            <motion.div
-              key={video.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease }}
-              className="rounded-2xl border border-border bg-background/80 backdrop-blur-xl overflow-hidden hover:shadow-md transition-all cursor-pointer group"
-              onClick={() => smoothNavigate('/video')}
-            >
-              <div className="relative aspect-video bg-muted flex items-center justify-center">
-                <div className="text-center p-4">
-                  <Play className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
-                  <p className="text-xs text-muted-foreground">{video.channel}</p>
-                </div>
-                <span className="absolute bottom-2 right-2 text-[9px] font-medium bg-foreground/80 text-background px-1.5 py-0.5 rounded">
-                  {video.duration}
-                </span>
-                <span className="absolute top-2 left-2 text-[8px] font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
-                  {video.level}
-                </span>
-              </div>
-              <div className="p-3">
-                <h4 className="text-sm font-semibold text-foreground line-clamp-1">{video.title}</h4>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{video.channel} · {video.category}</p>
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{video.description}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[10px] text-primary font-medium flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Watch Now <ChevronRight className="w-3 h-3" />
+        {/* ═══ VIDEO FEED ═══ */}
+        <div className="px-5 mt-6">
+          <h2 className="text-base font-semibold text-foreground mb-3">Daily Insight Feed</h2>
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-none">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCat(cat)}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all',
+                  selectedCat === cat
+                    ? 'bg-foreground text-background'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                )}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <div className={cn('grid gap-3 pb-6', isMobile ? 'grid-cols-1' : 'grid-cols-2 lg:grid-cols-3')}>
+            {filteredVideos.map((video, i) => (
+              <motion.div
+                key={video.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease }}
+                className="rounded-2xl border border-border bg-background/80 backdrop-blur-xl overflow-hidden hover:shadow-md transition-all cursor-pointer group"
+                onClick={() => smoothNavigate('/video')}
+              >
+                <div className="relative aspect-video bg-muted overflow-hidden">
+                  {video.thumbnail ? (
+                    <img
+                      src={video.thumbnail}
+                      alt={video.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Play className="w-8 h-8 text-muted-foreground/40" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                      <Play className="w-4 h-4 fill-foreground text-foreground ml-0.5" />
+                    </div>
+                  </div>
+                  <span className="absolute bottom-2 right-2 text-[9px] font-medium bg-foreground/80 text-background px-1.5 py-0.5 rounded">
+                    {video.duration}
                   </span>
-                  <button className="text-[9px] text-muted-foreground hover:text-primary transition-colors">+ Save</button>
+                  <span className="absolute top-2 left-2 text-[8px] font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
+                    {video.level}
+                  </span>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+                <div className="p-3">
+                  <h4 className="text-sm font-semibold text-foreground line-clamp-1">{video.title}</h4>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{video.channel} · {video.category}</p>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{video.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* ═══ QUICK STATS ═══ */}
-      <div className="px-5 mt-4 mb-24">
-        <div className={cn('grid gap-3', isMobile ? 'grid-cols-2' : 'grid-cols-4')}>
-          {[
-            { label: 'Concepts Mastered', value: '45' },
-            { label: 'Quests Completed', value: '12' },
-            { label: 'Active Projects', value: '3' },
-            { label: 'Hours This Week', value: '8' },
-          ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + i * 0.05, duration: 0.3 }}
-              className="rounded-xl border border-border bg-background/70 p-3 text-center"
-            >
-              <p className="text-xl font-semibold text-foreground">{stat.value}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">{stat.label}</p>
-            </motion.div>
-          ))}
+        {/* ═══ PRO UPSELL ═══ */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.5, ease }}
+          className="mx-5 mb-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-xl p-5 relative overflow-hidden"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Sparkles className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Premium</span>
+              <h3 className="text-base font-semibold text-foreground mt-0.5">Upgrade to Q-Click Pro</h3>
+              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                Advanced concept maps, unlimited AI quests, personalized learning paths.
+              </p>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setShowPaywall(true)}
+                className="mt-3 px-5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold shadow-sm"
+              >
+                Try Pro Free · 7 Days
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ═══ QUICK STATS ═══ */}
+        <div className="px-5 mb-24">
+          <div className={cn('grid gap-3', isMobile ? 'grid-cols-2' : 'grid-cols-4')}>
+            {[
+              { label: 'Concepts', value: '45' },
+              { label: 'Quests', value: '12' },
+              { label: 'Projects', value: '3' },
+              { label: 'Hours', value: '8' },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 + i * 0.05, duration: 0.3 }}
+                className="rounded-xl border border-border bg-background/70 backdrop-blur-xl p-3 text-center"
+              >
+                <p className="text-xl font-semibold text-foreground">{stat.value}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -455,10 +447,7 @@ const Index = () => {
               className="fixed left-0 top-0 bottom-0 z-50 w-64 border-r border-border bg-background/95 backdrop-blur-xl p-5 flex flex-col"
             >
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <img src="/images/qclick-logo-new.svg" alt="Q-Click" className="w-6 h-6" />
-                  <span className="text-sm font-semibold text-foreground">Q-Click</span>
-                </div>
+                <img src="/images/qclick-logo-new.svg" alt="Q-Click" className="w-8 h-8" />
                 <motion.button whileTap={{ scale: 0.85 }} onClick={() => setMenuOpen(false)}>
                   <X className="w-4 h-4 text-muted-foreground" />
                 </motion.button>
@@ -566,7 +555,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-lg font-semibold text-foreground">Upgrade to Q-Click Pro</h3>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  Unlock advanced concept maps, unlimited AI quests, personalized learning paths, and full access to all Forge tools.
+                  Unlock advanced concept maps, unlimited AI quests, personalized learning paths, and full Forge Labs access.
                 </p>
                 <div className="flex flex-col gap-2 mt-5">
                   <button className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm">
