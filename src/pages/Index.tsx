@@ -134,7 +134,7 @@ const Index = () => {
         ) : (
           <img src="/images/home-hero-study.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
         )}
-        <div className="absolute inset-0 bg-background/10" />
+        <div className="absolute inset-0 bg-background/5" />
       </div>
 
       {/* ═══ FIXED TOP BAR (never scrolls) ═══ */}
