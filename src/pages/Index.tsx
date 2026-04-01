@@ -161,13 +161,10 @@ const Index = () => {
                 <span className="text-[10px] font-semibold text-primary">Upgrade</span>
               </motion.button>
             )}
+            <CreditBar />
             <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60">
               <Flame className="w-3 h-3 text-orange-500" />
               <span className="text-[10px] font-semibold text-foreground">7 days</span>
-            </div>
-            <div className="flex items-center gap-1 px-2 py-1 rounded-xl border border-border bg-background/60">
-              <Trophy className="w-3 h-3 text-primary" />
-              <span className="text-[10px] font-semibold text-foreground">1280</span>
             </div>
             <motion.button
               whileTap={{ scale: 0.9 }}
