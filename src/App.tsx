@@ -54,6 +54,7 @@ const AppRoutes = () => {
             <Route path="/library" element={<Library />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/referral" element={<Referral />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/sentences" element={<Placeholder title="Sentences" description="Build and deconstruct sentences across languages. Coming soon." />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
