@@ -28,6 +28,7 @@ const LEVEL_COLORS: Record<string, string> = {
 };
 
 const RubricGenerator = () => {
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
