@@ -6,25 +6,23 @@ import {
   Menu, X, ChevronRight, Sparkles, Play,
   Lock, Flame, Trophy, User, Beaker,
   Library as LibraryIcon, Video, SlidersHorizontal,
-  HelpCircle, Eye, EyeOff,
+  HelpCircle, Eye, EyeOff, Crown,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Progress } from '@/components/ui/progress';
 import { categories, getVideosByCategory, type VideoItem } from '@/data/videoFeed';
-import BottomNav from '@/components/BottomNav';
+import VideoPlayerModal from '@/components/VideoPlayerModal';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-/* ─── Characters / Learning Paths ─── */
 const characters = [
   { name: 'Xavier', role: 'Logical Architect', icon: Brain, color: 'text-blue-600', bg: 'bg-blue-50', desc: 'Master logic, coding & systems thinking', progress: 35 },
   { name: 'Nosi', role: 'Research Lead', icon: Target, color: 'text-green-600', bg: 'bg-green-50', desc: 'Deep research, critical analysis & method', progress: 20 },
   { name: 'Oditi', role: 'Pattern Detective', icon: Zap, color: 'text-purple-600', bg: 'bg-purple-50', desc: 'Spot connections, solve puzzles', progress: 10 },
 ];
 
-/* ─── Pathway cards ─── */
 const pathways = [
   { title: 'Discover', subtitle: 'Master Concepts', desc: 'Connect the dots in your learning.', path: '/oasis', cta: 'Continue', progress: 20, icon: BookOpen },
   { title: 'Focus', subtitle: 'Mindfulness', desc: 'Breathe, reflect, grow.', path: '/delores', cta: 'Begin', progress: 60, icon: Heart },
@@ -36,17 +34,18 @@ const menuItems = [
   { icon: LibraryIcon, label: 'Library', path: '/library' },
   { icon: Video, label: 'Video Feed', path: '/video' },
   { icon: User, label: 'Profile', path: '/gamification' },
+  { icon: Crown, label: 'Upgrade to Pro', path: '/pricing' },
   { icon: SlidersHorizontal, label: 'Preferences', path: '/gamification' },
 ];
 
-const ONBOARDING_KEY = 'qclick-onboarding-v4';
+const ONBOARDING_KEY = 'qclick-onboarding-v5';
 
 const TOUR_STEPS = [
-  { title: 'Welcome to Q-Click', body: 'Your personal learning sanctuary. Let\'s take a quick look around.', emoji: '✨' },
-  { title: 'Pathways', body: 'Discover, Focus, Sandbox, and Quests — four ways to learn.', emoji: '🧭' },
-  { title: 'Video Feed', body: 'Watch curated content from top educational channels.', emoji: '🎬' },
-  { title: 'Forge Labs', body: 'Build concepts, run experiments, create with AI.', emoji: '🔬' },
-  { title: 'Go Pro', body: 'Upgrade for unlimited AI, concept maps & more.', emoji: '🔓' },
+  { title: 'Welcome to Q-Click', body: 'Your personal learning sanctuary. Tap any pathway to begin your journey.', emoji: '✨' },
+  { title: 'Four Pathways', body: 'Discover concepts, Focus on wellbeing, Build in the Sandbox, or take on Quests.', emoji: '🧭' },
+  { title: 'Daily Insight Feed', body: 'Tap any video to watch curated content from top educational channels.', emoji: '🎬' },
+  { title: 'Forge Labs', body: 'Your infinite sandbox — collide concepts, run experiments, build with AI.', emoji: '🔬' },
+  { title: 'Go Pro', body: 'Upgrade for unlimited AI, concept maps, personalised paths & more.', emoji: '🔓' },
 ];
 
 const Index = () => {
@@ -63,6 +62,7 @@ const Index = () => {
   const [showPaywall, setShowPaywall] = useState(false);
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [videoReady, setVideoReady] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
 
   const filteredVideos = getVideosByCategory(selectedCat);
 
@@ -72,6 +72,13 @@ const Index = () => {
       return () => clearTimeout(t);
     }
   }, []);
+
+  // Try to play video on mount
+  useEffect(() => {
+    if (videoEnabled && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [videoEnabled]);
 
   const finishTour = useCallback(() => {
     setShowTour(false);
@@ -96,12 +103,12 @@ const Index = () => {
     >
       {/* ═══ FIXED BACKGROUND: Video or Image ═══ */}
       <div className="fixed inset-0 z-0">
-        {/* Fallback image — always present */}
+        {/* Fallback image — always present, 100% cover */}
         <img
           src="/images/home-hero-study.png"
           alt=""
           className={cn(
-            'absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700',
+            'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
             videoReady && videoEnabled ? 'opacity-0' : 'opacity-100'
           )}
         />
@@ -115,7 +122,8 @@ const Index = () => {
             loop
             muted
             playsInline
-            onCanPlay={() => setVideoReady(true)}
+            preload="auto"
+            onCanPlayThrough={() => setVideoReady(true)}
             className={cn(
               'absolute inset-0 w-full h-full object-cover transition-opacity duration-1000',
               videoReady ? 'opacity-100' : 'opacity-0'
@@ -124,7 +132,7 @@ const Index = () => {
         )}
 
         {/* Gradient overlay for readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/80 to-white" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/70 to-background/95" />
       </div>
 
       {/* ═══ SCROLLABLE CONTENT ═══ */}
@@ -155,12 +163,11 @@ const Index = () => {
               <Trophy className="w-3 h-3 text-primary" />
               <span className="text-[10px] font-semibold text-foreground">1280</span>
             </div>
-            {/* Video toggle */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setVideoEnabled(v => !v)}
               className="w-8 h-8 rounded-xl flex items-center justify-center border border-border bg-background/60 backdrop-blur-xl"
-              title={videoEnabled ? 'Disable video' : 'Enable video'}
+              title={videoEnabled ? 'Disable background video' : 'Enable background video'}
             >
               {videoEnabled ? <Eye className="w-3 h-3 text-foreground" /> : <EyeOff className="w-3 h-3 text-muted-foreground" />}
             </motion.button>
@@ -178,17 +185,17 @@ const Index = () => {
           </div>
         </motion.div>
 
-        {/* Hero: Q Logo only (no text) */}
+        {/* Hero: Q Logo only */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.8, ease }}
-          className="flex flex-col items-center mt-8 mb-6"
+          className="flex flex-col items-center mt-6 mb-4"
         >
           <motion.div
             animate={{ scale: [1, 1.04, 1] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-24 h-24 sm:w-28 sm:h-28"
+            className="w-20 h-20 sm:w-24 sm:h-24"
           >
             <img
               src="/images/qclick-logo-new.svg"
@@ -196,6 +203,26 @@ const Index = () => {
               className="w-full h-full object-contain drop-shadow-xl"
             />
           </motion.div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-xs text-muted-foreground mt-2 italic tracking-wide"
+          >
+            the architecture of thought
+          </motion.p>
+        </motion.div>
+
+        {/* ═══ HOW IT WORKS — quick guide ═══ */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.5, ease }}
+          className="mx-5 mb-4 p-3 rounded-2xl border border-border bg-background/60 backdrop-blur-xl"
+        >
+          <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
+            <span className="font-semibold text-foreground">Your journey:</span> Pick a pathway below → watch curated videos → build in Forge Labs → track progress
+          </p>
         </motion.div>
 
         {/* ═══ PATHWAY CARDS ═══ */}
@@ -335,7 +362,7 @@ const Index = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease }}
                 className="rounded-2xl border border-border bg-background/80 backdrop-blur-xl overflow-hidden hover:shadow-md transition-all cursor-pointer group"
-                onClick={() => smoothNavigate('/video')}
+                onClick={() => setSelectedVideo(video)}
               >
                 <div className="relative aspect-video bg-muted overflow-hidden">
                   {video.thumbnail ? (
@@ -358,7 +385,7 @@ const Index = () => {
                   <span className="absolute bottom-2 right-2 text-[9px] font-medium bg-foreground/80 text-background px-1.5 py-0.5 rounded">
                     {video.duration}
                   </span>
-                  <span className="absolute top-2 left-2 text-[8px] font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
+                  <span className="absolute top-2 left-2 text-[8px] font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded-full backdrop-blur-sm">
                     {video.level}
                   </span>
                 </div>
@@ -392,17 +419,17 @@ const Index = () => {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => setShowPaywall(true)}
+                onClick={() => smoothNavigate('/pricing')}
                 className="mt-3 px-5 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold shadow-sm"
               >
-                Try Pro Free · 7 Days
+                View Plans & Pricing
               </motion.button>
             </div>
           </div>
         </motion.div>
 
         {/* ═══ QUICK STATS ═══ */}
-        <div className="px-5 mb-24">
+        <div className="px-5 mb-6">
           <div className={cn('grid gap-3', isMobile ? 'grid-cols-2' : 'grid-cols-4')}>
             {[
               { label: 'Concepts', value: '45' },
@@ -423,10 +450,15 @@ const Index = () => {
             ))}
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="px-5 pb-24 text-center">
+          <p className="text-[10px] text-muted-foreground">Q-Click v1.0 · Developer Preview</p>
+        </div>
       </div>
 
-      {/* ═══ BOTTOM NAV ═══ */}
-      <BottomNav />
+      {/* ═══ VIDEO PLAYER MODAL ═══ */}
+      <VideoPlayerModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />
 
       {/* ═══ SLIDE MENU ═══ */}
       <AnimatePresence>
@@ -555,11 +587,15 @@ const Index = () => {
                 </div>
                 <h3 className="text-lg font-semibold text-foreground">Upgrade to Q-Click Pro</h3>
                 <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  Unlock advanced concept maps, unlimited AI quests, personalized learning paths, and full Forge Labs access.
+                  Unlock advanced concept maps, unlimited AI quests, personalised learning paths, and full Forge Labs access.
                 </p>
+                <p className="text-xs text-muted-foreground mt-2">Starting at <span className="font-semibold text-foreground">$9.99/month</span></p>
                 <div className="flex flex-col gap-2 mt-5">
-                  <button className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm">
-                    Start Free Trial · 7 Days
+                  <button
+                    onClick={() => { setShowPaywall(false); smoothNavigate('/pricing'); }}
+                    className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm"
+                  >
+                    View Plans & Pricing
                   </button>
                   <button onClick={() => setShowPaywall(false)} className="text-xs text-muted-foreground">
                     Maybe later

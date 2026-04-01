@@ -15,6 +15,7 @@ import VideoPage from "./pages/Video";
 import Forge from "./pages/Forge";
 import Gamification from "./pages/Gamification";
 import Library from "./pages/Library";
+import Pricing from "./pages/Pricing";
 import Placeholder from "./pages/Placeholder";
 import NotFound from "./pages/NotFound";
 
@@ -47,6 +48,7 @@ const AppRoutes = () => {
         <Route path="/forge" element={<Forge />} />
         <Route path="/gamification" element={<Gamification />} />
         <Route path="/library" element={<Library />} />
+        <Route path="/pricing" element={<Pricing />} />
         <Route path="/sentences" element={<Placeholder title="Sentences" description="Build and deconstruct sentences across languages. Coming soon." />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
