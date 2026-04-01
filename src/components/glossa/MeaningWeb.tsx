@@ -96,7 +96,7 @@ const MeaningWeb = ({ focusConcept, onSelectConcept }: MeaningWebProps) => {
           })}
         </svg>
       </div>
-      <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
     </>
   );
 };
