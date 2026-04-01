@@ -187,6 +187,8 @@ const OasisChat = () => {
         </form>
       </div>
     </div>
+    <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
+    </>
   );
 };
 
