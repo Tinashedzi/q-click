@@ -5,7 +5,7 @@ import {
   BookOpen, Brain, Target, Zap, Heart,
   Menu, X, ChevronRight, ChevronDown, Sparkles, Play,
   Lock, Flame, Trophy, User, Beaker,
-  Library as LibraryIcon, Video, SlidersHorizontal,
+  Library as LibraryIcon, Video,
   HelpCircle, Eye, EyeOff, Crown, Gamepad2, Settings,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
