@@ -522,7 +522,7 @@ const Index = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -12, scale: 0.95 }}
               transition={{ duration: 0.35, ease }}
-              className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] w-[290px] rounded-2xl border border-border bg-background/95 backdrop-blur-xl p-4 shadow-lg"
+              className="fixed bottom-24 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto z-[100] max-w-[290px] mx-auto rounded-2xl border border-border bg-background/95 backdrop-blur-xl p-4 shadow-lg"
             >
               <div className="flex items-start gap-3 mb-3">
                 <span className="text-xl">{TOUR_STEPS[tourStep].emoji}</span>
