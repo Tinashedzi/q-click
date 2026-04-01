@@ -237,22 +237,22 @@ const Index = () => {
           </div>
         </div>
 
-        {/* ═══ INTERACTIVE GAMES LINK ═══ */}
+      {/* ═══ P-NET GAMES + LABS LINK ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.5, ease }}
           className="mx-5 mt-4 rounded-2xl border border-accent/20 bg-background/80 backdrop-blur-xl p-4 cursor-pointer"
-          onClick={() => smoothNavigate('/glossa')}
+          onClick={() => smoothNavigate('/forge')}
         >
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
               <Gamepad2 className="w-5 h-5 text-accent-foreground" />
             </div>
             <div className="flex-1">
-              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Interactive</span>
-              <h3 className="text-sm font-semibold text-foreground">P-Net Games</h3>
-              <p className="text-[11px] text-muted-foreground">Word puzzles, pattern matching & concept games</p>
+              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Interactive Labs</span>
+              <h3 className="text-sm font-semibold text-foreground">P-Net Games & Forge Labs</h3>
+              <p className="text-[11px] text-muted-foreground">Experiments, games, concept collisions & simulations</p>
             </div>
             <ChevronRight className="w-4 h-4 text-primary shrink-0" />
           </div>

@@ -118,6 +118,20 @@ const Pricing = () => {
     }
   }, [user, navigate]);
 
+  const handleManageSubscription = useCallback(async () => {
+    if (!user) return;
+    setLoadingTier('manage');
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+      if (error) throw error;
+      if (data?.url) window.open(data.url, '_blank');
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to open subscription management');
+    } finally {
+      setLoadingTier(null);
+    }
+  }, [user]);
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl pb-28">
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ ease }} className="mb-8">
