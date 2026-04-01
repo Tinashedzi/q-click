@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2 } from 'lucide-react';
+import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -118,6 +118,20 @@ const Pricing = () => {
     }
   }, [user, navigate]);
 
+  const handleManageSubscription = useCallback(async () => {
+    if (!user) return;
+    setLoadingTier('manage');
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+      if (error) throw error;
+      if (data?.url) window.open(data.url, '_blank');
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to open subscription management');
+    } finally {
+      setLoadingTier(null);
+    }
+  }, [user]);
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl pb-28">
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ ease }} className="mb-8">
@@ -207,6 +221,25 @@ const Pricing = () => {
           </motion.div>
         ))}
       </div>
+
+      {subscription.subscribed && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="flex justify-center mt-6"
+        >
+          <motion.button
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={handleManageSubscription}
+            className="flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-background/80 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+          >
+            <Settings className="w-4 h-4" />
+            Manage Subscription
+          </motion.button>
+        </motion.div>
+      )}
 
       <motion.p
         initial={{ opacity: 0 }}

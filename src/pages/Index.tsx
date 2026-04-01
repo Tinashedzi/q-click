@@ -122,17 +122,17 @@ const Index = () => {
               preload="auto"
               onCanPlayThrough={() => setVideoReady(true)}
               className={cn(
-                'absolute inset-0 w-full h-full object-contain transition-opacity duration-1000 brightness-110',
+                'absolute inset-0 w-full h-full object-cover transition-opacity duration-1000',
                 videoReady ? 'opacity-100' : 'opacity-0'
               )}
-              style={{ background: 'hsl(var(--background))' }}
+              style={{ filter: 'brightness(1.15) contrast(1.05)' }}
             />
           </>
         ) : (
           <img src="/images/home-hero-study.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
         )}
-        {/* Overlay for readability */}
-        <div className="absolute inset-0 bg-background/40" />
+        {/* Subtle overlay for readability */}
+        <div className="absolute inset-0 bg-background/20" />
       </div>
 
       {/* ═══ FIXED TOP BAR (never scrolls) ═══ */}
@@ -237,47 +237,28 @@ const Index = () => {
           </div>
         </div>
 
-        {/* ═══ INTERACTIVE GAMES LINK ═══ */}
+      {/* ═══ P-NET GAMES + LABS LINK ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.5, ease }}
           className="mx-5 mt-4 rounded-2xl border border-accent/20 bg-background/80 backdrop-blur-xl p-4 cursor-pointer"
-          onClick={() => smoothNavigate('/glossa')}
+          onClick={() => smoothNavigate('/forge')}
         >
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
               <Gamepad2 className="w-5 h-5 text-accent-foreground" />
             </div>
             <div className="flex-1">
-              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Interactive</span>
-              <h3 className="text-sm font-semibold text-foreground">P-Net Games</h3>
-              <p className="text-[11px] text-muted-foreground">Word puzzles, pattern matching & concept games</p>
+              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Interactive Labs</span>
+              <h3 className="text-sm font-semibold text-foreground">P-Net Games & Forge Labs</h3>
+              <p className="text-[11px] text-muted-foreground">Experiments, games, concept collisions & simulations</p>
             </div>
             <ChevronRight className="w-4 h-4 text-primary shrink-0" />
           </div>
         </motion.div>
 
-        {/* ═══ FORGE LABS BANNER ═══ */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65, duration: 0.5, ease }}
-          className="mx-5 mt-3 rounded-2xl border border-primary/20 bg-background/80 backdrop-blur-xl p-4 cursor-pointer"
-          onClick={() => smoothNavigate('/forge')}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Beaker className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Labs</span>
-              <h3 className="text-sm font-semibold text-foreground">Forge Labs</h3>
-              <p className="text-[11px] text-muted-foreground">Build concepts, run experiments, create with AI</p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-primary shrink-0" />
-          </div>
-        </motion.div>
+
 
         {/* ═══ DELORES FLOATING BUTTON ═══ */}
         <motion.button

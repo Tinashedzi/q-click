@@ -42,7 +42,8 @@ const Auth = () => {
           playsInline
           preload="auto"
           onCanPlayThrough={() => setVideoReady(true)}
-          className={`h-full max-h-screen aspect-[9/16] object-cover transition-opacity duration-1000 brightness-110 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+          className={`h-full max-h-screen aspect-[9/16] object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+          style={{ filter: 'brightness(1.15) contrast(1.05)' }}
         />
         {/* Subtle bottom gradient for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
