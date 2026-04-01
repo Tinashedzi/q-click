@@ -18,7 +18,7 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isHome = location.pathname === '/';
   const isDelores = location.pathname === '/delores';
-  // Home and Delores manage their own full-screen chrome
+  // Home manages its own layout; Delores has its own chrome
   const isFullScreen = isHome || isDelores;
   const [journalOpen, setJournalOpen] = useState(false);
 
