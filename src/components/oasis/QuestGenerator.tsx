@@ -180,7 +180,7 @@ const QuestGenerator = () => {
         </div>
 
         <Button onClick={generateQuest} disabled={generating || !topic.trim()} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
-          {generating ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Architecting quest…</> : <><Sparkles className="w-4 h-4 mr-2" /> Generate Quest</>}
+          {generating ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Architecting quest…</> : <><Sparkles className="w-4 h-4 mr-2" /> Generate Quest (1⚡)</>}
         </Button>
       </div>
 
