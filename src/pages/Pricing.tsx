@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2 } from 'lucide-react';
+import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
