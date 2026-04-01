@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
+import { useCreditGate } from '@/hooks/useCreditGate';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 
 interface Message {
   id: string;
