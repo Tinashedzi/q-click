@@ -14,6 +14,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Progress } from '@/components/ui/progress';
 import { categories, getVideosByCategory, type VideoItem } from '@/data/videoFeed';
 import VideoPlayerModal from '@/components/VideoPlayerModal';
+import CreditBar from '@/components/credits/CreditBar';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
