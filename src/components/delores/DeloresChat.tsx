@@ -77,6 +77,7 @@ interface DeloresChatProps {
 }
 
 const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresChatProps) => {
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
