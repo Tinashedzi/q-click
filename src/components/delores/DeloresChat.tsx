@@ -275,7 +275,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         </form>
       </div>
     </div>
-    <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
+    <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
     </>
   );
 };

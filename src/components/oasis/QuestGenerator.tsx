@@ -279,7 +279,7 @@ const QuestGenerator = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
     </div>
   );
 };
