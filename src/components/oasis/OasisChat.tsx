@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
+import { useCreditGate } from '@/hooks/useCreditGate';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 
 interface Message {
   id: string;
@@ -24,6 +26,7 @@ const suggestedQuestions = [
 ];
 
 const OasisChat = () => {
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
@@ -42,6 +45,8 @@ const OasisChat = () => {
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text.trim() };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
@@ -123,6 +128,7 @@ const OasisChat = () => {
   };
 
   return (
+    <>
     <div className="flex flex-col h-[60vh] max-h-[600px]">
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-4">
         <AnimatePresence>
@@ -182,6 +188,8 @@ const OasisChat = () => {
         </form>
       </div>
     </div>
+    <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
+    </>
   );
 };
 

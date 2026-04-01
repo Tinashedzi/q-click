@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useCreditGate } from '@/hooks/useCreditGate';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 
 interface RubricCriteria {
   name: string;
@@ -26,6 +28,7 @@ const LEVEL_COLORS: Record<string, string> = {
 };
 
 const RubricGenerator = () => {
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
@@ -64,6 +67,8 @@ const RubricGenerator = () => {
     if (!selectedGoalId) return;
     const goal = goals.find((g: any) => g.id === selectedGoalId);
     if (!goal) return;
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
 
     setGenerating(true);
     try {
@@ -130,7 +135,7 @@ const RubricGenerator = () => {
           size="sm"
         >
           <Sparkles className="w-3.5 h-3.5" />
-          {generating ? 'Generating…' : 'Generate Rubric'}
+          {generating ? 'Generating…' : 'Generate Rubric (1⚡)'}
         </Button>
       </div>
 
@@ -215,6 +220,7 @@ const RubricGenerator = () => {
           })}
         </div>
       )}
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
     </div>
   );
 };

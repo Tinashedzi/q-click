@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2, Settings, Share2 } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Check, Sparkles, Zap, Crown, ChevronLeft, Loader2, Settings, Share2, CreditCard } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,13 +23,21 @@ const TIERS = {
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, subscription, refreshSubscription } = useAuth();
-  const { credits } = useCredits();
+  const { credits, fetchCredits } = useCredits();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
   useEffect(() => {
     refreshSubscription();
-  }, [refreshSubscription]);
+    // Handle post-credit-purchase
+    if (searchParams.get('credits_purchased') === 'true') {
+      toast.success('🎉 50 bonus credits added to your account!');
+      fetchCredits();
+      // Clean URL
+      window.history.replaceState({}, '', '/pricing');
+    }
+  }, [refreshSubscription, searchParams, fetchCredits]);
 
   const activeTier = subscription.subscribed
     ? Object.entries(TIERS).find(([, v]) => v.product_id === subscription.productId)?.[0] ?? null
@@ -131,6 +139,23 @@ const Pricing = () => {
       if (data?.url) window.open(data.url, '_blank');
     } catch (e: any) {
       toast.error(e.message || 'Failed to open subscription management');
+    } finally {
+      setLoadingTier(null);
+    }
+  }, [user]);
+
+  const handleBuyCredits = useCallback(async () => {
+    if (!user) {
+      toast.error('Please sign in first.');
+      return;
+    }
+    setLoadingTier('credits');
+    try {
+      const { data, error } = await supabase.functions.invoke('purchase-credits');
+      if (error) throw error;
+      if (data?.url) window.open(data.url, '_blank');
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to start checkout');
     } finally {
       setLoadingTier(null);
     }
@@ -264,8 +289,34 @@ const Pricing = () => {
         </motion.div>
       )}
 
+      {/* Credit top-up */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, ease }}
+        className="mt-8 rounded-2xl border border-border/40 bg-card p-6 flex flex-col sm:flex-row items-center gap-4"
+      >
+        <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+          <CreditCard className="w-5 h-5 text-accent" />
+        </div>
+        <div className="flex-1 text-center sm:text-left">
+          <h3 className="text-base font-semibold text-foreground">Need more credits?</h3>
+          <p className="text-sm text-muted-foreground">Buy a 50-credit pack for $4.99 — no subscription needed. Use them anytime.</p>
+        </div>
+        <motion.button
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={handleBuyCredits}
+          disabled={loadingTier === 'credits'}
+          className="px-5 py-3 rounded-xl bg-accent text-accent-foreground text-sm font-semibold hover:bg-accent/90 transition-colors flex items-center gap-2 shrink-0"
+        >
+          {loadingTier === 'credits' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+          Buy 50 Credits — $4.99
+        </motion.button>
+      </motion.div>
+
       {/* Referral section */}
-      <div className="mt-8">
+      <div className="mt-6">
         <ReferralCard />
       </div>
 

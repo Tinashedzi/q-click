@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useSpeech } from '@/hooks/useSpeech';
 import ReactMarkdown from 'react-markdown';
 import DeloresAvatar from './DeloresAvatar';
+import { useCreditGate } from '@/hooks/useCreditGate';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 
 interface Message {
   id: string;
@@ -75,6 +77,7 @@ interface DeloresChatProps {
 }
 
 const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresChatProps) => {
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
@@ -109,6 +112,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text.trim() };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
@@ -191,6 +196,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   };
 
   return (
+    <>
     <div className="flex flex-col h-full">
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-4">
         <AnimatePresence>
@@ -269,6 +275,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         </form>
       </div>
     </div>
+    <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
+    </>
   );
 };
 

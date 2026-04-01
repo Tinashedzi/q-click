@@ -18,6 +18,7 @@ import Gamification from "./pages/Gamification";
 import Library from "./pages/Library";
 import Pricing from "./pages/Pricing";
 import Placeholder from "./pages/Placeholder";
+import Referral from "./pages/Referral";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,6 +52,7 @@ const AppRoutes = () => {
             <Route path="/gamification" element={<Gamification />} />
             <Route path="/library" element={<Library />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/referral" element={<Referral />} />
             <Route path="/sentences" element={<Placeholder title="Sentences" description="Build and deconstruct sentences across languages. Coming soon." />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import QuestToForge from '@/components/oasis/QuestToForge';
+import { useCreditGate } from '@/hooks/useCreditGate';
+import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 
 interface QuestStage {
   name: string;
@@ -51,6 +53,7 @@ const stageColors: Record<string, string> = {
 };
 
 const QuestGenerator = () => {
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [topic, setTopic] = useState('');
   const [beltLevel, setBeltLevel] = useState('white');
   const [generating, setGenerating] = useState(false);
@@ -71,6 +74,8 @@ const QuestGenerator = () => {
 
   const generateQuest = async () => {
     if (!topic.trim()) return;
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
     setGenerating(true);
     setQuest(null);
 
@@ -175,7 +180,7 @@ const QuestGenerator = () => {
         </div>
 
         <Button onClick={generateQuest} disabled={generating || !topic.trim()} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
-          {generating ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Architecting quest…</> : <><Sparkles className="w-4 h-4 mr-2" /> Generate Quest</>}
+          {generating ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Architecting quest…</> : <><Sparkles className="w-4 h-4 mr-2" /> Generate Quest (1⚡)</>}
         </Button>
       </div>
 
@@ -274,6 +279,7 @@ const QuestGenerator = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
     </div>
   );
 };

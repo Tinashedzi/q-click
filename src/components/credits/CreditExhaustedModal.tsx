@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Zap, Crown, Share2, X, Clock } from 'lucide-react';
+import { Zap, Crown, Share2, X, Clock, CreditCard, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCredits } from '@/contexts/CreditsContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CreditExhaustedModalProps {
   open: boolean;
@@ -12,14 +14,27 @@ interface CreditExhaustedModalProps {
 const CreditExhaustedModal = ({ open, onClose }: CreditExhaustedModalProps) => {
   const navigate = useNavigate();
   const { credits } = useCredits();
+  const [buyingCredits, setBuyingCredits] = useState(false);
 
   const shareApp = async () => {
     const text = `Join me on Q-Click! Use my referral code: ${credits.referral_code} to get 2 bonus AI credits 🎓✨`;
     if (navigator.share) {
-      await navigator.share({ title: 'Q-Click', text, url: window.location.origin });
+      await navigator.share({ title: 'Q-Click', text, url: `${window.location.origin}/referral?code=${credits.referral_code}` });
     } else {
-      await navigator.clipboard.writeText(text);
-      // toast handled by the caller
+      await navigator.clipboard.writeText(`${window.location.origin}/referral?code=${credits.referral_code}`);
+    }
+  };
+
+  const handleBuyCredits = async () => {
+    setBuyingCredits(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('purchase-credits');
+      if (error) throw error;
+      if (data?.url) window.open(data.url, '_blank');
+    } catch {
+      // silently fail
+    } finally {
+      setBuyingCredits(false);
     }
   };
 
@@ -38,7 +53,7 @@ const CreditExhaustedModal = ({ open, onClose }: CreditExhaustedModalProps) => {
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
             onClick={e => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-border bg-background p-6 space-y-5 shadow-xl"
+            className="w-full max-w-sm rounded-2xl border border-border bg-background p-6 space-y-5 shadow-xl relative"
           >
             <button onClick={onClose} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
               <X className="w-4 h-4" />
@@ -63,6 +78,15 @@ const CreditExhaustedModal = ({ open, onClose }: CreditExhaustedModalProps) => {
                 </div>
               </div>
 
+              <button onClick={handleBuyCredits} disabled={buyingCredits} className="w-full flex items-start gap-3 p-3 rounded-xl bg-accent/5 border border-accent/20 hover:bg-accent/10 transition-colors text-left">
+                <CreditCard className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-foreground">Buy 50 credits — $4.99</p>
+                  <p className="text-xs text-muted-foreground">One-time purchase, no subscription</p>
+                </div>
+                {buyingCredits && <Loader2 className="w-4 h-4 animate-spin text-accent ml-auto mt-0.5" />}
+              </button>
+
               <div className="flex items-start gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
                 <Crown className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                 <div>
@@ -71,8 +95,8 @@ const CreditExhaustedModal = ({ open, onClose }: CreditExhaustedModalProps) => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-accent/5 border border-accent/20">
-                <Share2 className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/5 border border-secondary/20">
+                <Share2 className="w-4 h-4 text-secondary mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Share & earn</p>
                   <p className="text-xs text-muted-foreground">Invite friends → earn 2 bonus credits each</p>
