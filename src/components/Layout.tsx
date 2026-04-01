@@ -16,10 +16,10 @@ const pageVariants = {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
-  const isHome = location.pathname === '/';
   const isDelores = location.pathname === '/delores';
-  // Home manages its own layout; Delores has its own chrome
-  const isFullScreen = isHome || isDelores;
+  const isHome = location.pathname === '/';
+  // Delores manages its own full-screen chrome; Home has its own top bar but shares bottom nav
+  const isFullScreen = isDelores;
   const [journalOpen, setJournalOpen] = useState(false);
 
   return (
