@@ -53,6 +53,7 @@ const stageColors: Record<string, string> = {
 };
 
 const QuestGenerator = () => {
+  const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [topic, setTopic] = useState('');
   const [beltLevel, setBeltLevel] = useState('white');
   const [generating, setGenerating] = useState(false);
