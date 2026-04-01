@@ -418,8 +418,8 @@ const Index = () => {
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Premium</span>
-                <h3 className="text-base font-semibold text-foreground mt-0.5">Upgrade to Q-Click Pro</h3>
+                <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Level Up</span>
+                <h3 className="text-base font-semibold text-foreground mt-0.5">Become an Intern or Inventor</h3>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                   Advanced concept maps, unlimited AI quests, personalized learning paths.
                 </p>
