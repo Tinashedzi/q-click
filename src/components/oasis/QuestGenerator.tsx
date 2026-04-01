@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Sparkles, Loader2, BookOpen, Users, Hammer, Heart, Clock, ChevronRight, Check } from 'lucide-react';
