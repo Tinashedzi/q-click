@@ -37,7 +37,7 @@ const menuItems = [
   { icon: Video, label: 'Video Feed', path: '/video' },
   { icon: User, label: 'Profile', path: '/gamification' },
   { icon: Crown, label: 'Upgrade to Pro', path: '/pricing' },
-  { icon: SlidersHorizontal, label: 'Preferences', path: '/gamification' },
+  { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 const ONBOARDING_KEY = 'qclick-onboarding-v5';
