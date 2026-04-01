@@ -112,6 +112,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text.trim() };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
