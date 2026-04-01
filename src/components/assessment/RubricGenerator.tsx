@@ -67,6 +67,8 @@ const RubricGenerator = () => {
     if (!selectedGoalId) return;
     const goal = goals.find((g: any) => g.id === selectedGoalId);
     if (!goal) return;
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
 
     setGenerating(true);
     try {
