@@ -9,6 +9,7 @@ import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 import PomodoroFocus from '@/components/delores/PomodoroFocus';
 import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
+import DelorisRadio from '@/components/delores/DelorisRadio';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -17,6 +18,7 @@ import BottomNav from '@/components/BottomNav';
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const activities = [
+  { title: 'Deloris Radio', subtitle: 'Focus soundscapes & beats', progress: 0, unlocked: true, action: 'radio' },
   { title: 'Deep Breathing Basics', subtitle: 'AI Narrated', progress: 35, unlocked: true, action: 'focus' },
   { title: 'Managing Stress', subtitle: 'Calm your mind', progress: 60, unlocked: true, action: 'mood' },
   { title: 'Mindful Movement Flow', subtitle: 'Gentle body movements', progress: 45, unlocked: true, action: 'matrix' },
@@ -245,6 +247,7 @@ const Delores = () => {
                 {activeView === 'journal' && <JournalEntry onComplete={() => setActiveView(null)} />}
                 {activeView === 'focus' && <PomodoroFocus />}
                 {activeView === 'calendar' && <StreakCalendar />}
+                {activeView === 'radio' && <DelorisRadio moodLevel={currentMood} />}
               </div>
             </motion.div>
           )}

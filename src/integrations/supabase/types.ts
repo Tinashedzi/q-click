@@ -431,6 +431,72 @@ export type Database = {
         }
         Relationships: []
       }
+      video_content: {
+        Row: {
+          added_by: string | null
+          ai_keywords: string[] | null
+          ai_quality_score: number | null
+          ai_summary: string | null
+          channel_name: string | null
+          created_at: string
+          description: string | null
+          difficulty_level: string
+          duration_seconds: number | null
+          id: string
+          is_curated: boolean | null
+          stem_domain: string
+          stem_subdomain: string | null
+          stem_topic: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          view_count: number | null
+          youtube_id: string
+        }
+        Insert: {
+          added_by?: string | null
+          ai_keywords?: string[] | null
+          ai_quality_score?: number | null
+          ai_summary?: string | null
+          channel_name?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string
+          duration_seconds?: number | null
+          id?: string
+          is_curated?: boolean | null
+          stem_domain?: string
+          stem_subdomain?: string | null
+          stem_topic?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          view_count?: number | null
+          youtube_id: string
+        }
+        Update: {
+          added_by?: string | null
+          ai_keywords?: string[] | null
+          ai_quality_score?: number | null
+          ai_summary?: string | null
+          channel_name?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty_level?: string
+          duration_seconds?: number | null
+          id?: string
+          is_curated?: boolean | null
+          stem_domain?: string
+          stem_subdomain?: string | null
+          stem_topic?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          view_count?: number | null
+          youtube_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
