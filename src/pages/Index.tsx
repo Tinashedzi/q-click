@@ -258,26 +258,7 @@ const Index = () => {
           </div>
         </motion.div>
 
-        {/* ═══ FORGE LABS BANNER ═══ */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65, duration: 0.5, ease }}
-          className="mx-5 mt-3 rounded-2xl border border-primary/20 bg-background/80 backdrop-blur-xl p-4 cursor-pointer"
-          onClick={() => smoothNavigate('/forge')}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Beaker className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <span className="text-[9px] font-bold text-primary uppercase tracking-wider">Labs</span>
-              <h3 className="text-sm font-semibold text-foreground">Forge Labs</h3>
-              <p className="text-[11px] text-muted-foreground">Build concepts, run experiments, create with AI</p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-primary shrink-0" />
-          </div>
-        </motion.div>
+
 
         {/* ═══ DELORES FLOATING BUTTON ═══ */}
         <motion.button
