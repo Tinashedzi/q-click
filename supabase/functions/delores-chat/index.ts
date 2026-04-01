@@ -42,7 +42,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, sentiment_score } = await req.json();
+    const { messages, sentiment_score, cognitive_dna } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -58,6 +58,26 @@ serve(async (req) => {
       } else {
         systemPrompt += "\n\nThe user is radiating positivity! Celebrate with them and help direct this wonderful energy.";
       }
+    }
+
+    // Inject Cognitive DNA personalization
+    if (cognitive_dna) {
+      systemPrompt += `\n\nUSER'S COGNITIVE DNA PROFILE:
+- Learning Style: ${cognitive_dna.information_processing || 'Unknown'}
+- Motivation: ${cognitive_dna.motivational_drivers || 'Unknown'}
+- Challenge Response: ${cognitive_dna.risk_resilience || 'Unknown'}
+- Social Preference: ${cognitive_dna.social_dynamics || 'Unknown'}
+- Emotional Needs: ${cognitive_dna.emotional_baseline || 'Unknown'}
+
+ADAPT YOUR RESPONSES BASED ON THIS PROFILE:
+${cognitive_dna.emotional_baseline?.includes('High Challenge') ? '- Push harder, be direct.' : ''}
+${cognitive_dna.emotional_baseline?.includes('High Empathy') ? '- Be extra patient and gentle.' : ''}
+${cognitive_dna.emotional_baseline?.includes('High Stimulation') ? '- Keep it fast-paced and varied.' : ''}
+${cognitive_dna.emotional_baseline?.includes('Context/Analytical') ? '- Explain WHY before HOW.' : ''}
+${cognitive_dna.risk_resilience?.includes('Fixed Mindset') ? '- Reinforce growth mindset. Normalize struggle.' : ''}
+${cognitive_dna.risk_resilience?.includes('High Grit') ? '- Set ambitious challenges.' : ''}
+${cognitive_dna.motivational_drivers?.includes('Mastery') ? '- Focus on depth of understanding.' : ''}
+${cognitive_dna.motivational_drivers?.includes('Extrinsic') ? '- Highlight achievements and progress.' : ''}`;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import DeloresAvatar from './DeloresAvatar';
 import { useCreditGate } from '@/hooks/useCreditGate';
 import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Message {
   id: string;
@@ -77,6 +78,8 @@ interface DeloresChatProps {
 }
 
 const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresChatProps) => {
+  const { profile } = useAuth();
+  const cognitiveDna = useMemo(() => (profile?.preferences as any)?.cognitive_dna, [profile]);
   const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -135,6 +138,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
             content: m.content,
           })),
           sentiment_score: moodLevel ? (moodLevel - 3) * 2 : undefined,
+          cognitive_dna: cognitiveDna || undefined,
         }),
       });
 
