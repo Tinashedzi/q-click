@@ -103,7 +103,7 @@ const ConceptCollision = ({ onExperimentSelect, onAddToCanvas }: {
         {colliding ? (
           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Colliding with AI…</>
         ) : (
-          <><Zap className="w-4 h-4 mr-2" /> Collide</>
+          <><Zap className="w-4 h-4 mr-2" /> Collide (1⚡)</>
         )}
       </Button>
 
