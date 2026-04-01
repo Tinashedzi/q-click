@@ -10,8 +10,7 @@ const Auth = () => {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // Show content after a brief splash
-    const t = setTimeout(() => setShowContent(true), 2000);
+    const t = setTimeout(() => setShowContent(true), 3000);
     return () => clearTimeout(t);
   }, []);
 
@@ -32,28 +31,24 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-background">
-      {/* Video/Image background */}
-      <div className="fixed inset-0 z-0">
-        <img
-          src="/images/home-hero-study.png"
-          alt=""
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoReady ? 'opacity-0' : 'opacity-100'}`}
-        />
+      {/* Bright 9:16 splash video — centered */}
+      <div className="fixed inset-0 z-0 flex items-center justify-center bg-background">
         <video
           ref={videoRef}
-          src="/videos/qclick-intro.mp4"
+          src="/videos/qclick-logo-splash.mp4"
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
           onCanPlayThrough={() => setVideoReady(true)}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
+          className={`h-full max-h-screen aspect-[9/16] object-cover transition-opacity duration-1000 brightness-110 ${videoReady ? 'opacity-100' : 'opacity-0'}`}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background/90" />
+        {/* Subtle bottom gradient for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
       </div>
 
-      {/* Splash logo */}
+      {/* Splash logo (shows first 3s) */}
       <AnimatePresence>
         {!showContent && (
           <motion.div
