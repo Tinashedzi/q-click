@@ -111,7 +111,7 @@ const Index = () => {
               alt=""
               className={cn(
                 'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
-                videoReady ? 'opacity-35' : 'opacity-100'
+                videoReady ? 'opacity-0' : 'opacity-100'
               )}
             />
             <video
