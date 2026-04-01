@@ -100,8 +100,43 @@ const Index = () => {
       animate={navigatingTo ? { opacity: 0, scale: 0.96, filter: 'blur(8px)' } : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
       transition={{ duration: 0.4, ease }}
     >
+      {/* ═══ FULLSCREEN VIDEO WALLPAPER ═══ */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        {videoEnabled ? (
+          <>
+            <img
+              src="/images/home-hero-study.png"
+              alt=""
+              className={cn(
+                'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
+                videoReady ? 'opacity-0' : 'opacity-100'
+              )}
+            />
+            <video
+              ref={videoRef}
+              src="/videos/qclick-logo-splash.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onCanPlayThrough={() => setVideoReady(true)}
+              className={cn(
+                'absolute inset-0 w-full h-full object-contain transition-opacity duration-1000 brightness-110',
+                videoReady ? 'opacity-100' : 'opacity-0'
+              )}
+              style={{ background: 'hsl(var(--background))' }}
+            />
+          </>
+        ) : (
+          <img src="/images/home-hero-study.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+        )}
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 bg-background/40" />
+      </div>
+
       {/* ═══ FIXED TOP BAR (never scrolls) ═══ */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-background/70 backdrop-blur-xl border-b border-border/30">
         <div className="flex items-center justify-between px-5 py-3">
           <motion.button
             whileHover={{ scale: 1.08 }}
@@ -113,7 +148,6 @@ const Index = () => {
           </motion.button>
 
           <div className="flex items-center gap-2">
-            {/* Upgrade badge */}
             {!subscription.subscribed && (
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -155,55 +189,20 @@ const Index = () => {
         </div>
       </div>
 
-      {/* ═══ FIXED VIDEO (stays in place, feed scrolls under) ═══ */}
-      <div className="fixed top-[60px] left-0 right-0 z-30 flex flex-col items-center bg-background/90 backdrop-blur-sm pb-3 pt-3">
-        {videoEnabled ? (
-          <div className="relative w-[55%] max-w-[320px] aspect-[9/16] rounded-3xl overflow-hidden shadow-2xl">
-            <img
-              src="/images/home-hero-study.png"
-              alt=""
-              className={cn(
-                'absolute inset-0 w-full h-full object-cover transition-opacity duration-700',
-                videoReady ? 'opacity-0' : 'opacity-100'
-              )}
-            />
-            <video
-              ref={videoRef}
-              src="/videos/qclick-logo-splash.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              onCanPlayThrough={() => setVideoReady(true)}
-              className={cn(
-                'absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 brightness-110',
-                videoReady ? 'opacity-100' : 'opacity-0'
-              )}
-            />
-          </div>
-        ) : (
-          <div className="w-[55%] max-w-[320px] aspect-[9/16] rounded-3xl overflow-hidden shadow-lg">
-            <img src="/images/home-hero-study.png" alt="" className="w-full h-full object-cover" />
-          </div>
-        )}
+      {/* ═══ SCROLLABLE CONTENT ═══ */}
+      <div className="relative z-10 flex flex-col pt-[68px] pb-24">
 
-        {/* Logo + tagline below video */}
-        <motion.div
-          animate={{ scale: [1, 1.04, 1] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-14 h-14 mt-2"
-        >
-          <img src="/images/qclick-logo-new.svg" alt="Q-Click" className="w-full h-full object-contain drop-shadow-xl" />
-        </motion.div>
-        <p className="text-[10px] text-muted-foreground italic tracking-wide mt-0.5">the architecture of thought</p>
-      </div>
-
-      {/* ═══ SCROLLABLE FEED (pushed below fixed video) ═══ */}
-      {/* Spacer for fixed top bar + video area (approx 60px bar + 9:16 video + logo) */}
-      <div className="h-[calc(60px+55vw*16/9+80px)] max-h-[calc(60px+320px*16/9*0.55+80px)] shrink-0" style={{ minHeight: 420 }} />
-
-      <div className="relative z-10 flex flex-col pb-24">
+        {/* Logo + tagline */}
+        <div className="flex flex-col items-center py-6">
+          <motion.div
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-16 h-16"
+          >
+            <img src="/images/qclick-logo-new.svg" alt="Q-Click" className="w-full h-full object-contain drop-shadow-xl" />
+          </motion.div>
+          <p className="text-[10px] text-muted-foreground italic tracking-wide mt-1">the architecture of thought</p>
+        </div>
 
         {/* ═══ PATHWAY CARDS ═══ */}
         <div className="px-5 mt-2">
@@ -243,7 +242,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.5, ease }}
-          className="mx-5 mt-4 rounded-2xl border border-accent/20 bg-accent/5 backdrop-blur-xl p-4 cursor-pointer"
+          className="mx-5 mt-4 rounded-2xl border border-accent/20 bg-background/80 backdrop-blur-xl p-4 cursor-pointer"
           onClick={() => smoothNavigate('/glossa')}
         >
           <div className="flex items-center gap-3">
@@ -264,7 +263,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.65, duration: 0.5, ease }}
-          className="mx-5 mt-3 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-xl p-4 cursor-pointer"
+          className="mx-5 mt-3 rounded-2xl border border-primary/20 bg-background/80 backdrop-blur-xl p-4 cursor-pointer"
           onClick={() => smoothNavigate('/forge')}
         >
           <div className="flex items-center gap-3">
@@ -299,10 +298,10 @@ const Index = () => {
           />
         </motion.button>
 
-        {/* ═══ LEARNING PATHS ═══ */}
+        {/* ═══ FIND A TUTOR ═══ */}
         <div className="px-5 mt-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-semibold text-foreground">Your Paths</h2>
+            <h2 className="text-base font-semibold text-foreground">Find a Tutor</h2>
             <button className="text-xs text-primary font-medium flex items-center gap-0.5">All <ChevronRight className="w-3 h-3" /></button>
           </div>
           <div className={cn('grid gap-3', isMobile ? 'grid-cols-1' : 'grid-cols-3')}>
@@ -312,7 +311,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 + i * 0.08, duration: 0.4, ease }}
-                className={cn('rounded-2xl border border-border p-4 cursor-pointer hover:shadow-md transition-all group', char.bg)}
+                className={cn('rounded-2xl border border-border bg-background/80 backdrop-blur-xl p-4 cursor-pointer hover:shadow-md transition-all group', char.bg)}
                 onClick={() => smoothNavigate('/oasis')}
               >
                 <div className="flex items-center gap-3 mb-2">
@@ -406,7 +405,7 @@ const Index = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.5, ease }}
-            className="mx-5 mb-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 backdrop-blur-xl p-5 relative overflow-hidden"
+            className="mx-5 mb-4 rounded-2xl border border-primary/20 bg-background/80 backdrop-blur-xl p-5 relative overflow-hidden"
           >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">

@@ -25,7 +25,6 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
   const [saved, setSaved] = useState(false);
   const { user } = useAuth();
 
-  // Try to use progress context, but handle case where it's not available
   let addPoints: ((p: number) => Promise<void>) | null = null;
   let updateStreak: (() => Promise<void>) | null = null;
   try {
@@ -33,7 +32,7 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
     addPoints = progress.addPoints;
     updateStreak = progress.updateStreak;
   } catch {
-    // Not inside ProgressProvider — skip DB updates
+    // Not inside ProgressProvider
   }
 
   useEffect(() => {
@@ -89,7 +88,7 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] bg-foreground/40 backdrop-blur-md flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] bg-foreground/60 backdrop-blur-md flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
@@ -97,14 +96,14 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 30, scale: 0.95 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full max-w-2xl rounded-2xl border border-border bg-background overflow-hidden shadow-2xl"
+          className="w-full max-w-lg rounded-2xl border border-border bg-background overflow-hidden shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="relative aspect-video bg-foreground/5">
             {video.youtubeId ? (
               <iframe
                 src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
-                className="w-full h-full"
+                className="absolute inset-0 w-full h-full"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
                 title={video.title}
@@ -118,7 +117,7 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={onClose}
-              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-xl flex items-center justify-center shadow-md"
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-xl flex items-center justify-center shadow-md z-10"
             >
               <X className="w-4 h-4 text-foreground" />
             </motion.button>
@@ -128,7 +127,7 @@ const VideoPlayerModal = ({ video, onClose }: VideoPlayerModalProps) => {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-xs font-semibold shadow-lg"
+                  className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-xs font-semibold shadow-lg z-10"
                 >
                   <Sparkles className="w-3 h-3" />
                   +{wisdomEarned} WP earned{user ? ' & saved' : ''}
