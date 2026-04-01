@@ -138,6 +138,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
             content: m.content,
           })),
           sentiment_score: moodLevel ? (moodLevel - 3) * 2 : undefined,
+          cognitive_dna: cognitiveDna || undefined,
         }),
       });
 
