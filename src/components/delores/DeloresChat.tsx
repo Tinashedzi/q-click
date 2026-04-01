@@ -277,4 +277,9 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   );
 };
 
+      <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
+    </div>
+  );
+};
+
 export default DeloresChat;
