@@ -42,18 +42,16 @@ const Delores = () => {
   const returnHome = useCallback(() => navigate('/'), [navigate]);
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col overflow-hidden bg-background">
-      {/* Soft radial background */}
-      <div
-        className="fixed inset-0 z-0 pointer-events-none"
-        style={{
-          background: `
-            radial-gradient(ellipse 80% 60% at 30% 20%, hsl(var(--primary) / 0.04), transparent),
-            radial-gradient(ellipse 60% 50% at 70% 80%, hsl(var(--secondary) / 0.04), transparent),
-            hsl(var(--background))
-          `,
-        }}
-      />
+    <div className="relative w-full min-h-screen flex flex-col overflow-hidden">
+      {/* Fixed BG illustration with soft overlay */}
+      <div className="fixed inset-0 z-0">
+        <img
+          src="/images/home-hero-botanical.png"
+          alt=""
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-white/75" />
+      </div>
 
       {/* Loading */}
       <AnimatePresence>
@@ -98,7 +96,7 @@ const Delores = () => {
                 onClick={() => setActiveView(null)}
                 className="w-10 h-10 rounded-2xl flex items-center justify-center border border-border bg-background/60 backdrop-blur-xl"
               >
-                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+                <ChevronLeft className="w-4 h-4 text-foreground" />
               </motion.button>
             ) : (
               <motion.div
@@ -121,7 +119,7 @@ const Delores = () => {
             whileTap={{ scale: 0.9 }}
             className="w-10 h-10 rounded-2xl flex items-center justify-center border border-border bg-background/60 backdrop-blur-xl"
           >
-            <Settings className="w-4 h-4 text-muted-foreground" />
+            <Settings className="w-4 h-4 text-foreground" />
           </motion.button>
         </div>
 
@@ -268,7 +266,7 @@ const Delores = () => {
           onClick={returnHome}
           className="pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center border border-border bg-background/80 backdrop-blur-xl shadow-sm hover:shadow-md transition-all"
         >
-          <img src="/images/qclick-logo.svg" alt="Home" className="w-6 h-6 object-contain" />
+          <img src="/images/qclick-logo-new.svg" alt="Home" className="w-7 h-7 object-contain" />
         </motion.button>
       </motion.div>
     </div>
