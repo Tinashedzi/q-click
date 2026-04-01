@@ -52,7 +52,8 @@ const TOUR_STEPS = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const { profile, subscription } = useAuth();
+  const { profile, subscription, signOut } = useAuth();
+  const { progress, updateStreak } = useProgress();
   const isMobile = useIsMobile();
   const videoRef = useRef<HTMLVideoElement>(null);
 
