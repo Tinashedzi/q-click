@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import JournalOverlay from './JournalOverlay';
+import AmbientMuteButton from './AmbientMuteButton';
+import FloatingRadio from './FloatingRadio';
 
 interface LayoutProps {
   children: ReactNode;
@@ -24,14 +26,12 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const isDelores = location.pathname === '/delores';
   const isHome = location.pathname === '/';
-  // Delores manages its own full-screen chrome; Home has its own top bar but shares bottom nav
   const isFullScreen = isDelores;
   const activePageVariants = isHome ? fixedChromePageVariants : pageVariants;
   const [journalOpen, setJournalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Subtle ambient gradient for non-fullscreen pages */}
       {!isFullScreen && (
         <div
           className="fixed inset-0 pointer-events-none z-0"
@@ -60,8 +60,11 @@ const Layout = ({ children }: LayoutProps) => {
         </AnimatePresence>
       </main>
 
-      {/* Bottom nav on ALL pages except home (has its own) and delores (has its own) */}
       {!isFullScreen && <BottomNav />}
+
+      {/* Global floating components */}
+      <AmbientMuteButton />
+      <FloatingRadio />
 
       <JournalOverlay isOpen={journalOpen} onClose={() => setJournalOpen(false)} />
     </div>
