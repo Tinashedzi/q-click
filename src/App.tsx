@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ProgressProvider } from "@/contexts/ProgressContext";
 import { CreditsProvider } from "@/contexts/CreditsContext";
+import { AmbientSoundProvider } from "@/contexts/AmbientSoundContext";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -21,6 +22,9 @@ import Pricing from "./pages/Pricing";
 import Placeholder from "./pages/Placeholder";
 import Referral from "./pages/Referral";
 import Settings from "./pages/Settings";
+import About from "./pages/About";
+import Feedback from "./pages/Feedback";
+import HowToUse from "./pages/HowToUse";
 import NotFound from "./pages/NotFound";
 import CognitiveDNAFlow from "./components/onboarding/CognitiveDNAFlow";
 
@@ -61,23 +65,28 @@ const AppRoutes = () => {
   return (
     <ProgressProvider>
       <CreditsProvider>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/glossa" element={<Glossa />} />
-            <Route path="/delores" element={<Delores />} />
-            <Route path="/oasis" element={<Oasis />} />
-            <Route path="/video" element={<VideoPage />} />
-            <Route path="/forge" element={<Forge />} />
-            <Route path="/gamification" element={<Gamification />} />
-            <Route path="/library" element={<Library />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/referral" element={<Referral />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/sentences" element={<Placeholder title="Sentences" description="Build and deconstruct sentences across languages. Coming soon." />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <AmbientSoundProvider>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/glossa" element={<Glossa />} />
+              <Route path="/delores" element={<Delores />} />
+              <Route path="/oasis" element={<Oasis />} />
+              <Route path="/video" element={<VideoPage />} />
+              <Route path="/forge" element={<Forge />} />
+              <Route path="/gamification" element={<Gamification />} />
+              <Route path="/library" element={<Library />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/referral" element={<Referral />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/feedback" element={<Feedback />} />
+              <Route path="/how-to-use" element={<HowToUse />} />
+              <Route path="/sentences" element={<Placeholder title="Sentences" description="Build and deconstruct sentences across languages. Coming soon." />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </AmbientSoundProvider>
       </CreditsProvider>
     </ProgressProvider>
   );
