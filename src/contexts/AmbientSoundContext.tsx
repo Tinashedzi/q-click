@@ -131,12 +131,11 @@ export const AmbientSoundProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const isPaused = pausedOnPage === location.pathname;
     if (isPaused) {
-      stopAudio();
+      // Mute gain but don't stop oscillators so we can resume
+      if (gainRef.current && audioCtxRef.current) {
+        gainRef.current.gain.setTargetAtTime(0, audioCtxRef.current.currentTime, 0.3);
+      }
       return;
-    }
-    // Resume on page that was paused if leaving
-    if (pausedOnPage && pausedOnPage !== location.pathname) {
-      setPausedOnPage(null);
     }
 
     // Need user gesture to start AudioContext
@@ -151,7 +150,7 @@ export const AmbientSoundProvider = ({ children }: { children: ReactNode }) => {
     // Small delay for smooth transition
     const t = setTimeout(resumeAndPlay, 200);
     return () => clearTimeout(t);
-  }, [location.pathname, pausedOnPage]);
+  }, [location.pathname, pausedOnPage, startSound, stopAudio]);
 
   // Volume / mute changes
   useEffect(() => {

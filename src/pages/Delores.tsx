@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, ChevronLeft, Play, Lock } from 'lucide-react';
+import { Settings, ChevronLeft, Play, Lock, Mic } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
@@ -147,7 +147,7 @@ const Delores = () => {
 
               {/* Desktop: side-by-side | Mobile: vertical */}
               <div className="flex-1 flex flex-col lg:flex-row lg:gap-8 lg:items-start">
-                {/* Hero orb */}
+                {/* Hero mic icon */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -158,9 +158,30 @@ const Delores = () => {
                   <motion.button
                     onClick={() => setActiveView('chat')}
                     whileTap={{ scale: [1, 0.92, 1.06, 1] }}
-                    className="relative"
+                    className="relative flex items-center justify-center"
                   >
-                    <DeloresAvatar moodLevel={currentMood} size={isMobile ? 'md' : 'lg'} isListening={isListening} />
+                    {/* Pulsating rings */}
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute rounded-full border border-primary/30"
+                        style={{ width: (isMobile ? 80 : 120) + i * 24, height: (isMobile ? 80 : 120) + i * 24 }}
+                        animate={{
+                          scale: isListening ? [1, 1.2 + i * 0.1, 1] : [1, 1.06 + i * 0.03, 1],
+                          opacity: [0.15, 0.3, 0.15],
+                        }}
+                        transition={{ duration: isListening ? 1.5 : 3, repeat: Infinity, ease: 'easeInOut', delay: i * 0.2 }}
+                      />
+                    ))}
+                    {/* Core circle with mic */}
+                    <motion.div
+                      className="relative rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center"
+                      style={{ width: isMobile ? 80 : 120, height: isMobile ? 80 : 120 }}
+                      animate={{ scale: isListening ? [1, 1.05, 0.97, 1.03, 1] : [1, 1.02, 1] }}
+                      transition={{ duration: isListening ? 1.2 : 3, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Mic className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} text-primary`} strokeWidth={1.5} />
+                    </motion.div>
                     <motion.div
                       animate={{ opacity: [0.08, 0.2, 0.08], scale: [1.3, 1.6, 1.3] }}
                       transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}

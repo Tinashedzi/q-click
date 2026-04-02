@@ -15,10 +15,10 @@ const FloatingRadio = () => {
         animate={{ scale: 1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setOpen(true)}
-        className="fixed bottom-24 right-4 z-[100] w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center"
+        className="fixed bottom-[88px] right-[calc(50%-108px)] z-[60] w-10 h-10 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center"
         title="Open Deloris Radio"
       >
-        <Radio className="w-5 h-5" />
+        <Radio className="w-4 h-4" />
       </motion.button>
     );
   }
