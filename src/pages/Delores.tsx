@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, ChevronLeft, Play, Lock } from 'lucide-react';
+import { Settings, ChevronLeft, Play, Lock, Mic } from 'lucide-react';
 import DeloresAvatar from '@/components/delores/DeloresAvatar';
 import DeloresChat from '@/components/delores/DeloresChat';
 import MoodCheckIn from '@/components/delores/MoodCheckIn';
