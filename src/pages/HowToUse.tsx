@@ -35,8 +35,8 @@ const HowToUse = () => {
       level: 'Beginner',
       youtubeId: slot.youtubeId,
       thumbnail: slot.thumbnail || '',
-      domain: 'Tutorial',
-      tags: ['tutorial'],
+      description: slot.description,
+      category: 'Tutorial',
     });
   };
 
