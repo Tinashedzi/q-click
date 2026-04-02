@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { HelpCircle } from 'lucide-react';
 import BottomNav from './BottomNav';
 import JournalOverlay from './JournalOverlay';
 import AmbientMuteButton from './AmbientMuteButton';
