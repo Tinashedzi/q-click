@@ -67,10 +67,10 @@ const Layout = ({ children }: LayoutProps) => {
       <AmbientMuteButton />
       <FloatingRadio />
 
-      {/* Help icon */}
+      {/* Help icon — top-right */}
       <Link
         to="/how-to-use"
-        className="fixed bottom-[88px] left-4 z-50 w-9 h-9 rounded-full bg-background/80 backdrop-blur-xl border border-border shadow-lg flex items-center justify-center hover:bg-primary/10 transition-colors"
+        className="fixed top-4 right-4 z-50 w-9 h-9 rounded-full bg-background/80 backdrop-blur-xl border border-border shadow-lg flex items-center justify-center hover:bg-primary/10 transition-colors"
         title="How to use Q-Click"
       >
         <HelpCircle className="w-4 h-4 text-muted-foreground" />
