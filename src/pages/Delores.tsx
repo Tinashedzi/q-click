@@ -9,6 +9,7 @@ import EmotionalMatrix from '@/components/delores/EmotionalMatrix';
 import PomodoroFocus from '@/components/delores/PomodoroFocus';
 import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
+import MeditationPlayer from '@/components/delores/MeditationPlayer';
 import DelorisRadio from '@/components/delores/DelorisRadio';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
