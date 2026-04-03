@@ -453,5 +453,6 @@ export function getAllVideos(): VideoItem[] {
 
 export function getVideosByCategory(cat: string): VideoItem[] {
   if (cat === 'All') return getAllVideos();
+  if (cat === 'Shorts') return getAllVideos().filter(v => v.isShort);
   return getAllVideos().filter(v => v.category === cat);
 }
