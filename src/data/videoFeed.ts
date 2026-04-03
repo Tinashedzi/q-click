@@ -19,7 +19,7 @@ export interface VideoItem {
   isShort?: boolean;
 }
 
-export const categories = ['All', 'Science', 'Mathematics', 'Technology', 'Africa', 'Biology', 'History', 'Engineering', 'Philosophy', 'Future Quotient', 'Design', 'Geography', 'Cooking', 'Cars', 'AI', 'Documentaries'];
+export const categories = ['All', 'Shorts', 'Science', 'Mathematics', 'Technology', 'Africa', 'Biology', 'History', 'Engineering', 'Philosophy', 'Future Quotient', 'Design', 'Geography', 'Cooking', 'Cars', 'AI', 'Documentaries'];
 
 export const videoChannels: VideoChannel[] = [
   {
@@ -453,5 +453,6 @@ export function getAllVideos(): VideoItem[] {
 
 export function getVideosByCategory(cat: string): VideoItem[] {
   if (cat === 'All') return getAllVideos();
+  if (cat === 'Shorts') return getAllVideos().filter(v => v.isShort);
   return getAllVideos().filter(v => v.category === cat);
 }
