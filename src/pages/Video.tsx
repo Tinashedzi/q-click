@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AtomicRevealPlayer from '@/components/video/AtomicRevealPlayer';
 import VideoPlayer from '@/components/video/VideoPlayer';
+import VideoPlayerModal from '@/components/VideoPlayerModal';
 import { sampleVideos } from '@/data/sampleVideos';
-import { Upload, Sparkles, Video, Play } from 'lucide-react';
+import { videoChannels, categories, getVideosByCategory, type VideoItem } from '@/data/videoFeed';
+import { Upload, Sparkles, Video, Play, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCreditGate } from '@/hooks/useCreditGate';
 import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
@@ -19,12 +21,15 @@ const bentoVideos = [
 
 const VideoPage = () => {
   const [selectedVideo, setSelectedVideo] = useState(sampleVideos[0]);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null);
   const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
+
+  const filteredVideos = getVideosByCategory(activeCategory);
 
   const handleAIRecommendation = async () => {
     const ok = await useCredit();
     if (!ok) return;
-    // AI recommendation logic would go here
   };
 
   return (
@@ -64,6 +69,71 @@ const VideoPage = () => {
               </div>
             </div>
           </motion.div>
+        ))}
+      </div>
+
+      {/* Category filter with Shorts */}
+      <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={cn(
+              'shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all flex items-center gap-1',
+              activeCategory === cat
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-background/60 text-muted-foreground border-border hover:border-primary/40'
+            )}
+          >
+            {cat === 'Shorts' && <Zap className="w-3 h-3" />}
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Filtered video grid */}
+      <div className={cn(
+        'grid gap-3 mb-8',
+        activeCategory === 'Shorts'
+          ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
+          : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
+      )}>
+        {filteredVideos.map((vid, i) => (
+          <motion.button
+            key={vid.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.03 }}
+            onClick={() => setPlayingVideo(vid)}
+            className="group text-left rounded-2xl border border-border bg-background/70 backdrop-blur-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all"
+          >
+            <div className={cn(
+              'relative overflow-hidden bg-muted',
+              vid.isShort ? 'aspect-[9/16]' : 'aspect-video'
+            )}>
+              <img
+                src={`https://i.ytimg.com/vi/${vid.youtubeId}/hqdefault.jpg`}
+                alt={vid.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-primary/90 flex items-center justify-center">
+                  <Play className="w-4 h-4 text-primary-foreground ml-0.5" />
+                </div>
+              </div>
+              <span className="absolute bottom-1.5 right-1.5 text-[10px] bg-black/70 text-white px-1.5 py-0.5 rounded-md">{vid.duration}</span>
+              {vid.isShort && (
+                <span className="absolute top-1.5 left-1.5 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
+                  <Zap className="w-2.5 h-2.5" /> Short
+                </span>
+              )}
+            </div>
+            <div className="p-2.5">
+              <h4 className="text-xs font-medium text-foreground line-clamp-2 leading-snug">{vid.title}</h4>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{vid.channel}</p>
+            </div>
+          </motion.button>
         ))}
       </div>
 
@@ -132,6 +202,7 @@ const VideoPage = () => {
         </div>
       </Tabs>
 
+      <VideoPlayerModal video={playingVideo} onClose={() => setPlayingVideo(null)} />
       <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
     </div>
   );

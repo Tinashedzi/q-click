@@ -268,6 +268,7 @@ const Delores = () => {
                 {activeView === 'matrix' && <EmotionalMatrix />}
                 {activeView === 'journal' && <JournalEntry onComplete={() => setActiveView(null)} />}
                 {activeView === 'focus' && <PomodoroFocus />}
+                {activeView === 'meditation' && <MeditationPlayer />}
                 {activeView === 'calendar' && <StreakCalendar />}
                 {activeView === 'radio' && <DelorisRadio moodLevel={currentMood} />}
               </div>
