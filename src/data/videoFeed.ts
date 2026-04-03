@@ -19,7 +19,7 @@ export interface VideoItem {
   isShort?: boolean;
 }
 
-export const categories = ['All', 'Science', 'Mathematics', 'Technology', 'Africa', 'Biology', 'History', 'Engineering', 'Philosophy', 'Future Quotient', 'Design', 'Geography', 'Cooking', 'Cars', 'AI', 'Documentaries'];
+export const categories = ['All', 'Shorts', 'Science', 'Mathematics', 'Technology', 'Africa', 'Biology', 'History', 'Engineering', 'Philosophy', 'Future Quotient', 'Design', 'Geography', 'Cooking', 'Cars', 'AI', 'Documentaries'];
 
 export const videoChannels: VideoChannel[] = [
   {
