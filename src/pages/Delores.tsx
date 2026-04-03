@@ -20,7 +20,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 const activities = [
   { title: 'Deloris Radio', subtitle: 'Focus soundscapes & beats', progress: 0, unlocked: true, action: 'radio' },
-  { title: 'Deep Breathing Basics', subtitle: 'AI Narrated', progress: 35, unlocked: true, action: 'focus' },
+  { title: 'Deep Breathing', subtitle: 'Meditation & focus time', progress: 35, unlocked: true, action: 'meditation' },
   { title: 'Managing Stress', subtitle: 'Calm your mind', progress: 60, unlocked: true, action: 'mood' },
   { title: 'Mindful Movement Flow', subtitle: 'Gentle body movements', progress: 45, unlocked: true, action: 'matrix' },
   { title: 'Daily Journal', subtitle: 'Reflect & grow', progress: 20, unlocked: true, action: 'journal' },
