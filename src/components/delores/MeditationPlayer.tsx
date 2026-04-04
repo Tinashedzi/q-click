@@ -299,7 +299,7 @@ const MeditationPlayer = () => {
       {/* Hidden video for fullscreen use */}
       <video
         ref={videoRef}
-        src="/videos/breathing-round.mp4"
+        src={selectedVideo}
         loop
         playsInline
         className="hidden"

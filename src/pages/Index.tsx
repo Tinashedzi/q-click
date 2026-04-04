@@ -383,18 +383,13 @@ const Index = () => {
                 onClick={() => setSelectedVideo(video)}
               >
                 <div className="relative aspect-video bg-muted overflow-hidden">
-                  {video.thumbnail ? (
-                    <img
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Play className="w-8 h-8 text-muted-foreground/40" />
-                    </div>
-                  )}
+                  <img
+                    src={video.youtubeId ? `https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg` : video.thumbnail || ''}
+                    alt={video.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
                       <Play className="w-4 h-4 fill-foreground text-foreground ml-0.5" />
