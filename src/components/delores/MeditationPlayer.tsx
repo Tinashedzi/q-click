@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { useAmbientSound } from '@/contexts/AmbientSoundContext';
 
 const TIMER_OPTIONS = [
-  { label: '5 min', seconds: 5 * 60 },
-  { label: '15 min', seconds: 15 * 60 },
-  { label: '25 min', seconds: 25 * 60 },
+  { label: '5 min', seconds: 5 * 60, video: '/videos/breathing-round.mp4' },
+  { label: '15 min', seconds: 15 * 60, video: '/videos/breathing-square.mp4' },
+  { label: '25 min', seconds: 25 * 60, video: '/videos/breathing-deloris.mp4' },
 ];
 
 const ENCOURAGEMENTS = [
@@ -20,6 +20,7 @@ const ENCOURAGEMENTS = [
 
 const MeditationPlayer = () => {
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState('/videos/breathing-round.mp4');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -52,8 +53,9 @@ const MeditationPlayer = () => {
     } catch {}
   }, []);
 
-  const startSession = (seconds: number) => {
+  const startSession = (seconds: number, video: string) => {
     setSelectedDuration(seconds);
+    setSelectedVideo(video);
     setTimeRemaining(seconds);
     setIsPlaying(true);
     setIsFullscreen(true);
@@ -154,7 +156,7 @@ const MeditationPlayer = () => {
       {/* Looping video with sound */}
       <video
         ref={videoRef}
-        src="/videos/breathing-round.mp4"
+        src={selectedVideo}
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-contain"
@@ -284,7 +286,7 @@ const MeditationPlayer = () => {
             key={opt.label}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => startSession(opt.seconds)}
+            onClick={() => startSession(opt.seconds, opt.video)}
             className="flex flex-col items-center gap-2 p-4 rounded-2xl border border-border bg-background/60 backdrop-blur-xl hover:border-primary/40 transition-all"
           >
             <Timer className="w-5 h-5 text-primary" />
@@ -297,7 +299,7 @@ const MeditationPlayer = () => {
       {/* Hidden video for fullscreen use */}
       <video
         ref={videoRef}
-        src="/videos/breathing-round.mp4"
+        src={selectedVideo}
         loop
         playsInline
         className="hidden"
