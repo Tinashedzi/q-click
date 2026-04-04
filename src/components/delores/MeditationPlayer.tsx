@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, Pause, Timer, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAmbientSound } from '@/contexts/AmbientSoundContext';
 
 const TIMER_OPTIONS = [
   { label: '5 min', seconds: 5 * 60 },
@@ -25,7 +26,9 @@ const MeditationPlayer = () => {
   const [showComplete, setShowComplete] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const dingRef = useRef<AudioContext | null>(null);
+  const wasAmbientPaused = useRef(false);
+
+  const { pausedOnPage, togglePagePause } = useAmbientSound();
 
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60);
@@ -55,11 +58,32 @@ const MeditationPlayer = () => {
     setIsPlaying(true);
     setIsFullscreen(true);
     setShowComplete(false);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play();
+
+    // Pause ambient sound if not already paused
+    if (!pausedOnPage) {
+      togglePagePause();
+      wasAmbientPaused.current = true;
     }
   };
+
+  // Auto-play video when fullscreen opens
+  useEffect(() => {
+    if (isFullscreen && isPlaying && videoRef.current) {
+      const v = videoRef.current;
+      v.muted = false;
+      v.currentTime = 0;
+      const playPromise = v.play();
+      if (playPromise) {
+        playPromise.catch(() => {
+          // If autoplay with sound fails, try muted first then unmute
+          v.muted = true;
+          v.play().then(() => {
+            setTimeout(() => { v.muted = false; }, 500);
+          }).catch(() => {});
+        });
+      }
+    }
+  }, [isFullscreen, isPlaying]);
 
   const togglePlayPause = () => {
     if (isPlaying) {
@@ -86,6 +110,12 @@ const MeditationPlayer = () => {
     setSelectedDuration(null);
     videoRef.current?.pause();
     if (timerRef.current) clearInterval(timerRef.current);
+
+    // Resume ambient sound if we paused it
+    if (wasAmbientPaused.current && pausedOnPage) {
+      togglePagePause();
+      wasAmbientPaused.current = false;
+    }
   };
 
   useEffect(() => {
@@ -121,13 +151,12 @@ const MeditationPlayer = () => {
       className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center"
       onClick={togglePlayPause}
     >
-      {/* Looping video */}
+      {/* Looping video with sound */}
       <video
         ref={videoRef}
         src="/videos/breathing-round.mp4"
         loop
         playsInline
-        muted
         className="absolute inset-0 w-full h-full object-contain"
       />
 
@@ -237,7 +266,6 @@ const MeditationPlayer = () => {
       {/* Preview */}
       <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/10 border border-border">
         <video
-          ref={isFullscreen ? undefined : videoRef}
           src="/videos/breathing-round.mp4"
           loop
           playsInline
@@ -266,13 +294,12 @@ const MeditationPlayer = () => {
         ))}
       </div>
 
-      {/* Hidden video ref for fullscreen */}
+      {/* Hidden video for fullscreen use */}
       <video
         ref={videoRef}
         src="/videos/breathing-round.mp4"
         loop
         playsInline
-        muted
         className="hidden"
         preload="auto"
       />
