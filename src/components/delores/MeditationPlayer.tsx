@@ -20,6 +20,7 @@ const ENCOURAGEMENTS = [
 
 const MeditationPlayer = () => {
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState('/videos/breathing-round.mp4');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
