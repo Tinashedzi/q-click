@@ -53,8 +53,9 @@ const MeditationPlayer = () => {
     } catch {}
   }, []);
 
-  const startSession = (seconds: number) => {
+  const startSession = (seconds: number, video: string) => {
     setSelectedDuration(seconds);
+    setSelectedVideo(video);
     setTimeRemaining(seconds);
     setIsPlaying(true);
     setIsFullscreen(true);
