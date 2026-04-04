@@ -286,7 +286,7 @@ const MeditationPlayer = () => {
             key={opt.label}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => startSession(opt.seconds)}
+            onClick={() => startSession(opt.seconds, opt.video)}
             className="flex flex-col items-center gap-2 p-4 rounded-2xl border border-border bg-background/60 backdrop-blur-xl hover:border-primary/40 transition-all"
           >
             <Timer className="w-5 h-5 text-primary" />
