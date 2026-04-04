@@ -156,7 +156,7 @@ const MeditationPlayer = () => {
       {/* Looping video with sound */}
       <video
         ref={videoRef}
-        src="/videos/breathing-round.mp4"
+        src={selectedVideo}
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-contain"
