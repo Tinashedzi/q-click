@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { useAmbientSound } from '@/contexts/AmbientSoundContext';
 
 const TIMER_OPTIONS = [
-  { label: '5 min', seconds: 5 * 60 },
-  { label: '15 min', seconds: 15 * 60 },
-  { label: '25 min', seconds: 25 * 60 },
+  { label: '5 min', seconds: 5 * 60, video: '/videos/breathing-round.mp4' },
+  { label: '15 min', seconds: 15 * 60, video: '/videos/breathing-square.mp4' },
+  { label: '25 min', seconds: 25 * 60, video: '/videos/breathing-deloris.mp4' },
 ];
 
 const ENCOURAGEMENTS = [
