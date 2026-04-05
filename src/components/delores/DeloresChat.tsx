@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,17 +8,23 @@ import { useToast } from '@/hooks/use-toast';
 import { useSpeech } from '@/hooks/useSpeech';
 import ReactMarkdown from 'react-markdown';
 import DeloresAvatar from './DeloresAvatar';
+import AgentStatusBar from './AgentStatusBar';
+import ToolResultCard from './ToolResultCard';
 import { useCreditGate } from '@/hooks/useCreditGate';
 import CreditExhaustedModal from '@/components/credits/CreditExhaustedModal';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { parseToolResults, type AgentState, type ToolExecution, type MemoryContext } from '@/engine/delores-agent';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  toolExecutions?: ToolExecution[];
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-chat`;
+const MEMORY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-memory`;
 
 /* ═══ MIC BUTTON ═══ */
 const MicButton = ({ onTranscript, onListeningChange }: { onTranscript: (text: string) => void; onListeningChange?: (l: boolean) => void }) => {
@@ -78,7 +84,7 @@ interface DeloresChatProps {
 }
 
 const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresChatProps) => {
-  const { profile } = useAuth();
+  const { profile, session } = useAuth();
   const cognitiveDna = useMemo(() => (profile?.preferences as any)?.cognitive_dna, [profile]);
   const { useCredit, showExhausted, setShowExhausted } = useCreditGate();
   const [messages, setMessages] = useState<Message[]>([
@@ -91,9 +97,49 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [agentState, setAgentState] = useState<AgentState>('idle');
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null);
+  const [allToolExecutions, setAllToolExecutions] = useState<ToolExecution[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { speak, stop } = useSpeech();
+
+  // Load memory context on mount
+  useEffect(() => {
+    if (!session?.access_token) return;
+    fetch(MEMORY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ action: 'get_context' }),
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) setMemoryContext(data);
+      })
+      .catch(console.error);
+  }, [session?.access_token]);
+
+  // Personalized greeting based on memory
+  useEffect(() => {
+    if (memoryContext && memoryContext.total_sessions > 0 && messages.length === 1) {
+      const lastSession = memoryContext.recent_sessions?.[0];
+      let greeting = "Welcome back! 🌿 ";
+      if (lastSession?.session_summary) {
+        greeting += `Last time we talked about ${lastSession.topics_discussed?.slice(0, 2).join(' and ') || 'some things'}. `;
+      }
+      greeting += `I've been holding ${memoryContext.memory_count} memories of our conversations. What's on your mind today?`;
+      
+      setMessages([{
+        id: '0',
+        role: 'assistant',
+        content: greeting,
+      }]);
+    }
+  }, [memoryContext]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -104,14 +150,28 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
       stop();
       setSpeakingId(null);
     } else {
-      // Strip markdown for cleaner speech
       const cleanText = text.replace(/[#*_`~\[\]()>]/g, '').replace(/\n+/g, '. ');
       speak(cleanText);
       setSpeakingId(msgId);
-      // Auto-clear speaking state after estimated duration
       setTimeout(() => setSpeakingId(null), cleanText.length * 60);
     }
   };
+
+  // Consolidate session when unmounting (if enough messages)
+  useEffect(() => {
+    return () => {
+      if (sessionId && session?.access_token && messages.length > 4) {
+        fetch(MEMORY_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ action: 'consolidate', session_id: sessionId }),
+        }).catch(console.error);
+      }
+    };
+  }, [sessionId, session?.access_token, messages.length]);
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
@@ -122,6 +182,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
     setMessages(allMessages);
     setInput('');
     setIsLoading(true);
+    setAgentState('thinking');
 
     let assistantSoFar = '';
 
@@ -130,7 +191,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
           messages: allMessages.filter(m => m.id !== '0').map(m => ({
@@ -139,20 +200,40 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
           })),
           sentiment_score: moodLevel ? (moodLevel - 3) * 2 : undefined,
           cognitive_dna: cognitiveDna || undefined,
+          session_id: sessionId,
         }),
       });
 
       if (resp.status === 429) {
         toast({ title: 'Delores needs a moment', description: 'Please wait and try again.', variant: 'destructive' });
         setIsLoading(false);
+        setAgentState('idle');
         return;
       }
       if (resp.status === 402) {
         toast({ title: 'Credits exhausted', description: 'Please add AI credits to continue.', variant: 'destructive' });
         setIsLoading(false);
+        setAgentState('idle');
         return;
       }
       if (!resp.ok || !resp.body) throw new Error('Stream failed');
+
+      // Check for tool executions
+      const toolHeader = resp.headers.get('X-Delores-Tools');
+      const toolExecutions = parseToolResults(toolHeader);
+
+      if (toolExecutions.length > 0) {
+        setAgentState('acting');
+        setAllToolExecutions(prev => [...prev, ...toolExecutions]);
+        // Brief pause to show "acting" state
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      setAgentState('responding');
+
+      // Parse session ID from response if available
+      const newSessionId = resp.headers.get('X-Delores-Session');
+      if (newSessionId) setSessionId(newSessionId);
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
@@ -180,9 +261,9 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
               setMessages(prev => {
                 const last = prev[prev.length - 1];
                 if (last?.role === 'assistant' && last.id !== '0') {
-                  return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
+                  return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar, toolExecutions } : m);
                 }
-                return [...prev, { id: crypto.randomUUID(), role: 'assistant', content: assistantSoFar }];
+                return [...prev, { id: crypto.randomUUID(), role: 'assistant', content: assistantSoFar, toolExecutions }];
               });
             }
           } catch {
@@ -197,16 +278,25 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
     }
 
     setIsLoading(false);
+    setAgentState('idle');
   };
 
   return (
     <>
     <div className="flex flex-col h-full">
+      {/* Agent Status Bar */}
+      <AgentStatusBar
+        state={agentState}
+        memoryCount={memoryContext?.memory_count || 0}
+        sessionCount={memoryContext?.total_sessions || 0}
+        recentTools={allToolExecutions}
+      />
+
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-4">
         <AnimatePresence>
           {messages.map(msg => (
             <motion.div key={msg.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
+              className={cn('flex flex-col', msg.role === 'user' ? 'items-end' : 'items-start')}>
               <div className={cn(
                 'max-w-[85%] rounded-2xl px-4 py-3 text-sm',
                 msg.role === 'user'
@@ -236,6 +326,15 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
               </div>
+
+              {/* Tool execution results */}
+              {msg.toolExecutions?.length ? (
+                <div className="mt-2 space-y-1.5 max-w-[85%]">
+                  {msg.toolExecutions.map((te, i) => (
+                    <ToolResultCard key={`${te.tool}-${i}`} execution={te} />
+                  ))}
+                </div>
+              ) : null}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -245,7 +344,11 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
             <div className="glass-deep border border-border/30 rounded-2xl rounded-bl-md px-4 py-3">
               <div className="flex items-center gap-2 mb-1">
                 <DeloresAvatar moodLevel={moodLevel ?? null} size="xs" />
-                <span className="text-xs text-muted-foreground">Delores is thinking…</span>
+                <span className="text-xs text-muted-foreground">
+                  {agentState === 'acting' ? 'Delores is taking action…' :
+                   agentState === 'planning' ? 'Delores is planning…' :
+                   'Delores is thinking…'}
+                </span>
               </div>
               <div className="flex gap-1">
                 <span className="w-2 h-2 rounded-full bg-accent/40 animate-bounce" style={{ animationDelay: '0ms' }} />
