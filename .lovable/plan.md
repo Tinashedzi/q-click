@@ -1,33 +1,62 @@
 
-## Cognitive DNA Onboarding & Personalization
+# Delores Agentic Upgrade — "Love Code" Architecture
 
-### Phase 1: Onboarding Flow Component
-- Create `src/components/onboarding/CognitiveDNAFlow.tsx` — a full-screen, animated 5-question psychometric probe flow
-- Each probe is presented one at a time with Delores as the interviewer
-- Options map to cognitive traits from the JSON (Information Processing, Motivational Drivers, Risk & Resilience, Social Dynamics, Emotional Baseline)
-- On completion, compute a `cognitive_dna` profile object and store it in `profiles.preferences` JSONB field
-- Gate the flow: show on first login if `preferences.cognitive_dna` is null, skip otherwise
+## Phase 1: Database Schema (New Tables)
 
-### Phase 2: Personalization Engine
-- Create `src/engine/cognitive-profile.ts` — utility functions to read the stored DNA and derive:
-  - **Learning style** (visual/kinesthetic/auditory/text-based)
-  - **Motivation type** (intrinsic/extrinsic/mastery/social)
-  - **Challenge tolerance** (high grit vs needs pacing)
-  - **Social preference** (lone wolf/collaborator/competitor/mentor)
-  - **SEL support level** (high empathy vs high challenge)
+### `delores_memory` — Persistent conversation memory & consolidation
+- `user_id`, `memory_type` (interaction | consolidation | insight), `content` (JSONB), `importance_score` (1-10), `tags` (text[]), `expires_at` (nullable)
+- Stores conversation summaries, user preferences learned over time, emotional patterns
+- RLS: users can only access their own memories
 
-### Phase 3: Delores Personalization
-- Update the `delores-chat` edge function system prompt to include the user's cognitive DNA traits
-- Delores adapts tone: e.g. "High Empathy/Slower Pacing" → gentler language; "High Challenge" → more direct pushes
+### `delores_sessions` — Conversation sessions with context
+- `user_id`, `session_id`, `messages` (JSONB), `mood_trajectory` (JSONB), `topics_discussed` (text[]), `session_summary` (text), `cognitive_dna_snapshot` (JSONB)
+- Enables Delores to remember past conversations and reference them
+- RLS: users can only access their own sessions
 
-### Phase 4: Quest & Content Personalization
-- Update quest generator to factor in challenge tolerance and motivation type
-- Update video feed ordering to prefer content matching the user's learning style (e.g. visual learners see more video-heavy content first)
+### `delores_tools` — Tool execution log (agentic actions Delores takes)
+- `user_id`, `session_id`, `tool_name`, `input` (JSONB), `output` (JSONB), `status` (pending | approved | executed | rejected), `requires_approval` (boolean)
+- Tracks what Delores does on behalf of the user (e.g., creating journal entries, setting goals, recommending quests)
 
-### Files to create/modify:
-- **New**: `src/components/onboarding/CognitiveDNAFlow.tsx`
-- **New**: `src/engine/cognitive-profile.ts`
-- **Modify**: `src/App.tsx` (gate the DNA flow)
-- **Modify**: `supabase/functions/delores-chat/index.ts` (inject DNA into system prompt)
-- **Modify**: `supabase/functions/quest-architect/index.ts` (adjust difficulty)
-- **Modify**: `src/pages/Index.tsx` (sort video feed by learning style)
+## Phase 2: Edge Function Upgrades
+
+### Upgrade `delores-chat` to agentic mode
+- **Memory injection**: Load recent memories and session context into system prompt
+- **Tool calling**: Enable Delores to call tools (create journal entries, set mood check-ins, recommend quests, trigger breathing exercises, look up concepts)
+- **Reasoning framework**: Before responding, Delores states her plan internally (collaborative reasoning pattern from your code)
+- **Memory consolidation**: After N messages, auto-summarize and store as a memory
+
+### New `delores-memory` edge function
+- Consolidate old interactions into summaries ("Dream Mode")
+- Extract recurring emotional patterns and insights
+- Score memory importance for retrieval ranking
+
+## Phase 3: Frontend — Agentic Chat UI
+
+### Upgrade `DeloresChat.tsx`
+- Show when Delores is "thinking" / "planning" / "taking action" (not just typing)
+- Render tool-call results inline (e.g., "I've created a journal entry for you ✅")
+- Session awareness: "Last time we talked about X…"
+- Proactive suggestions based on memory ("You mentioned stress about exams last week — how did that go?")
+
+### New: `AgentStatusBar` component
+- Shows Delores's current state: Listening → Thinking → Planning → Acting → Responding
+- Memory indicator: "Delores remembers 47 conversations with you"
+
+## Phase 4: Agentic Tool Capabilities
+
+Delores can autonomously (with user awareness):
+1. **Create journal entries** from conversation insights
+2. **Trigger mood check-ins** when she detects emotional shifts
+3. **Recommend specific quests** based on learning patterns
+4. **Start meditation sessions** when stress is detected
+5. **Reference past conversations** ("Remember when you told me about…")
+6. **Set learning goals** based on discussed interests
+7. **Provide personalized wisdom** from her memory of the user
+
+## Files to Create/Modify:
+- **Migration**: New tables (`delores_memory`, `delores_sessions`, `delores_tools`)
+- **Modify**: `supabase/functions/delores-chat/index.ts` (agentic upgrade)
+- **New**: `supabase/functions/delores-memory/index.ts` (memory consolidation)
+- **Modify**: `src/components/delores/DeloresChat.tsx` (agentic UI)
+- **New**: `src/components/delores/AgentStatusBar.tsx`
+- **New**: `src/engine/delores-agent.ts` (client-side agent harness)
