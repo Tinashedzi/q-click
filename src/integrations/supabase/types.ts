@@ -62,6 +62,125 @@ export type Database = {
         }
         Relationships: []
       }
+      delores_memory: {
+        Row: {
+          content: Json
+          created_at: string
+          expires_at: string | null
+          id: string
+          importance_score: number
+          memory_type: string
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          importance_score?: number
+          memory_type?: string
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          importance_score?: number
+          memory_type?: string
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      delores_sessions: {
+        Row: {
+          cognitive_dna_snapshot: Json | null
+          created_at: string
+          id: string
+          is_active: boolean
+          messages: Json
+          mood_trajectory: Json
+          session_summary: string | null
+          topics_discussed: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cognitive_dna_snapshot?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          messages?: Json
+          mood_trajectory?: Json
+          session_summary?: string | null
+          topics_discussed?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cognitive_dna_snapshot?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          messages?: Json
+          mood_trajectory?: Json
+          session_summary?: string | null
+          topics_discussed?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      delores_tools: {
+        Row: {
+          created_at: string
+          id: string
+          requires_approval: boolean
+          session_id: string | null
+          status: string
+          tool_input: Json
+          tool_name: string
+          tool_output: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          requires_approval?: boolean
+          session_id?: string | null
+          status?: string
+          tool_input?: Json
+          tool_name: string
+          tool_output?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          requires_approval?: boolean
+          session_id?: string | null
+          status?: string
+          tool_input?: Json
+          tool_name?: string
+          tool_output?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delores_tools_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "delores_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       evidence_entries: {
         Row: {
           content: string | null
