@@ -52,9 +52,11 @@ export const TOOL_DISPLAY: Record<string, { label: string; emoji: string; action
 export function parseToolResults(header: string | null): ToolExecution[] {
   if (!header) return [];
   try {
-    return JSON.parse(header);
+    const decoded = atob(header);
+    return JSON.parse(decoded);
   } catch {
-    return [];
+    // Fallback: try parsing as plain JSON for backwards compat
+    try { return JSON.parse(header); } catch { return []; }
   }
 }
 

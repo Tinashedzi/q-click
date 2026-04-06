@@ -532,11 +532,11 @@ ${cognitive_dna.motivational_drivers?.includes("Extrinsic") ? "- Highlight achie
         headers: {
           ...corsHeaders,
           "Content-Type": "text/event-stream",
-          "X-Delores-Tools": JSON.stringify(toolResults.map(t => ({
+          "X-Delores-Tools": btoa(JSON.stringify(toolResults.map(t => ({
             tool: t.tool,
             args: t.args,
             success: t.result.success,
-          }))),
+          })))),
         },
       });
     }
