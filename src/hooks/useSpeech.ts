@@ -1,7 +1,12 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-export const useSpeech = () => {
+interface UseSpeechOptions {
+  onEnd?: () => void;
+}
+
+export const useSpeech = (options?: UseSpeechOptions) => {
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [speaking, setSpeaking] = useState(false);
 
   const speak = useCallback((text: string) => {
     if (!window.speechSynthesis) {
@@ -13,25 +18,38 @@ export const useSpeech = () => {
 
     const utterance = new SpeechSynthesisUtterance(text);
     const voices = window.speechSynthesis.getVoices();
+
+    // Prefer a female English voice for Delores's persona
     const preferredVoice =
+      voices.find(v => v.lang.includes('en') && v.name.includes('Google UK English Female')) ||
+      voices.find(v => v.lang.includes('en') && /female/i.test(v.name)) ||
+      voices.find(v => v.lang.includes('en') && v.name.includes('Samantha')) ||
       voices.find(v => v.lang.includes('en') && v.name.includes('Google UK')) ||
       voices.find(v => v.lang.includes('en'));
 
     if (preferredVoice) utterance.voice = preferredVoice;
 
-    utterance.pitch = 1.1;   // slightly higher – friendly
-    utterance.rate = 0.9;    // slower – calming
+    utterance.pitch = 1.1;
+    utterance.rate = 0.9;
     utterance.volume = 1;
+
+    utterance.onstart = () => setSpeaking(true);
+    utterance.onend = () => {
+      setSpeaking(false);
+      options?.onEnd?.();
+    };
+    utterance.onerror = () => {
+      setSpeaking(false);
+    };
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
-  }, []);
+  }, [options?.onEnd]);
 
   const stop = useCallback(() => {
     window.speechSynthesis.cancel();
+    setSpeaking(false);
   }, []);
 
-  const isSpeaking = () => window.speechSynthesis?.speaking ?? false;
-
-  return { speak, stop, isSpeaking };
+  return { speak, stop, speaking };
 };
