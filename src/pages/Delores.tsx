@@ -11,6 +11,7 @@ import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
 import MeditationPlayer from '@/components/delores/MeditationPlayer';
 import DelorisRadio from '@/components/delores/DelorisRadio';
+import MemoryDashboard from '@/components/delores/MemoryDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -25,6 +26,7 @@ const activities = [
   { title: 'Daily Journal', subtitle: 'Reflect & grow', progress: 20, unlocked: true, action: 'journal' },
   { title: 'Emotional Dashboard', subtitle: 'See your patterns', progress: 70, unlocked: true, action: 'dashboard' },
   { title: 'Streak Calendar', subtitle: 'Stay consistent', progress: 50, unlocked: true, action: 'calendar' },
+  { title: 'Delores Memory', subtitle: 'What I remember about you', progress: 0, unlocked: true, action: 'memory' },
 ];
 
 const Delores = () => {
@@ -270,6 +272,7 @@ const Delores = () => {
                 {activeView === 'meditation' && <MeditationPlayer />}
                 {activeView === 'calendar' && <StreakCalendar />}
                 {activeView === 'radio' && <DelorisRadio moodLevel={currentMood} />}
+                {activeView === 'memory' && <MemoryDashboard />}
               </div>
             </motion.div>
           )}

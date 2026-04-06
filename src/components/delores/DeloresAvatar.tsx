@@ -1,14 +1,10 @@
 import { motion } from 'framer-motion';
 
-/**
- * AI Voice-assistant style orb avatar for Deloris.
- * Uses a warm amber-gold palette for a calming, inviting feel.
- */
-
 interface DeloresAvatarProps {
   moodLevel: number | null;
   size?: 'xs' | 'sm' | 'md' | 'lg';
   isListening?: boolean;
+  isSpeaking?: boolean;
 }
 
 const moodConfig: Record<number, { breathe: number; color1: string; color2: string; color3: string; pulseOpacity: number }> = {
@@ -26,11 +22,15 @@ const sizes = {
   lg: { container: 112, orb: 84 },
 };
 
-const DeloresAvatar = ({ moodLevel, size = 'md', isListening = false }: DeloresAvatarProps) => {
+const DeloresAvatar = ({ moodLevel, size = 'md', isListening = false, isSpeaking = false }: DeloresAvatarProps) => {
   const clampedMood = Math.min(5, Math.max(1, moodLevel ?? 3));
   const config = moodConfig[clampedMood];
   const s = sizes[size];
-  const listeningSpeed = isListening ? config.breathe * 0.4 : config.breathe;
+  const active = isListening || isSpeaking;
+  const listeningSpeed = active ? config.breathe * 0.4 : config.breathe;
+
+  // Speaking uses amber ring colors
+  const ringColor = isSpeaking ? 'hsl(38 85% 55%)' : config.color1;
 
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: s.container, height: s.container }}>
@@ -42,17 +42,19 @@ const DeloresAvatar = ({ moodLevel, size = 'md', isListening = false }: DeloresA
           style={{
             width: s.orb + i * 16,
             height: s.orb + i * 16,
-            border: `1px solid ${config.color1}`,
+            border: `1px solid ${ringColor}`,
           }}
           animate={{
-            scale: isListening ? [1, 1.3 + i * 0.15, 1] : [1, 1.1 + i * 0.05, 1],
-            opacity: [0.15 - i * 0.04, 0.3 - i * 0.06, 0.15 - i * 0.04],
+            scale: active ? [1, 1.3 + i * 0.15, 1] : [1, 1.1 + i * 0.05, 1],
+            opacity: isSpeaking
+              ? [0.2, 0.5 - i * 0.08, 0.2]
+              : [0.15 - i * 0.04, 0.3 - i * 0.06, 0.15 - i * 0.04],
           }}
           transition={{
-            duration: listeningSpeed,
+            duration: isSpeaking ? 0.8 + i * 0.15 : listeningSpeed,
             repeat: Infinity,
             ease: 'easeInOut',
-            delay: i * 0.3,
+            delay: i * (isSpeaking ? 0.12 : 0.3),
           }}
         />
       ))}
@@ -63,14 +65,14 @@ const DeloresAvatar = ({ moodLevel, size = 'md', isListening = false }: DeloresA
         style={{
           width: s.orb + 8,
           height: s.orb + 8,
-          background: `radial-gradient(circle, ${config.color1} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${isSpeaking ? 'hsl(38 85% 55%)' : config.color1} 0%, transparent 70%)`,
         }}
         animate={{
-          scale: isListening ? [1, 1.4, 0.95, 1.3, 1] : [1, 1.15, 1],
-          opacity: isListening ? [0.4, 0.8, 0.3, 0.7, 0.4] : [config.pulseOpacity, config.pulseOpacity + 0.2, config.pulseOpacity],
+          scale: active ? [1, 1.4, 0.95, 1.3, 1] : [1, 1.15, 1],
+          opacity: active ? [0.4, 0.8, 0.3, 0.7, 0.4] : [config.pulseOpacity, config.pulseOpacity + 0.2, config.pulseOpacity],
         }}
         transition={{
-          duration: isListening ? listeningSpeed * 0.7 : listeningSpeed,
+          duration: active ? listeningSpeed * 0.7 : listeningSpeed,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
@@ -84,15 +86,15 @@ const DeloresAvatar = ({ moodLevel, size = 'md', isListening = false }: DeloresA
           height: s.orb,
           background: `radial-gradient(circle at 35% 35%, ${config.color1}, ${config.color2} 60%, ${config.color3} 100%)`,
           boxShadow: `
-            0 0 ${s.orb * 0.4}px ${config.color1},
+            0 0 ${s.orb * 0.4}px ${isSpeaking ? 'hsl(38 85% 55%)' : config.color1},
             inset 0 -${s.orb * 0.15}px ${s.orb * 0.3}px ${config.color3}
           `,
         }}
         animate={{
-          scale: isListening ? [1, 1.08, 0.96, 1.05, 1] : [1, 1.04, 1],
+          scale: active ? [1, 1.08, 0.96, 1.05, 1] : [1, 1.04, 1],
         }}
         transition={{
-          duration: isListening ? listeningSpeed * 0.6 : listeningSpeed,
+          duration: active ? listeningSpeed * 0.6 : listeningSpeed,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
@@ -109,7 +111,7 @@ const DeloresAvatar = ({ moodLevel, size = 'md', isListening = false }: DeloresA
           }}
           animate={{
             opacity: [0.5, 0.8, 0.5],
-            x: isListening ? [-2, 2, -2] : [0, 1, 0],
+            x: active ? [-2, 2, -2] : [0, 1, 0],
           }}
           transition={{ duration: listeningSpeed, repeat: Infinity, ease: 'easeInOut' }}
         />
