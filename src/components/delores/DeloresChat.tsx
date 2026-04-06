@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
+import { Send, Volume2, VolumeX, Mic, MicOff, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -27,14 +27,17 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-chat
 const MEMORY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-memory`;
 
 /* ═══ MIC BUTTON ═══ */
-const MicButton = ({ onTranscript, onListeningChange }: { onTranscript: (text: string) => void; onListeningChange?: (l: boolean) => void }) => {
+const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
+  onTranscript: (text: string) => void;
+  onListeningChange?: (l: boolean) => void;
+  autoStart?: boolean;
+}) => {
   const [listening, setListening] = useState(false);
   const supported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+  const recRef = useRef<any>(null);
 
-  const toggle = () => {
-    if (!supported) return;
-    if (listening) { setListening(false); onListeningChange?.(false); return; }
-
+  const startListening = useCallback(() => {
+    if (!supported || listening) return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const rec = new SR();
     rec.continuous = false; rec.interimResults = false; rec.lang = 'en-US';
@@ -42,9 +45,24 @@ const MicButton = ({ onTranscript, onListeningChange }: { onTranscript: (text: s
     rec.onresult = (e: any) => { result = Array.from(e.results).map((r: any) => r[0].transcript).join(''); };
     rec.onend = () => { setListening(false); onListeningChange?.(false); if (result) onTranscript(result); };
     rec.onerror = () => { setListening(false); onListeningChange?.(false); };
+    recRef.current = rec;
     setListening(true); onListeningChange?.(true);
     rec.start();
+  }, [supported, listening, onTranscript, onListeningChange]);
+
+  const toggle = () => {
+    if (!supported) return;
+    if (listening) { recRef.current?.stop(); setListening(false); onListeningChange?.(false); return; }
+    startListening();
   };
+
+  // Auto-start for hands-free mode
+  useEffect(() => {
+    if (autoStart && !listening) {
+      const t = setTimeout(startListening, 600);
+      return () => clearTimeout(t);
+    }
+  }, [autoStart]);
 
   if (!supported) return null;
 
@@ -96,14 +114,24 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [handsFree, setHandsFree] = useState(false);
+  const [shouldAutoListen, setShouldAutoListen] = useState(false);
   const [agentState, setAgentState] = useState<AgentState>('idle');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null);
   const [allToolExecutions, setAllToolExecutions] = useState<ToolExecution[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const { speak, stop } = useSpeech();
+
+  // Speech hook with onEnd callback for hands-free loop
+  const { speak, stop, speaking } = useSpeech({
+    onEnd: () => {
+      if (handsFree && !isLoading) {
+        setShouldAutoListen(true);
+      }
+    },
+  });
 
   // Load memory context on mount
   useEffect(() => {
@@ -132,7 +160,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         greeting += `Last time we talked about ${lastSession.topics_discussed?.slice(0, 2).join(' and ') || 'some things'}. `;
       }
       greeting += `I've been holding ${memoryContext.memory_count} memories of our conversations. What's on your mind today?`;
-      
+
       setMessages([{
         id: '0',
         role: 'assistant',
@@ -146,18 +174,15 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   }, [messages, isLoading]);
 
   const handleSpeak = (msgId: string, text: string) => {
-    if (speakingId === msgId) {
+    if (speaking) {
       stop();
-      setSpeakingId(null);
     } else {
       const cleanText = text.replace(/[#*_`~\[\]()>]/g, '').replace(/\n+/g, '. ');
       speak(cleanText);
-      setSpeakingId(msgId);
-      setTimeout(() => setSpeakingId(null), cleanText.length * 60);
     }
   };
 
-  // Consolidate session when unmounting (if enough messages)
+  // Consolidate session when unmounting
   useEffect(() => {
     return () => {
       if (sessionId && session?.access_token && messages.length > 4) {
@@ -175,6 +200,11 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
+
+    // Stop any ongoing speech when user sends a message
+    if (speaking) stop();
+    setShouldAutoListen(false);
+
     const hasCredit = await useCredit();
     if (!hasCredit) return;
     const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text.trim() };
@@ -206,32 +236,25 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
 
       if (resp.status === 429) {
         toast({ title: 'Delores needs a moment', description: 'Please wait and try again.', variant: 'destructive' });
-        setIsLoading(false);
-        setAgentState('idle');
-        return;
+        setIsLoading(false); setAgentState('idle'); return;
       }
       if (resp.status === 402) {
         toast({ title: 'Credits exhausted', description: 'Please add AI credits to continue.', variant: 'destructive' });
-        setIsLoading(false);
-        setAgentState('idle');
-        return;
+        setIsLoading(false); setAgentState('idle'); return;
       }
       if (!resp.ok || !resp.body) throw new Error('Stream failed');
 
-      // Check for tool executions
       const toolHeader = resp.headers.get('X-Delores-Tools');
       const toolExecutions = parseToolResults(toolHeader);
 
       if (toolExecutions.length > 0) {
         setAgentState('acting');
         setAllToolExecutions(prev => [...prev, ...toolExecutions]);
-        // Brief pause to show "acting" state
         await new Promise(r => setTimeout(r, 600));
       }
 
       setAgentState('responding');
 
-      // Parse session ID from response if available
       const newSessionId = resp.headers.get('X-Delores-Session');
       if (newSessionId) setSessionId(newSessionId);
 
@@ -272,6 +295,12 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
           }
         }
       }
+
+      // Auto-speak completed response
+      if (voiceEnabled && assistantSoFar) {
+        const cleanText = assistantSoFar.replace(/[#*_`~\[\]()>]/g, '').replace(/\n+/g, '. ');
+        speak(cleanText);
+      }
     } catch (e) {
       console.error('Delores chat error:', e);
       toast({ title: 'Connection error', description: 'Could not reach Delores. Please try again.', variant: 'destructive' });
@@ -292,6 +321,32 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         recentTools={allToolExecutions}
       />
 
+      {/* Voice controls header */}
+      <div className="flex items-center justify-end gap-1.5 px-3 py-1.5 border-b border-border/20">
+        <button
+          onClick={() => setVoiceEnabled(v => !v)}
+          className={cn(
+            'flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all',
+            voiceEnabled ? 'bg-primary/15 text-primary' : 'bg-muted/50 text-muted-foreground'
+          )}
+          title={voiceEnabled ? 'Voice on' : 'Voice off'}
+        >
+          {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+          Voice
+        </button>
+        <button
+          onClick={() => { setHandsFree(h => !h); if (!handsFree) setShouldAutoListen(true); }}
+          className={cn(
+            'flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all',
+            handsFree ? 'bg-accent/15 text-accent' : 'bg-muted/50 text-muted-foreground'
+          )}
+          title="Hands-free mode"
+        >
+          <Headphones className="w-3 h-3" />
+          Hands-free
+        </button>
+      </div>
+
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-4">
         <AnimatePresence>
           {messages.map(msg => (
@@ -306,15 +361,15 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
                 {msg.role === 'assistant' && (
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <DeloresAvatar moodLevel={moodLevel ?? null} size="xs" />
+                      <DeloresAvatar moodLevel={moodLevel ?? null} size="xs" isSpeaking={speaking && messages[messages.length - 1]?.id === msg.id} />
                       <span className="text-xs font-medium text-muted-foreground">Delores</span>
                     </div>
                     <button
                       onClick={() => handleSpeak(msg.id, msg.content)}
                       className="p-1 rounded-full hover:bg-accent/20 transition-colors"
-                      aria-label={speakingId === msg.id ? 'Stop listening' : 'Listen'}
+                      aria-label={speaking ? 'Stop listening' : 'Listen'}
                     >
-                      {speakingId === msg.id ? (
+                      {speaking ? (
                         <VolumeX className="w-3.5 h-3.5 text-accent" />
                       ) : (
                         <Volume2 className="w-3.5 h-3.5 text-muted-foreground" />
@@ -327,7 +382,6 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
                 </div>
               </div>
 
-              {/* Tool execution results */}
               {msg.toolExecutions?.length ? (
                 <div className="mt-2 space-y-1.5 max-w-[85%]">
                   {msg.toolExecutions.map((te, i) => (
@@ -373,7 +427,11 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
 
       <div className="p-4 border-t border-border/30">
         <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2 items-center">
-          <MicButton onTranscript={(text) => { setInput(text); sendMessage(text); }} onListeningChange={onListeningChange} />
+          <MicButton
+            onTranscript={(text) => { setInput(text); sendMessage(text); }}
+            onListeningChange={onListeningChange}
+            autoStart={shouldAutoListen && handsFree}
+          />
           <Input value={input} onChange={e => setInput(e.target.value)} placeholder="Talk to Delores…" className="bg-card/50 border-border/30" disabled={isLoading} />
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
             className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly">

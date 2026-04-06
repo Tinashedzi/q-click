@@ -272,6 +272,7 @@ const Delores = () => {
                 {activeView === 'meditation' && <MeditationPlayer />}
                 {activeView === 'calendar' && <StreakCalendar />}
                 {activeView === 'radio' && <DelorisRadio moodLevel={currentMood} />}
+                {activeView === 'memory' && <MemoryDashboard />}
               </div>
             </motion.div>
           )}
