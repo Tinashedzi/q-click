@@ -11,6 +11,7 @@ import StreakCalendar from '@/components/delores/StreakCalendar';
 import JournalEntry from '@/components/delores/JournalEntry';
 import MeditationPlayer from '@/components/delores/MeditationPlayer';
 import DelorisRadio from '@/components/delores/DelorisRadio';
+import MemoryDashboard from '@/components/delores/MemoryDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
 import { useIsMobile } from '@/hooks/use-mobile';
