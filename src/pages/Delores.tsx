@@ -26,6 +26,7 @@ const activities = [
   { title: 'Daily Journal', subtitle: 'Reflect & grow', progress: 20, unlocked: true, action: 'journal' },
   { title: 'Emotional Dashboard', subtitle: 'See your patterns', progress: 70, unlocked: true, action: 'dashboard' },
   { title: 'Streak Calendar', subtitle: 'Stay consistent', progress: 50, unlocked: true, action: 'calendar' },
+  { title: 'Delores Memory', subtitle: 'What I remember about you', progress: 0, unlocked: true, action: 'memory' },
 ];
 
 const Delores = () => {
