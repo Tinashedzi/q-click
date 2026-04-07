@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useSpeech } from '@/hooks/useSpeech';
+import { useSpeech, getAvailableVoices } from '@/hooks/useSpeech';
 import ReactMarkdown from 'react-markdown';
 import DeloresAvatar from './DeloresAvatar';
 import AgentStatusBar from './AgentStatusBar';
@@ -117,12 +117,25 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [handsFree, setHandsFree] = useState(false);
   const [shouldAutoListen, setShouldAutoListen] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>('');
   const [agentState, setAgentState] = useState<AgentState>('idle');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [memoryContext, setMemoryContext] = useState<MemoryContext | null>(null);
   const [allToolExecutions, setAllToolExecutions] = useState<ToolExecution[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Load available voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const v = getAvailableVoices();
+      if (v.length) setVoices(v);
+    };
+    loadVoices();
+    window.speechSynthesis?.addEventListener('voiceschanged', loadVoices);
+    return () => window.speechSynthesis?.removeEventListener('voiceschanged', loadVoices);
+  }, []);
 
   // Speech hook with onEnd callback for hands-free loop
   const { speak, stop, speaking } = useSpeech({
@@ -131,6 +144,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         setShouldAutoListen(true);
       }
     },
+    voiceURI: selectedVoiceURI || undefined,
   });
 
   // Load memory context on mount
@@ -322,7 +336,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
       />
 
       {/* Voice controls header */}
-      <div className="flex items-center justify-end gap-1.5 px-3 py-1.5 border-b border-border/20">
+      <div className="flex items-center justify-end gap-1.5 px-3 py-1.5 border-b border-border/20 flex-wrap">
         <button
           onClick={() => setVoiceEnabled(v => !v)}
           className={cn(
@@ -334,6 +348,23 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
           {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
           Voice
         </button>
+        {voiceEnabled && voices.length > 0 && (
+          <select
+            value={selectedVoiceURI}
+            onChange={e => setSelectedVoiceURI(e.target.value)}
+            className="h-6 px-1.5 rounded-lg text-[10px] bg-card/50 border border-border/30 text-foreground max-w-[140px] truncate"
+            title="Choose Delores's voice"
+          >
+            <option value="">Auto (best match)</option>
+            {voices
+              .filter(v => v.lang.startsWith('en'))
+              .map(v => (
+                <option key={v.voiceURI} value={v.voiceURI}>
+                  {v.name}
+                </option>
+              ))}
+          </select>
+        )}
         <button
           onClick={() => { setHandsFree(h => !h); if (!handsFree) setShouldAutoListen(true); }}
           className={cn(
