@@ -336,7 +336,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
       />
 
       {/* Voice controls header */}
-      <div className="flex items-center justify-end gap-1.5 px-3 py-1.5 border-b border-border/20">
+      <div className="flex items-center justify-end gap-1.5 px-3 py-1.5 border-b border-border/20 flex-wrap">
         <button
           onClick={() => setVoiceEnabled(v => !v)}
           className={cn(
@@ -348,6 +348,23 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
           {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
           Voice
         </button>
+        {voiceEnabled && voices.length > 0 && (
+          <select
+            value={selectedVoiceURI}
+            onChange={e => setSelectedVoiceURI(e.target.value)}
+            className="h-6 px-1.5 rounded-lg text-[10px] bg-card/50 border border-border/30 text-foreground max-w-[140px] truncate"
+            title="Choose Delores's voice"
+          >
+            <option value="">Auto (best match)</option>
+            {voices
+              .filter(v => v.lang.startsWith('en'))
+              .map(v => (
+                <option key={v.voiceURI} value={v.voiceURI}>
+                  {v.name}
+                </option>
+              ))}
+          </select>
+        )}
         <button
           onClick={() => { setHandsFree(h => !h); if (!handsFree) setShouldAutoListen(true); }}
           className={cn(
