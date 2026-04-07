@@ -126,6 +126,17 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  // Load available voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const v = getAvailableVoices();
+      if (v.length) setVoices(v);
+    };
+    loadVoices();
+    window.speechSynthesis?.addEventListener('voiceschanged', loadVoices);
+    return () => window.speechSynthesis?.removeEventListener('voiceschanged', loadVoices);
+  }, []);
+
   // Speech hook with onEnd callback for hands-free loop
   const { speak, stop, speaking } = useSpeech({
     onEnd: () => {
@@ -133,6 +144,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         setShouldAutoListen(true);
       }
     },
+    voiceURI: selectedVoiceURI || undefined,
   });
 
   // Load memory context on mount
