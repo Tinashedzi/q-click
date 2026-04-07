@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useSpeech } from '@/hooks/useSpeech';
+import { useSpeech, getAvailableVoices } from '@/hooks/useSpeech';
 import ReactMarkdown from 'react-markdown';
 import DeloresAvatar from './DeloresAvatar';
 import AgentStatusBar from './AgentStatusBar';
