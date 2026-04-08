@@ -21,7 +21,7 @@ const DEFAULT: CreditState = {
   monthly_bonus: 0,
   monthly_used: 0,
   referral_credits: 0,
-  remaining: 5,
+  remaining: 25,
   referral_code: '',
   total_referrals: 0,
   loading: true,
