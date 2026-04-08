@@ -24,6 +24,7 @@ interface Message {
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-chat`;
+const VOICE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-voice-harness`;
 const MEMORY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-memory`;
 
 /* ═══ MIC BUTTON ═══ */
