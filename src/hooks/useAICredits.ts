@@ -16,7 +16,7 @@ export interface CreditState {
 }
 
 const DEFAULT: CreditState = {
-  daily_credits: 5,
+  daily_credits: 25,
   daily_used: 0,
   monthly_bonus: 0,
   monthly_used: 0,
