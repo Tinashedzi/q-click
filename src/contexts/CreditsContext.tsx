@@ -6,6 +6,7 @@ interface CreditsContextType {
   fetchCredits: () => Promise<void>;
   deductCredit: () => Promise<boolean>;
   redeemReferral: (code: string) => Promise<boolean>;
+  redeemUpgradeCode: (code: string) => Promise<boolean>;
 }
 
 const CreditsContext = createContext<CreditsContextType | null>(null);
