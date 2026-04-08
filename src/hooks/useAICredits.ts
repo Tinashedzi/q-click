@@ -16,12 +16,12 @@ export interface CreditState {
 }
 
 const DEFAULT: CreditState = {
-  daily_credits: 5,
+  daily_credits: 25,
   daily_used: 0,
   monthly_bonus: 0,
   monthly_used: 0,
   referral_credits: 0,
-  remaining: 5,
+  remaining: 25,
   referral_code: '',
   total_referrals: 0,
   loading: true,
@@ -116,5 +116,27 @@ export const useAICredits = () => {
     }
   }, [user, fetchCredits]);
 
-  return { credits, fetchCredits, deductCredit, redeemReferral };
+  const redeemUpgradeCode = useCallback(async (code: string) => {
+    if (!user) return false;
+    try {
+      const { data, error } = await supabase.functions.invoke('manage-credits', {
+        body: { action: 'redeem_upgrade_code', referral_code: code },
+      });
+      if (error) throw error;
+      if (data?.success) {
+        toast.success(data.message || '🎉 Plan upgraded!');
+        await fetchCredits();
+        return true;
+      }
+      if (data?.error) {
+        toast.error(data.error);
+      }
+      return false;
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to redeem upgrade code');
+      return false;
+    }
+  }, [user, fetchCredits]);
+
+  return { credits, fetchCredits, deductCredit, redeemReferral, redeemUpgradeCode };
 };
