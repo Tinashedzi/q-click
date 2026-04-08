@@ -23,7 +23,7 @@ serve(async (req) => {
     const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
     if (authErr || !user) throw new Error("Not authenticated");
 
-    const { action, referral_code } = await req.json();
+    const { action, referral_code } = await req.json().catch(() => ({ action: 'check', referral_code: '' }));
 
     // Get or create credits row
     let { data: credits } = await supabase
