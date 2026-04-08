@@ -325,6 +325,73 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
     setAgentState('idle');
   };
 
+  /** Voice-specific path: calls delores-voice-harness for TTS-optimized responses */
+  const sendVoiceMessage = async (text: string) => {
+    if (!text.trim() || isLoading) return;
+    if (speaking) stop();
+    setShouldAutoListen(false);
+
+    const hasCredit = await useCredit();
+    if (!hasCredit) return;
+
+    const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text.trim() };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setIsLoading(true);
+    setAgentState('thinking');
+
+    try {
+      const resp = await fetch(VOICE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          transcript: text.trim(),
+          session_id: sessionId,
+        }),
+      });
+
+      if (resp.status === 429) {
+        toast({ title: 'Delores needs a moment', description: 'Please wait and try again.', variant: 'destructive' });
+        setIsLoading(false); setAgentState('idle'); return;
+      }
+      if (resp.status === 402) {
+        toast({ title: 'Credits exhausted', description: 'Please add AI credits to continue.', variant: 'destructive' });
+        setIsLoading(false); setAgentState('idle'); return;
+      }
+      if (!resp.ok) throw new Error('Voice harness request failed');
+
+      const data = await resp.json();
+
+      if (data.error) {
+        toast({ title: 'Voice error', description: data.error, variant: 'destructive' });
+        setIsLoading(false); setAgentState('idle'); return;
+      }
+
+      if (data.requires_approval) {
+        setAgentState('acting');
+        await new Promise(r => setTimeout(r, 400));
+      }
+
+      setAgentState('responding');
+      const assistantMsg: Message = { id: crypto.randomUUID(), role: 'assistant', content: data.text };
+      setMessages(prev => [...prev, assistantMsg]);
+
+      // Speak the response (already TTS-optimized, no markdown cleaning needed)
+      if (voiceEnabled && data.text) {
+        speak(data.text);
+      }
+    } catch (e) {
+      console.error('Voice harness error:', e);
+      toast({ title: 'Connection error', description: 'Could not reach Delores voice. Please try again.', variant: 'destructive' });
+    }
+
+    setIsLoading(false);
+    setAgentState('idle');
+  };
+
   return (
     <>
     <div className="flex flex-col h-full">
