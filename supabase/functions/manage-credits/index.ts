@@ -101,6 +101,30 @@ serve(async (req) => {
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    if (action === "redeem_upgrade_code") {
+      const { code } = await req.json().catch(() => ({ code: referral_code }));
+      const upgradeCode = referral_code || code;
+      
+      if (upgradeCode === "d1149abf") {
+        // Upgrade to Inventor plan: 50 daily + 200 monthly bonus
+        await supabase.from("ai_credits").update({
+          daily_credits: 50,
+          monthly_bonus: 200,
+          monthly_used: 0,
+        }).eq("user_id", user.id);
+
+        return new Response(JSON.stringify({
+          success: true,
+          plan: "inventor",
+          message: "🎉 You've been upgraded to the Inventor plan! 50 daily credits + 200 monthly bonus.",
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      return new Response(JSON.stringify({ error: "Invalid upgrade code" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (action === "redeem_referral" && referral_code) {
       // Find the referrer
       const { data: referrer } = await supabase
