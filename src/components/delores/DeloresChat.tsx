@@ -527,7 +527,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
       <div className="p-4 border-t border-border/30">
         <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2 items-center">
           <MicButton
-            onTranscript={(text) => { setInput(text); sendMessage(text); }}
+            onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
             onListeningChange={onListeningChange}
             autoStart={shouldAutoListen && handsFree}
           />
