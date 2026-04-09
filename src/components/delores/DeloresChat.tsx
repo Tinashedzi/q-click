@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Volume2, VolumeX, Mic, MicOff, Headphones } from 'lucide-react';
+import { Send, Volume2, VolumeX, Mic, MicOff, Headphones, Feather } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -16,11 +16,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { parseToolResults, type AgentState, type ToolExecution, type MemoryContext } from '@/engine/delores-agent';
 
+interface FolktaleInfo {
+  theme: string;
+  stemConcept: string;
+}
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   toolExecutions?: ToolExecution[];
+  folktale?: FolktaleInfo;
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-chat`;
@@ -34,6 +40,7 @@ const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
   autoStart?: boolean;
 }) => {
   const [listening, setListening] = useState(false);
+  const [interimText, setInterimText] = useState('');
   const supported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   const recRef = useRef<any>(null);
 
@@ -41,19 +48,49 @@ const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
     if (!supported || listening) return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const rec = new SR();
-    rec.continuous = false; rec.interimResults = false; rec.lang = 'en-US';
-    let result = '';
-    rec.onresult = (e: any) => { result = Array.from(e.results).map((r: any) => r[0].transcript).join(''); };
-    rec.onend = () => { setListening(false); onListeningChange?.(false); if (result) onTranscript(result); };
-    rec.onerror = () => { setListening(false); onListeningChange?.(false); };
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.lang = 'en-US';
+    let finalResult = '';
+
+    rec.onresult = (e: any) => {
+      let interim = '';
+      let final = '';
+      for (let i = 0; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) {
+          final += r[0].transcript;
+        } else {
+          interim += r[0].transcript;
+        }
+      }
+      finalResult = final || interim;
+      setInterimText(interim);
+    };
+
+    rec.onend = () => {
+      setListening(false);
+      setInterimText('');
+      onListeningChange?.(false);
+      if (finalResult.trim()) onTranscript(finalResult.trim());
+    };
+
+    rec.onerror = (e: any) => {
+      console.warn('Speech recognition error:', e.error);
+      setListening(false);
+      setInterimText('');
+      onListeningChange?.(false);
+    };
+
     recRef.current = rec;
-    setListening(true); onListeningChange?.(true);
+    setListening(true);
+    onListeningChange?.(true);
     rec.start();
   }, [supported, listening, onTranscript, onListeningChange]);
 
   const toggle = () => {
     if (!supported) return;
-    if (listening) { recRef.current?.stop(); setListening(false); onListeningChange?.(false); return; }
+    if (listening) { recRef.current?.stop(); setListening(false); setInterimText(''); onListeningChange?.(false); return; }
     startListening();
   };
 
@@ -68,25 +105,56 @@ const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
   if (!supported) return null;
 
   return (
-    <motion.button
-      type="button"
-      onClick={toggle}
-      whileTap={{ scale: 0.9 }}
-      className={cn(
-        'w-9 h-9 shrink-0 rounded-full flex items-center justify-center border transition-all duration-300',
-        listening
-          ? 'border-destructive/40 bg-destructive/10 shadow-[0_0_16px_-4px_hsl(var(--destructive)/0.3)]'
-          : 'border-border/30 bg-card/20 hover:bg-card/40'
-      )}
-    >
-      {listening ? (
-        <MicOff className="w-4 h-4 text-destructive" />
-      ) : (
-        <Mic className="w-4 h-4 text-muted-foreground" />
-      )}
-    </motion.button>
+    <div className="flex flex-col items-center gap-1">
+      <motion.button
+        type="button"
+        onClick={toggle}
+        whileTap={{ scale: 0.9 }}
+        className={cn(
+          'w-9 h-9 shrink-0 rounded-full flex items-center justify-center border transition-all duration-300',
+          listening
+            ? 'border-destructive/40 bg-destructive/10 shadow-[0_0_16px_-4px_hsl(var(--destructive)/0.3)] animate-pulse'
+            : 'border-border/30 bg-card/20 hover:bg-card/40'
+        )}
+        title={listening ? 'Stop listening' : 'Speak to Delores'}
+      >
+        {listening ? (
+          <MicOff className="w-4 h-4 text-destructive" />
+        ) : (
+          <Mic className="w-4 h-4 text-muted-foreground" />
+        )}
+      </motion.button>
+      <AnimatePresence>
+        {listening && interimText && (
+          <motion.p
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="text-[10px] text-muted-foreground italic max-w-[200px] truncate text-center"
+          >
+            {interimText}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
+
+/* ═══ FOLKTALE CARD ═══ */
+const FolktaleCard = ({ folktale }: { folktale: FolktaleInfo }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.95 }}
+    animate={{ opacity: 1, scale: 1 }}
+    className="mt-3 pt-3 border-t border-border/20"
+  >
+    <div className="flex items-center gap-1.5 text-[10px] font-bold text-accent uppercase tracking-widest mb-1">
+      <Feather className="w-3 h-3" /> Folktale Mirror: {folktale.theme}
+    </div>
+    <p className="text-[11px] text-muted-foreground italic leading-relaxed">
+      {folktale.stemConcept}
+    </p>
+  </motion.div>
+);
 
 const suggestedPrompts = [
   "I'm feeling overwhelmed today",
@@ -110,7 +178,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
     {
       id: '0',
       role: 'assistant',
-      content: "Hey there, I'm Delores. 🌿 Think of me as a gentle companion on your journey. I'm here to listen, reflect, and walk beside you — never ahead. What's on your heart today?",
+      content: "Welcome, young seeker. I am Delores — a gentle companion on your journey of discovery. I don't just give answers; I help you find them within yourself. What's been on your mind today?",
     },
   ]);
   const [input, setInput] = useState('');
@@ -170,11 +238,11 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   useEffect(() => {
     if (memoryContext && memoryContext.total_sessions > 0 && messages.length === 1) {
       const lastSession = memoryContext.recent_sessions?.[0];
-      let greeting = "Welcome back! 🌿 ";
+      let greeting = "Welcome back, my dear. 🌿 ";
       if (lastSession?.session_summary) {
-        greeting += `Last time we talked about ${lastSession.topics_discussed?.slice(0, 2).join(' and ') || 'some things'}. `;
+        greeting += `Last time we explored ${lastSession.topics_discussed?.slice(0, 2).join(' and ') || 'some things'} together. `;
       }
-      greeting += `I've been holding ${memoryContext.memory_count} memories of our conversations. What's on your mind today?`;
+      greeting += `I've been holding ${memoryContext.memory_count} memories of our conversations. What wisdom shall we seek today?`;
 
       setMessages([{
         id: '0',
@@ -325,7 +393,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
     setAgentState('idle');
   };
 
-  /** Voice-specific path: calls delores-voice-harness for TTS-optimized responses */
+  /** Voice-specific path: calls delores-voice-harness for TTS-optimized Socratic responses */
   const sendVoiceMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
     if (speaking) stop();
@@ -376,7 +444,12 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
       }
 
       setAgentState('responding');
-      const assistantMsg: Message = { id: crypto.randomUUID(), role: 'assistant', content: data.text };
+      const assistantMsg: Message = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: data.text,
+        folktale: data.folktale || undefined,
+      };
       setMessages(prev => [...prev, assistantMsg]);
 
       // Speak the response (already TTS-optimized, no markdown cleaning needed)
@@ -479,6 +552,9 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
                 <div className="prose prose-sm prose-stone max-w-none [&_p]:mb-1 [&_p:last-child]:mb-0">
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
+
+                {/* Folktale mirror card for voice responses */}
+                {msg.folktale && <FolktaleCard folktale={msg.folktale} />}
               </div>
 
               {msg.toolExecutions?.length ? (
@@ -499,7 +575,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
                 <DeloresAvatar moodLevel={moodLevel ?? null} size="xs" />
                 <span className="text-xs text-muted-foreground">
                   {agentState === 'acting' ? 'Delores is taking action…' :
-                   agentState === 'planning' ? 'Delores is planning…' :
+                   agentState === 'planning' ? 'Delores is reflecting…' :
                    'Delores is thinking…'}
                 </span>
               </div>

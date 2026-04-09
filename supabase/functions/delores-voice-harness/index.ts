@@ -7,6 +7,25 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// --- AFRICAN FOLKTALES FOR SOCRATIC INTEGRATION ---
+const FOLKTALES = [
+  { theme: "Anansi the Spider", stemConcept: "Network Theory, Algorithms, Biomimicry", socraticQuestion: "Anansi weaves intricate webs to catch his prey. How does the structure of his web optimize for strength and efficiency? What parallels can we draw to modern communication networks or neural pathways?" },
+  { theme: "The Tortoise and the Hare", stemConcept: "Optimization, Resource Management, Iterative Design", socraticQuestion: "The tortoise's slow but steady pace won the race. In engineering, when might an iterative, slower approach be more effective than a fast one?" },
+  { theme: "Creation Myths (Order from Chaos)", stemConcept: "Cosmology, Entropy, Systems Thinking", socraticQuestion: "Many African creation stories describe order emerging from primordial chaos. How do scientific theories like the Big Bang also describe increasing complexity from simpler states?" },
+  { theme: "Ubuntu (Interconnectedness)", stemConcept: "Ecology, Social Networks, Collaborative AI", socraticQuestion: "'I am because we are.' How does Ubuntu resonate with ecological interdependence or the design of collaborative AI systems?" },
+  { theme: "Oral Tradition & Memory", stemConcept: "Information Theory, Cognitive Science of Memory", socraticQuestion: "How does the human brain encode and retrieve stories? What can we learn from oral traditions about robust, long-term memory formation?" },
+];
+
+function selectFolktale(transcript: string) {
+  const lower = transcript.toLowerCase();
+  if (lower.includes("network") || lower.includes("web") || lower.includes("connect")) return FOLKTALES[0];
+  if (lower.includes("patience") || lower.includes("slow") || lower.includes("speed")) return FOLKTALES[1];
+  if (lower.includes("chaos") || lower.includes("origin") || lower.includes("universe")) return FOLKTALES[2];
+  if (lower.includes("together") || lower.includes("team") || lower.includes("community")) return FOLKTALES[3];
+  if (lower.includes("memory") || lower.includes("story") || lower.includes("remember")) return FOLKTALES[4];
+  return FOLKTALES[Math.floor(Math.random() * FOLKTALES.length)];
+}
+
 // --- HARNESS TYPES ---
 enum ToolType {
   READ_ONLY = "read_only",
@@ -38,11 +57,40 @@ class DeloresVoiceHarness {
       requiresApproval = true;
     } else if (userInput.toLowerCase().includes("analyze") || userInput.toLowerCase().includes("check")) {
       plan = "data_analysis_and_retrieval";
+    } else if (userInput.toLowerCase().includes("why") || userInput.toLowerCase().includes("how") || userInput.toLowerCase().includes("what if")) {
+      plan = "socratic_deep_inquiry";
+    } else if (userInput.toLowerCase().includes("feel") || userInput.toLowerCase().includes("scared") || userInput.toLowerCase().includes("sad") || userInput.toLowerCase().includes("happy")) {
+      plan = "emotional_attunement";
     }
 
     return { plan, requiresApproval };
   }
 }
+
+const SOCRATIC_SYSTEM_PROMPT = `You are Delores, a wise and loving Socratic STEM mentor for young learners on Q-Click.
+
+CORE IDENTITY:
+You are warm, gentle, and firm — like a grandmother who loves you enough to tell you the truth. You speak with the cadence of an elder sharing wisdom by firelight. You are never condescending, always patient, and deeply curious about how your student thinks.
+
+THE BICYCLE TEST:
+You use the "Bicycle Test" mentality — when a student says they understand something, you ask them to sketch it from memory, to explain the mechanism, to find the chain that connects the gears. This creates productive friction that deepens understanding. As the Yoruba proverb says: "It is only a person we love who we tell that their breath smells."
+
+SOCRATIC DIALOGUE FLOW:
+1. Listen deeply to what the student says
+2. Ask a clarifying question to understand their thinking
+3. When appropriate, weave in an African folktale or proverb as a metaphor
+4. Guide them to discover the answer themselves — never just give it
+5. Celebrate their insights with genuine warmth
+
+AFRICAN WISDOM:
+Draw from African folktales and proverbs naturally. Anansi teaches network thinking. The Tortoise teaches patience and optimization. Ubuntu teaches interconnectedness. Oral traditions teach memory and information theory. Use these not as decoration but as genuine pedagogical tools.
+
+VOICE CONSTRAINTS:
+- Never use markdown formatting, bullet points, asterisks, or special characters
+- Speak naturally as if talking to a beloved student sitting beside you
+- Keep responses concise — two to four sentences — perfect for spoken delivery
+- Use pauses naturally with commas and periods
+- Address the student warmly: "my dear", "young one", "seeker"`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -67,6 +115,7 @@ serve(async (req) => {
 
     const harness = new DeloresVoiceHarness();
     const { plan, requiresApproval } = await harness.processIntent(transcript);
+    const folktale = selectFolktale(transcript);
 
     // Call AI via Lovable AI Gateway
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -80,11 +129,12 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are Delores, a voice-first AGI mentor for young learners on Q-Click.
+            content: `${SOCRATIC_SYSTEM_PROMPT}
+
 Execution Plan: ${plan}.
 Constraints: ${requiresApproval ? 'Action requires user confirmation before proceeding.' : 'No restrictions.'}
-Keep responses natural, empathetic, warm, and concise for text-to-speech playback.
-Never use markdown formatting, bullet points, or special characters — speak naturally as if talking to a friend.`,
+Relevant Folktale Context — ${folktale.theme}: ${folktale.socraticQuestion}
+You may weave this folktale into your response if it fits naturally. Do not force it.`,
           },
           { role: "user", content: transcript },
         ],
@@ -98,22 +148,23 @@ Never use markdown formatting, bullet points, or special characters — speak na
     }
 
     const aiData = await aiResponse.json();
-    const deloresSpeech = aiData.choices?.[0]?.message?.content || "I'm here for you. Could you say that again?";
+    const deloresSpeech = aiData.choices?.[0]?.message?.content || "I hear you, my dear. Could you share that thought once more?";
 
     // Log to Memory Consolidation Engine
     await supabase.from("delores_memory").insert({
       user_id: user.id,
       memory_type: "voice_interaction",
-      content: { plan, transcript, response: deloresSpeech },
-      importance_score: requiresApproval ? 8 : 3,
-      tags: ["voice", plan],
+      content: { plan, transcript, response: deloresSpeech, folktale: folktale.theme },
+      importance_score: requiresApproval ? 8 : plan === "socratic_deep_inquiry" ? 6 : 3,
+      tags: ["voice", plan, folktale.theme],
     });
 
     return new Response(JSON.stringify({
       text: deloresSpeech,
       plan,
       requires_approval: requiresApproval,
-      voice_settings: { rate: 1.0, pitch: 0.9 },
+      folktale: { theme: folktale.theme, stemConcept: folktale.stemConcept },
+      voice_settings: { rate: 0.9, pitch: 1.1 },
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
