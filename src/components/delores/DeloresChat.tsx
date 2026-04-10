@@ -571,6 +571,18 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
               ))}
           </select>
         )}
+        {voiceEnabled && (
+          <button
+            onClick={() => setShowVoiceSettings(s => !s)}
+            className={cn(
+              'flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all',
+              showVoiceSettings ? 'bg-primary/15 text-primary' : 'bg-muted/50 text-muted-foreground'
+            )}
+            title="Voice settings"
+          >
+            <Sliders className="w-3 h-3" />
+          </button>
+        )}
         <button
           onClick={() => { setHandsFree(h => !h); if (!handsFree) setShouldAutoListen(true); }}
           className={cn(
@@ -583,6 +595,49 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
           Hands-free
         </button>
       </div>
+
+      {/* Pitch & Rate sliders panel */}
+      <AnimatePresence>
+        {showVoiceSettings && voiceEnabled && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden border-b border-border/20"
+          >
+            <div className="px-4 py-3 grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[10px] font-medium text-muted-foreground">
+                  <span>Pitch</span>
+                  <span className="text-primary">{ttsPitch.toFixed(1)}</span>
+                </div>
+                <Slider
+                  value={[ttsPitch]}
+                  onValueChange={([v]) => setTtsPitch(v)}
+                  min={0.5}
+                  max={1.5}
+                  step={0.1}
+                  className="h-4"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[10px] font-medium text-muted-foreground">
+                  <span>Rate</span>
+                  <span className="text-primary">{ttsRate.toFixed(1)}</span>
+                </div>
+                <Slider
+                  value={[ttsRate]}
+                  onValueChange={([v]) => setTtsRate(v)}
+                  min={0.5}
+                  max={1.5}
+                  step={0.1}
+                  className="h-4"
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 p-4">
         <AnimatePresence>
