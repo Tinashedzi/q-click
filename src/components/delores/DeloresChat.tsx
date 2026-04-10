@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Volume2, VolumeX, Mic, MicOff, Headphones, Feather } from 'lucide-react';
+import { Send, Volume2, VolumeX, Mic, MicOff, Headphones, Feather, Sliders } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useSpeech, getAvailableVoices } from '@/hooks/useSpeech';
