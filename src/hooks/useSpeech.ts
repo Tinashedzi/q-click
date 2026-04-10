@@ -3,6 +3,8 @@ import { useCallback, useRef, useState } from 'react';
 interface UseSpeechOptions {
   onEnd?: () => void;
   voiceURI?: string;
+  pitch?: number;
+  rate?: number;
 }
 
 export const getAvailableVoices = (): SpeechSynthesisVoice[] => {
@@ -42,8 +44,8 @@ export const useSpeech = (options?: UseSpeechOptions) => {
 
     if (selectedVoice) utterance.voice = selectedVoice;
 
-    utterance.pitch = 1.1;
-    utterance.rate = 0.9;
+    utterance.pitch = options?.pitch ?? 1.1;
+    utterance.rate = options?.rate ?? 0.9;
     utterance.volume = 1;
 
     utterance.onstart = () => setSpeaking(true);
@@ -57,7 +59,7 @@ export const useSpeech = (options?: UseSpeechOptions) => {
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
-  }, [options?.onEnd, options?.voiceURI]);
+  }, [options?.onEnd, options?.voiceURI, options?.pitch, options?.rate]);
 
   const stop = useCallback(() => {
     window.speechSynthesis.cancel();
