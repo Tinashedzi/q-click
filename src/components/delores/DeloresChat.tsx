@@ -34,16 +34,77 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-chat
 const VOICE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-voice-harness`;
 const MEMORY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-memory`;
 
-/* ═══ MIC BUTTON ═══ */
-const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
+/* ═══ VOICE SPECTRUM VISUALIZER ═══ */
+const VoiceSpectrum = ({ isListening, volume }: { isListening: boolean; volume: number }) => {
+  const bars = 16;
+  const baseHeight = 4;
+  const maxHeight = 24;
+
+  return (
+    <div className="flex items-center gap-0.5 h-6 px-1">
+      {Array.from({ length: bars }).map((_, i) => {
+        let height = baseHeight;
+        if (isListening) {
+          const factor = 0.4 + Math.sin(i * 0.8 + Date.now() * 0.01) * 0.3;
+          height = baseHeight + (volume * factor) * (maxHeight - baseHeight);
+        }
+        return (
+          <motion.div
+            key={i}
+            className="w-0.5 rounded-full bg-primary/60"
+            animate={{ height: `${height}px` }}
+            transition={{ duration: 0.1, ease: 'linear' }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+/* ═══ INLINE MIC BUTTON (with volume tracking) ═══ */
+const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, autoStart }: {
   onTranscript: (text: string) => void;
   onListeningChange?: (l: boolean) => void;
+  onVolumeChange?: (v: number) => void;
   autoStart?: boolean;
 }) => {
   const [listening, setListening] = useState(false);
   const [interimText, setInterimText] = useState('');
   const supported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   const recRef = useRef<any>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+
+  const stopVolumeTracking = useCallback(() => {
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    audioCtxRef.current?.close().catch(() => {});
+    audioCtxRef.current = null;
+    analyserRef.current = null;
+    onVolumeChange?.(0);
+  }, [onVolumeChange]);
+
+  const startVolumeTracking = useCallback(() => {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      const ctx = new AudioContext();
+      const analyser = ctx.createAnalyser();
+      const source = ctx.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 256;
+      audioCtxRef.current = ctx;
+      analyserRef.current = analyser;
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      const update = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteFrequencyData(dataArray);
+        const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+        onVolumeChange?.(avg / 128);
+        animFrameRef.current = requestAnimationFrame(update);
+      };
+      update();
+    }).catch(console.warn);
+  }, [onVolumeChange]);
 
   const startListening = useCallback(() => {
     if (!supported || listening) return;
@@ -54,16 +115,15 @@ const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
     rec.lang = 'en-US';
     let finalResult = '';
 
+    rec.onstart = () => startVolumeTracking();
+
     rec.onresult = (e: any) => {
       let interim = '';
       let final = '';
       for (let i = 0; i < e.results.length; i++) {
         const r = e.results[i];
-        if (r.isFinal) {
-          final += r[0].transcript;
-        } else {
-          interim += r[0].transcript;
-        }
+        if (r.isFinal) final += r[0].transcript;
+        else interim += r[0].transcript;
       }
       finalResult = final || interim;
       setInterimText(interim);
@@ -72,6 +132,7 @@ const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
     rec.onend = () => {
       setListening(false);
       setInterimText('');
+      stopVolumeTracking();
       onListeningChange?.(false);
       if (finalResult.trim()) onTranscript(finalResult.trim());
     };
@@ -80,6 +141,7 @@ const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
       console.warn('Speech recognition error:', e.error);
       setListening(false);
       setInterimText('');
+      stopVolumeTracking();
       onListeningChange?.(false);
     };
 
@@ -87,15 +149,21 @@ const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
     setListening(true);
     onListeningChange?.(true);
     rec.start();
-  }, [supported, listening, onTranscript, onListeningChange]);
+  }, [supported, listening, onTranscript, onListeningChange, startVolumeTracking, stopVolumeTracking]);
 
   const toggle = () => {
     if (!supported) return;
-    if (listening) { recRef.current?.stop(); setListening(false); setInterimText(''); onListeningChange?.(false); return; }
+    if (listening) {
+      recRef.current?.stop();
+      setListening(false);
+      setInterimText('');
+      stopVolumeTracking();
+      onListeningChange?.(false);
+      return;
+    }
     startListening();
   };
 
-  // Auto-start for hands-free mode
   useEffect(() => {
     if (autoStart && !listening) {
       const t = setTimeout(startListening, 600);
@@ -103,41 +171,30 @@ const MicButton = ({ onTranscript, onListeningChange, autoStart }: {
     }
   }, [autoStart]);
 
+  useEffect(() => () => stopVolumeTracking(), [stopVolumeTracking]);
+
   if (!supported) return null;
 
   return (
-    <div className="flex flex-col items-center gap-1">
+    <>
       <motion.button
         type="button"
         onClick={toggle}
         whileTap={{ scale: 0.9 }}
         className={cn(
-          'w-9 h-9 shrink-0 rounded-full flex items-center justify-center border transition-all duration-300',
+          'p-2.5 rounded-xl transition-all duration-300',
           listening
-            ? 'border-destructive/40 bg-destructive/10 shadow-[0_0_16px_-4px_hsl(var(--destructive)/0.3)] animate-pulse'
-            : 'border-border/30 bg-card/20 hover:bg-card/40'
+            ? 'bg-destructive/10 text-destructive shadow-[0_0_16px_-4px_hsl(var(--destructive)/0.3)]'
+            : 'text-muted-foreground hover:bg-muted/50'
         )}
         title={listening ? 'Stop listening' : 'Speak to Delores'}
       >
-        {listening ? (
-          <MicOff className="w-4 h-4 text-destructive" />
-        ) : (
-          <Mic className="w-4 h-4 text-muted-foreground" />
-        )}
+        {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
       </motion.button>
-      <AnimatePresence>
-        {listening && interimText && (
-          <motion.p
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="text-[10px] text-muted-foreground italic max-w-[200px] truncate text-center"
-          >
-            {interimText}
-          </motion.p>
-        )}
-      </AnimatePresence>
-    </div>
+      {listening && interimText && (
+        <span className="text-[10px] text-muted-foreground italic truncate max-w-[120px]">{interimText}</span>
+      )}
+    </>
   );
 };
 
