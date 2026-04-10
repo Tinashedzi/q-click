@@ -277,6 +277,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
       }
     },
     voiceURI: selectedVoiceURI || undefined,
+    pitch: ttsPitch,
+    rate: ttsRate,
   });
 
   // Load memory context on mount
@@ -663,16 +665,33 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
         </div>
       )}
 
-      <div className="p-4 border-t border-border/30">
-        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex gap-2 items-center">
-          <MicButton
-            onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
-            onListeningChange={onListeningChange}
-            autoStart={shouldAutoListen && handsFree}
-          />
-          <Input value={input} onChange={e => setInput(e.target.value)} placeholder="Talk to Delores…" className="bg-card/50 border-border/30" disabled={isLoading} />
+      <div className="p-4 border-t border-border/30 space-y-2">
+        {/* Voice spectrum when listening */}
+        <AnimatePresence>
+          {isListening && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+              <VoiceSpectrum isListening={isListening} volume={voiceVolume} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex items-center gap-0">
+          <div className="flex-1 flex items-center gap-1 bg-card/50 border border-border/30 rounded-2xl px-1 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+            <InlineMicButton
+              onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
+              onListeningChange={(l) => { setIsListening(l); onListeningChange?.(l); }}
+              onVolumeChange={setVoiceVolume}
+              autoStart={shouldAutoListen && handsFree}
+            />
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              placeholder={isListening ? 'Listening…' : 'Talk to Delores…'}
+              className="flex-1 py-2.5 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+              disabled={isLoading}
+            />
+          </div>
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
-            className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly">
+            className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly ml-2">
             <Send className="w-4 h-4" />
           </Button>
         </form>
