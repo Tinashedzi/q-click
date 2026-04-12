@@ -186,18 +186,34 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
         onClick={toggle}
         whileTap={{ scale: 0.9 }}
         className={cn(
-          'relative p-3 rounded-full transition-all duration-300',
+          'relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300',
           listening
-            ? 'bg-destructive text-destructive-foreground shadow-[0_0_20px_-2px_hsl(var(--destructive)/0.5)] animate-pulse'
-            : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md'
+            ? 'text-destructive'
+            : 'text-muted-foreground hover:text-foreground'
         )}
         title={listening ? 'Stop listening' : 'Speak to Delores'}
       >
-        {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        {listening ? (
+          <>
+            {/* Animated waveform bars when listening */}
+            <div className="flex items-center gap-[2px] h-5">
+              {[0, 1, 2, 3, 4].map(i => (
+                <motion.div
+                  key={i}
+                  className="w-[3px] rounded-full bg-destructive"
+                  animate={{ height: ['6px', `${12 + i * 3}px`, '6px'] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1, ease: 'easeInOut' }}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <Mic className="w-5 h-5" />
+        )}
         {listening && (
           <motion.span
-            className="absolute inset-0 rounded-full border-2 border-destructive/40"
-            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+            className="absolute inset-0 rounded-xl border-2 border-destructive/20"
+            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0, 0.4] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
         )}
@@ -740,14 +756,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
             </motion.div>
           )}
         </AnimatePresence>
-        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex items-center gap-0">
-          <div className="flex-1 flex items-center gap-1 bg-card/50 border border-border/30 rounded-2xl px-1 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-            <InlineMicButton
-              onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
-              onListeningChange={(l) => { setIsListening(l); onListeningChange?.(l); }}
-              onVolumeChange={setVoiceVolume}
-              autoStart={shouldAutoListen && handsFree}
-            />
+        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-1 bg-card/50 border border-border/30 rounded-2xl px-3 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -755,9 +765,15 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
               className="flex-1 py-2.5 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
               disabled={isLoading}
             />
+            <InlineMicButton
+              onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
+              onListeningChange={(l) => { setIsListening(l); onListeningChange?.(l); }}
+              onVolumeChange={setVoiceVolume}
+              autoStart={shouldAutoListen && handsFree}
+            />
           </div>
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
-            className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly ml-2">
+            className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly">
             <Send className="w-4 h-4" />
           </Button>
         </form>
