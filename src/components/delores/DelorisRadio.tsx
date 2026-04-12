@@ -42,7 +42,9 @@ interface DelorisRadioProps {
 
 const DelorisRadio = ({ moodLevel, compact = false }: DelorisRadioProps) => {
   const [playing, setPlaying] = useState(false);
-  const [activeChannel, setActiveChannel] = useState<SoundChannel | null>(null);
+  const [activeChannel, setActiveChannel] = useState<SoundChannel | null>(
+    CHANNELS.find(c => c.id === 'thunderstorm') || null
+  );
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
   const [filter, setFilter] = useState('all');

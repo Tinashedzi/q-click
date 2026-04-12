@@ -36,27 +36,31 @@ const MEMORY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delores-me
 
 /* ═══ VOICE SPECTRUM VISUALIZER ═══ */
 const VoiceSpectrum = ({ isListening, volume }: { isListening: boolean; volume: number }) => {
-  const bars = 16;
-  const baseHeight = 4;
-  const maxHeight = 24;
+  const bars = 24;
+  const baseHeight = 3;
+  const maxHeight = 32;
 
   return (
-    <div className="flex items-center gap-0.5 h-6 px-1">
+    <div className="flex items-center justify-center gap-[3px] h-10 px-3 py-2 rounded-xl bg-primary/5 border border-primary/20">
       {Array.from({ length: bars }).map((_, i) => {
         let height = baseHeight;
         if (isListening) {
-          const factor = 0.4 + Math.sin(i * 0.8 + Date.now() * 0.01) * 0.3;
-          height = baseHeight + (volume * factor) * (maxHeight - baseHeight);
+          const centerFactor = 1 - Math.abs(i - bars / 2) / (bars / 2) * 0.5;
+          const wave = Math.sin(i * 0.6 + Date.now() * 0.008) * 0.3 + 0.5;
+          height = baseHeight + (volume * wave * centerFactor) * (maxHeight - baseHeight);
         }
         return (
           <motion.div
             key={i}
-            className="w-0.5 rounded-full bg-primary/60"
-            animate={{ height: `${height}px` }}
-            transition={{ duration: 0.1, ease: 'linear' }}
+            className="w-[3px] rounded-full bg-gradient-to-t from-primary/40 to-primary"
+            animate={{ height: `${Math.max(baseHeight, height)}px` }}
+            transition={{ duration: 0.08, ease: 'linear' }}
           />
         );
       })}
+      {isListening && (
+        <span className="ml-2 text-[10px] font-medium text-primary animate-pulse">Listening…</span>
+      )}
     </div>
   );
 };
@@ -182,17 +186,24 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
         onClick={toggle}
         whileTap={{ scale: 0.9 }}
         className={cn(
-          'p-2.5 rounded-xl transition-all duration-300',
+          'relative p-3 rounded-full transition-all duration-300',
           listening
-            ? 'bg-destructive/10 text-destructive shadow-[0_0_16px_-4px_hsl(var(--destructive)/0.3)]'
-            : 'text-muted-foreground hover:bg-muted/50'
+            ? 'bg-destructive text-destructive-foreground shadow-[0_0_20px_-2px_hsl(var(--destructive)/0.5)] animate-pulse'
+            : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md'
         )}
         title={listening ? 'Stop listening' : 'Speak to Delores'}
       >
         {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        {listening && (
+          <motion.span
+            className="absolute inset-0 rounded-full border-2 border-destructive/40"
+            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        )}
       </motion.button>
       {listening && interimText && (
-        <span className="text-[10px] text-muted-foreground italic truncate max-w-[120px]">{interimText}</span>
+        <span className="text-[10px] text-muted-foreground italic truncate max-w-[140px]">{interimText}</span>
       )}
     </>
   );
