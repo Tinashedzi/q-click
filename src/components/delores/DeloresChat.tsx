@@ -756,14 +756,8 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
             </motion.div>
           )}
         </AnimatePresence>
-        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex items-center gap-0">
-          <div className="flex-1 flex items-center gap-1 bg-card/50 border border-border/30 rounded-2xl px-1 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-            <InlineMicButton
-              onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
-              onListeningChange={(l) => { setIsListening(l); onListeningChange?.(l); }}
-              onVolumeChange={setVoiceVolume}
-              autoStart={shouldAutoListen && handsFree}
-            />
+        <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-1 bg-card/50 border border-border/30 rounded-2xl px-3 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -771,9 +765,15 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
               className="flex-1 py-2.5 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
               disabled={isLoading}
             />
+            <InlineMicButton
+              onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
+              onListeningChange={(l) => { setIsListening(l); onListeningChange?.(l); }}
+              onVolumeChange={setVoiceVolume}
+              autoStart={shouldAutoListen && handsFree}
+            />
           </div>
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
-            className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly ml-2">
+            className="bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 btn-jelly">
             <Send className="w-4 h-4" />
           </Button>
         </form>
