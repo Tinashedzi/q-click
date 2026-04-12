@@ -186,18 +186,34 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
         onClick={toggle}
         whileTap={{ scale: 0.9 }}
         className={cn(
-          'relative p-3 rounded-full transition-all duration-300',
+          'relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300',
           listening
-            ? 'bg-destructive text-destructive-foreground shadow-[0_0_20px_-2px_hsl(var(--destructive)/0.5)] animate-pulse'
-            : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md'
+            ? 'text-destructive'
+            : 'text-muted-foreground hover:text-foreground'
         )}
         title={listening ? 'Stop listening' : 'Speak to Delores'}
       >
-        {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+        {listening ? (
+          <>
+            {/* Animated waveform bars when listening */}
+            <div className="flex items-center gap-[2px] h-5">
+              {[0, 1, 2, 3, 4].map(i => (
+                <motion.div
+                  key={i}
+                  className="w-[3px] rounded-full bg-destructive"
+                  animate={{ height: ['6px', `${12 + i * 3}px`, '6px'] }}
+                  transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1, ease: 'easeInOut' }}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <Mic className="w-5 h-5" />
+        )}
         {listening && (
           <motion.span
-            className="absolute inset-0 rounded-full border-2 border-destructive/40"
-            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+            className="absolute inset-0 rounded-xl border-2 border-destructive/20"
+            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0, 0.4] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
         )}
