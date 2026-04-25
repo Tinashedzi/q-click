@@ -1,70 +1,51 @@
-import { useCallback, useRef, useState } from 'react';
+// src/hooks/useSpeech.ts
+import { useState, useCallback, useRef } from 'react';
 
-interface UseSpeechOptions {
-  onEnd?: () => void;
-  voiceURI?: string;
-  pitch?: number;
-  rate?: number;
-}
-
-export const getAvailableVoices = (): SpeechSynthesisVoice[] => {
-  if (!window.speechSynthesis) return [];
-  return window.speechSynthesis.getVoices();
-};
-
-export const useSpeech = (options?: UseSpeechOptions) => {
+export const useSpeech = () => {
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const [speaking, setSpeaking] = useState(false);
 
-  const speak = useCallback((text: string) => {
+  const stop = useCallback(() => {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      utteranceRef.current = null;
+    }
+  }, []);
+
+  const speak = useCallback((text: string, rate = 0.9, pitch = 1.0, voiceURI?: string) => {
     if (!window.speechSynthesis) {
-      console.warn('Speech synthesis not supported');
+      setIsSupported(false);
       return;
     }
 
+    // Cancel any ongoing speech (barge‑in capability)
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-
-    let selectedVoice: SpeechSynthesisVoice | undefined;
-
-    if (options?.voiceURI) {
-      selectedVoice = voices.find(v => v.voiceURI === options.voiceURI);
+    utterance.rate = rate;
+    utterance.pitch = pitch;
+    
+    if (voiceURI) {
+      const voices = window.speechSynthesis.getVoices();
+      const selected = voices.find(v => v.voiceURI === voiceURI);
+      if (selected) utterance.voice = selected;
     }
-
-    if (!selectedVoice) {
-      selectedVoice =
-        voices.find(v => v.lang.includes('en') && v.name.includes('Google UK English Female')) ||
-        voices.find(v => v.lang.includes('en') && /female/i.test(v.name)) ||
-        voices.find(v => v.lang.includes('en') && v.name.includes('Samantha')) ||
-        voices.find(v => v.lang.includes('en') && v.name.includes('Google UK')) ||
-        voices.find(v => v.lang.includes('en'));
-    }
-
-    if (selectedVoice) utterance.voice = selectedVoice;
-
-    utterance.pitch = options?.pitch ?? 1.1;
-    utterance.rate = options?.rate ?? 0.9;
-    utterance.volume = 1;
-
-    utterance.onstart = () => setSpeaking(true);
+    
+    utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => {
-      setSpeaking(false);
-      options?.onEnd?.();
+      setIsSpeaking(false);
+      utteranceRef.current = null;
     };
     utterance.onerror = () => {
-      setSpeaking(false);
+      setIsSpeaking(false);
+      utteranceRef.current = null;
     };
-
+    
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
-  }, [options?.onEnd, options?.voiceURI, options?.pitch, options?.rate]);
-
-  const stop = useCallback(() => {
-    window.speechSynthesis.cancel();
-    setSpeaking(false);
   }, []);
 
-  return { speak, stop, speaking };
+  return { speak, stop, isSpeaking, isSupported };
 };
