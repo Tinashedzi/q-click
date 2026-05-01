@@ -66,6 +66,11 @@ const VoiceSpectrum = ({ isListening, volume }: { isListening: boolean; volume: 
 };
 
 /* ═══ INLINE MIC BUTTON (with volume tracking) ═══ */
+// Android Chrome ignores `continuous=true` and forcibly stops recognition after
+// each utterance (or on silence). We work around it by auto-restarting until
+// the user stops, or until our pause timer fires.
+const IS_ANDROID = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent);
+
 const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, autoStart, pauseThreshold = 1500, disabled }: {
   onTranscript: (text: string) => void;
   onListeningChange?: (l: boolean) => void;
@@ -77,17 +82,24 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
   const [listening, setListening] = useState(false);
   const [interimText, setInterimText] = useState('');
   const [pendingSend, setPendingSend] = useState(false);
-  const supported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+  const supported = typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
   const recRef = useRef<any>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const finalTranscriptRef = useRef('');
+  const interimTextRef = useRef('');
   const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sentRef = useRef(false);
+  const wantListeningRef = useRef(false); // user intends to keep listening (drives Android auto-restart)
+  const restartingRef = useRef(false);
 
   const stopVolumeTracking = useCallback(() => {
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    animFrameRef.current = null;
+    try { mediaStreamRef.current?.getTracks().forEach(t => t.stop()); } catch {}
+    mediaStreamRef.current = null;
     audioCtxRef.current?.close().catch(() => {});
     audioCtxRef.current = null;
     analyserRef.current = null;
@@ -95,8 +107,15 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
   }, [onVolumeChange]);
 
   const startVolumeTracking = useCallback(() => {
+    // Skip on Android — getUserMedia + SpeechRecognition fight over the mic
+    // and cause recognition to abort with "audio-capture" / "not-allowed".
+    if (IS_ANDROID) return;
+    if (audioCtxRef.current) return;
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      const ctx = new AudioContext();
+      mediaStreamRef.current = stream;
+      const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!Ctx) return;
+      const ctx = new Ctx();
       const analyser = ctx.createAnalyser();
       const source = ctx.createMediaStreamSource(stream);
       source.connect(analyser);
@@ -123,26 +142,36 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
     }
   }, []);
 
+  const commitTranscript = useCallback(() => {
+    if (sentRef.current) return;
+    const text = (finalTranscriptRef.current || interimTextRef.current).trim();
+    if (!text) return;
+    sentRef.current = true;
+    wantListeningRef.current = false;
+    onTranscript(text);
+  }, [onTranscript]);
+
   const armPauseTimer = useCallback(() => {
     clearPauseTimer();
     pauseTimerRef.current = setTimeout(() => {
       setPendingSend(true);
+      wantListeningRef.current = false; // stop the Android auto-restart loop
       try { recRef.current?.stop(); } catch {}
+      // Fallback: if onend doesn't fire (some Android builds), commit anyway
+      setTimeout(() => {
+        if (!sentRef.current) commitTranscript();
+      }, 400);
     }, pauseThreshold);
-  }, [clearPauseTimer, pauseThreshold]);
+  }, [clearPauseTimer, pauseThreshold, commitTranscript]);
 
-  const startListening = useCallback(() => {
-    if (!supported || listening || disabled) return;
+  const buildRecognizer = useCallback(() => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const rec = new SR();
-    rec.continuous = true;
+    // On Android continuous is effectively ignored; keep false so we control the loop ourselves.
+    rec.continuous = !IS_ANDROID;
     rec.interimResults = true;
+    rec.maxAlternatives = 1;
     rec.lang = 'en-US';
-
-    finalTranscriptRef.current = '';
-    sentRef.current = false;
-    setInterimText('');
-    setPendingSend(false);
 
     rec.onstart = () => startVolumeTracking();
 
@@ -157,55 +186,94 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
       if (final) {
         finalTranscriptRef.current += (finalTranscriptRef.current ? ' ' : '') + final.trim();
       }
+      interimTextRef.current = interim;
       setInterimText(interim);
-      // Reset silence countdown whenever we hear speech
       if (final || interim) armPauseTimer();
     };
 
     rec.onend = () => {
+      // Android: auto-restart so the user can keep talking past the engine's
+      // forced cutoff. We only stop when wantListeningRef is false (user
+      // toggled off OR pause timer fired).
+      if (wantListeningRef.current && !disabled) {
+        restartingRef.current = true;
+        try {
+          recRef.current?.start();
+          return;
+        } catch {
+          // Sometimes start() throws if called too quickly — retry once
+          setTimeout(() => {
+            if (!wantListeningRef.current) return;
+            try { recRef.current?.start(); } catch {
+              wantListeningRef.current = false;
+            }
+          }, 200);
+          return;
+        } finally {
+          restartingRef.current = false;
+        }
+      }
       clearPauseTimer();
       setListening(false);
       setPendingSend(false);
       stopVolumeTracking();
       onListeningChange?.(false);
-      const text = (finalTranscriptRef.current || interimText).trim();
       setInterimText('');
-      if (text && !sentRef.current) {
-        sentRef.current = true;
-        onTranscript(text);
-      }
+      commitTranscript();
     };
 
     rec.onerror = (e: any) => {
-      // no-speech and aborted are normal — don't surface as errors
-      if (e.error && e.error !== 'no-speech' && e.error !== 'aborted') {
-        console.warn('Speech recognition error:', e.error);
+      const err = e?.error;
+      // no-speech: Android fires this constantly during silence — just restart.
+      if (err === 'no-speech' && wantListeningRef.current) {
+        return; // onend will auto-restart
       }
-      clearPauseTimer();
-      setListening(false);
-      setPendingSend(false);
-      setInterimText('');
-      stopVolumeTracking();
-      onListeningChange?.(false);
+      if (err && err !== 'aborted') {
+        console.warn('Speech recognition error:', err);
+      }
+      // Hard errors that should stop the loop
+      if (err === 'not-allowed' || err === 'service-not-allowed' || err === 'audio-capture') {
+        wantListeningRef.current = false;
+        clearPauseTimer();
+        setListening(false);
+        setPendingSend(false);
+        setInterimText('');
+        stopVolumeTracking();
+        onListeningChange?.(false);
+      }
     };
 
+    return rec;
+  }, [armPauseTimer, clearPauseTimer, commitTranscript, disabled, onListeningChange, startVolumeTracking, stopVolumeTracking]);
+
+  const startListening = useCallback(() => {
+    if (!supported || listening || disabled) return;
+    finalTranscriptRef.current = '';
+    interimTextRef.current = '';
+    sentRef.current = false;
+    wantListeningRef.current = true;
+    setInterimText('');
+    setPendingSend(false);
+
+    const rec = buildRecognizer();
     recRef.current = rec;
     setListening(true);
     onListeningChange?.(true);
     try {
       rec.start();
-      // Safety net: if user starts mic but says nothing, arm a longer timer
       armPauseTimer();
     } catch (err) {
       console.warn('Could not start recognition:', err);
+      wantListeningRef.current = false;
       setListening(false);
       onListeningChange?.(false);
     }
-  }, [supported, listening, disabled, onTranscript, onListeningChange, startVolumeTracking, stopVolumeTracking, armPauseTimer, clearPauseTimer, interimText]);
+  }, [supported, listening, disabled, buildRecognizer, onListeningChange, armPauseTimer]);
 
   const toggle = () => {
     if (!supported) return;
     if (listening) {
+      wantListeningRef.current = false;
       clearPauseTimer();
       try { recRef.current?.stop(); } catch {}
       return;
@@ -221,7 +289,9 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
   }, [autoStart, disabled]);
 
   useEffect(() => () => {
+    wantListeningRef.current = false;
     clearPauseTimer();
+    try { recRef.current?.stop(); } catch {}
     stopVolumeTracking();
   }, [stopVolumeTracking, clearPauseTimer]);
 
