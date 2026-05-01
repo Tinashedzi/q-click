@@ -820,7 +820,9 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
               onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
               onListeningChange={(l) => { setIsListening(l); onListeningChange?.(l); }}
               onVolumeChange={setVoiceVolume}
-              autoStart={shouldAutoListen && handsFree}
+              autoStart={shouldAutoListen && handsFree && !speaking && !isLoading}
+              disabled={speaking || isLoading}
+              pauseThreshold={1500}
             />
           </div>
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
