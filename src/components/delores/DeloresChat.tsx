@@ -116,40 +116,74 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
     }).catch(console.warn);
   }, [onVolumeChange]);
 
+  const clearPauseTimer = useCallback(() => {
+    if (pauseTimerRef.current) {
+      clearTimeout(pauseTimerRef.current);
+      pauseTimerRef.current = null;
+    }
+  }, []);
+
+  const armPauseTimer = useCallback(() => {
+    clearPauseTimer();
+    pauseTimerRef.current = setTimeout(() => {
+      setPendingSend(true);
+      try { recRef.current?.stop(); } catch {}
+    }, pauseThreshold);
+  }, [clearPauseTimer, pauseThreshold]);
+
   const startListening = useCallback(() => {
-    if (!supported || listening) return;
+    if (!supported || listening || disabled) return;
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const rec = new SR();
-    rec.continuous = false;
+    rec.continuous = true;
     rec.interimResults = true;
     rec.lang = 'en-US';
-    let finalResult = '';
+
+    finalTranscriptRef.current = '';
+    sentRef.current = false;
+    setInterimText('');
+    setPendingSend(false);
 
     rec.onstart = () => startVolumeTracking();
 
     rec.onresult = (e: any) => {
       let interim = '';
       let final = '';
-      for (let i = 0; i < e.results.length; i++) {
+      for (let i = e.resultIndex; i < e.results.length; i++) {
         const r = e.results[i];
         if (r.isFinal) final += r[0].transcript;
         else interim += r[0].transcript;
       }
-      finalResult = final || interim;
+      if (final) {
+        finalTranscriptRef.current += (finalTranscriptRef.current ? ' ' : '') + final.trim();
+      }
       setInterimText(interim);
+      // Reset silence countdown whenever we hear speech
+      if (final || interim) armPauseTimer();
     };
 
     rec.onend = () => {
+      clearPauseTimer();
       setListening(false);
-      setInterimText('');
+      setPendingSend(false);
       stopVolumeTracking();
       onListeningChange?.(false);
-      if (finalResult.trim()) onTranscript(finalResult.trim());
+      const text = (finalTranscriptRef.current || interimText).trim();
+      setInterimText('');
+      if (text && !sentRef.current) {
+        sentRef.current = true;
+        onTranscript(text);
+      }
     };
 
     rec.onerror = (e: any) => {
-      console.warn('Speech recognition error:', e.error);
+      // no-speech and aborted are normal — don't surface as errors
+      if (e.error && e.error !== 'no-speech' && e.error !== 'aborted') {
+        console.warn('Speech recognition error:', e.error);
+      }
+      clearPauseTimer();
       setListening(false);
+      setPendingSend(false);
       setInterimText('');
       stopVolumeTracking();
       onListeningChange?.(false);
@@ -158,30 +192,38 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
     recRef.current = rec;
     setListening(true);
     onListeningChange?.(true);
-    rec.start();
-  }, [supported, listening, onTranscript, onListeningChange, startVolumeTracking, stopVolumeTracking]);
+    try {
+      rec.start();
+      // Safety net: if user starts mic but says nothing, arm a longer timer
+      armPauseTimer();
+    } catch (err) {
+      console.warn('Could not start recognition:', err);
+      setListening(false);
+      onListeningChange?.(false);
+    }
+  }, [supported, listening, disabled, onTranscript, onListeningChange, startVolumeTracking, stopVolumeTracking, armPauseTimer, clearPauseTimer, interimText]);
 
   const toggle = () => {
     if (!supported) return;
     if (listening) {
-      recRef.current?.stop();
-      setListening(false);
-      setInterimText('');
-      stopVolumeTracking();
-      onListeningChange?.(false);
+      clearPauseTimer();
+      try { recRef.current?.stop(); } catch {}
       return;
     }
     startListening();
   };
 
   useEffect(() => {
-    if (autoStart && !listening) {
+    if (autoStart && !listening && !disabled) {
       const t = setTimeout(startListening, 600);
       return () => clearTimeout(t);
     }
-  }, [autoStart]);
+  }, [autoStart, disabled]);
 
-  useEffect(() => () => stopVolumeTracking(), [stopVolumeTracking]);
+  useEffect(() => () => {
+    clearPauseTimer();
+    stopVolumeTracking();
+  }, [stopVolumeTracking, clearPauseTimer]);
 
   if (!supported) return null;
 
