@@ -269,6 +269,9 @@ const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, auto
       {listening && interimText && (
         <span className="text-[10px] text-muted-foreground italic truncate max-w-[140px]">{interimText}</span>
       )}
+      {pendingSend && (
+        <span className="text-[10px] font-medium text-primary animate-pulse">Sending…</span>
+      )}
     </>
   );
 };
