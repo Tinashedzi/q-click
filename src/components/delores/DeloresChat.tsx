@@ -66,19 +66,25 @@ const VoiceSpectrum = ({ isListening, volume }: { isListening: boolean; volume: 
 };
 
 /* ═══ INLINE MIC BUTTON (with volume tracking) ═══ */
-const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, autoStart }: {
+const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, autoStart, pauseThreshold = 1500, disabled }: {
   onTranscript: (text: string) => void;
   onListeningChange?: (l: boolean) => void;
   onVolumeChange?: (v: number) => void;
   autoStart?: boolean;
+  pauseThreshold?: number;
+  disabled?: boolean;
 }) => {
   const [listening, setListening] = useState(false);
   const [interimText, setInterimText] = useState('');
+  const [pendingSend, setPendingSend] = useState(false);
   const supported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   const recRef = useRef<any>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animFrameRef = useRef<number | null>(null);
+  const finalTranscriptRef = useRef('');
+  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sentRef = useRef(false);
 
   const stopVolumeTracking = useCallback(() => {
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
