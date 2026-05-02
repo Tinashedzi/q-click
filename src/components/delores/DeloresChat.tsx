@@ -71,7 +71,7 @@ const VoiceSpectrum = ({ isListening, volume }: { isListening: boolean; volume: 
 // the user stops, or until our pause timer fires.
 const IS_ANDROID = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent);
 
-const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, autoStart, pauseThreshold = 1500, disabled }: {
+const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, autoStart, pauseThreshold = 4000, disabled }: {
   onTranscript: (text: string) => void;
   onListeningChange?: (l: boolean) => void;
   onVolumeChange?: (v: number) => void;
@@ -892,7 +892,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
               onVolumeChange={setVoiceVolume}
               autoStart={shouldAutoListen && handsFree && !speaking && !isLoading}
               disabled={speaking || isLoading}
-              pauseThreshold={1500}
+              pauseThreshold={4000}
             />
           </div>
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
