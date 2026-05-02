@@ -127,7 +127,7 @@ const TOOLS = [
       parameters: {
         type: "object",
         properties: {
-          duration_minutes: { type: "number", enum: [5, 15, 25], description: "Suggested duration" },
+          duration_minutes: { type: "number", description: "Suggested duration in minutes (5, 15, or 25)" },
           reason: { type: "string", description: "Why meditation would help right now" },
         },
         required: ["duration_minutes", "reason"],
