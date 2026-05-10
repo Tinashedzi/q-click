@@ -240,6 +240,8 @@ const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, on
       }
       interimTextRef.current = interim;
       setInterimText(interim);
+      const combined = (finalTranscriptRef.current + (interim ? ' ' + interim : '')).trim();
+      onLiveTranscript?.(combined);
       if (final || interim.trim()) {
         hasSpokenRef.current = true;
         lastTranscriptAtRef.current = Date.now();
