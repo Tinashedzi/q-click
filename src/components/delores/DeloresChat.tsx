@@ -970,6 +970,73 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Live transcript preview while listening */}
+        <AnimatePresence>
+          {isListening && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              className="rounded-xl border border-primary/30 bg-primary/5 p-3"
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">Live transcript</span>
+                <span className="text-[10px] text-muted-foreground">Pause to confirm</span>
+              </div>
+              <p className="text-sm text-foreground min-h-[1.25rem] leading-snug">
+                {liveTranscript || <span className="italic text-muted-foreground">Speak now…</span>}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Pending transcript — edit & confirm before send */}
+        <AnimatePresence>
+          {pendingTranscript !== null && !isListening && (
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              className="rounded-xl border border-accent/40 bg-accent/5 p-3 space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">Review before sending</span>
+                <span className="text-[10px] text-muted-foreground">Edit if needed</span>
+              </div>
+              <textarea
+                value={pendingTranscript}
+                onChange={e => setPendingTranscript(e.target.value)}
+                rows={2}
+                autoFocus
+                className="w-full bg-background/60 border border-border/40 rounded-lg p-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 resize-none"
+              />
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setPendingTranscript(null); setLiveTranscript(''); }}
+                  className="px-3 py-1 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+                >
+                  Discard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const t = pendingTranscript.trim();
+                    setPendingTranscript(null);
+                    setLiveTranscript('');
+                    if (t) sendVoiceMessage(t);
+                  }}
+                  disabled={!pendingTranscript.trim()}
+                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-accent text-accent-foreground hover:bg-accent/90 disabled:opacity-50 transition-colors"
+                >
+                  Send
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <form onSubmit={e => { e.preventDefault(); sendMessage(input); }} className="flex items-center gap-2">
           <div className="flex-1 flex items-center gap-1 bg-card/50 border border-border/30 rounded-2xl px-3 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
             <input
@@ -980,12 +1047,24 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
               disabled={isLoading}
             />
             <InlineMicButton
-              onTranscript={(text) => { setInput(text); sendVoiceMessage(text); }}
-              onListeningChange={(l) => { setIsListening(l); onListeningChange?.(l); }}
+              onTranscript={(text) => {
+                setLiveTranscript('');
+                if (handsFree) {
+                  // Hands-free: skip the confirm step for an uninterrupted loop
+                  sendVoiceMessage(text);
+                } else {
+                  setPendingTranscript(text);
+                }
+              }}
+              onLiveTranscript={setLiveTranscript}
+              onListeningChange={(l) => {
+                setIsListening(l);
+                onListeningChange?.(l);
+                if (l) { setLiveTranscript(''); setPendingTranscript(null); }
+              }}
               onVolumeChange={setVoiceVolume}
               autoStart={shouldAutoListen && handsFree && !speaking && !isLoading}
               disabled={speaking || isLoading}
-              
             />
           </div>
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
