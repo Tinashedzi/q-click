@@ -84,8 +84,9 @@ const MAX_LISTEN_MS = 30000; // hard cap so a stuck mic eventually sends what it
 
 type SpeechPhase = 'idle' | 'waiting' | 'speaking' | 'pausing';
 
-const InlineMicButton = ({ onTranscript, onListeningChange, onVolumeChange, autoStart, pauseThreshold, disabled }: {
+const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, onVolumeChange, autoStart, pauseThreshold, disabled }: {
   onTranscript: (text: string) => void;
+  onLiveTranscript?: (text: string) => void;
   onListeningChange?: (l: boolean) => void;
   onVolumeChange?: (v: number) => void;
   autoStart?: boolean;
