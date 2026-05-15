@@ -246,7 +246,7 @@ const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, on
       const combined = (finalTranscriptRef.current + (interim ? ' ' + interim : '')).trim();
       onLiveTranscript?.(combined);
       if (final || interim.trim()) {
-        if (!hasSpokenRef.current) onSpeechStart?.();
+        if (!hasSpokenRef.current) onSpeechStartRef.current?.();
         hasSpokenRef.current = true;
         lastTranscriptAtRef.current = Date.now();
       }
