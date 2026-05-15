@@ -1085,22 +1085,22 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
             <InlineMicButton
               onTranscript={(text) => {
                 setLiveTranscript('');
-                if (handsFree) {
-                  // Hands-free: skip the confirm step for an uninterrupted loop
+                if (handsFree || autoSendMode) {
                   sendVoiceMessage(text);
                 } else {
                   setPendingTranscript(text);
                 }
               }}
               onLiveTranscript={setLiveTranscript}
+              onSpeechStart={() => { if (speaking) stop(); }}
               onListeningChange={(l) => {
                 setIsListening(l);
                 onListeningChange?.(l);
                 if (l) { setLiveTranscript(''); setPendingTranscript(null); }
               }}
               onVolumeChange={setVoiceVolume}
-              autoStart={shouldAutoListen && handsFree && !speaking && !isLoading}
-              disabled={speaking || isLoading}
+              autoStart={shouldAutoListen && handsFree && !isLoading}
+              disabled={isLoading || (speaking && !handsFree)}
             />
           </div>
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
