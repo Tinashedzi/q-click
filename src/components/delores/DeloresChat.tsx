@@ -486,6 +486,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   const [isLoading, setIsLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [handsFree, setHandsFree] = useState(false);
+  const [autoSendMode, setAutoSendMode] = useState(true); // true = auto-send on pause, false = review/edit before send
   const [shouldAutoListen, setShouldAutoListen] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>('');
