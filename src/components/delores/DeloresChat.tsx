@@ -84,11 +84,12 @@ const MAX_LISTEN_MS = 30000; // hard cap so a stuck mic eventually sends what it
 
 type SpeechPhase = 'idle' | 'waiting' | 'speaking' | 'pausing';
 
-const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, onVolumeChange, autoStart, pauseThreshold, disabled }: {
+const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, onVolumeChange, onSpeechStart, autoStart, pauseThreshold, disabled }: {
   onTranscript: (text: string) => void;
   onLiveTranscript?: (text: string) => void;
   onListeningChange?: (l: boolean) => void;
   onVolumeChange?: (v: number) => void;
+  onSpeechStart?: () => void; // fires once per turn when user first speaks (for interrupt)
   autoStart?: boolean;
   pauseThreshold?: number; // optional override (ms) for end-of-speech silence
   disabled?: boolean;
@@ -114,6 +115,8 @@ const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, on
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const SILENCE_MS = pauseThreshold ?? SPEECH_END_SILENCE_MS;
+  const onSpeechStartRef = useRef(onSpeechStart);
+  useEffect(() => { onSpeechStartRef.current = onSpeechStart; }, [onSpeechStart]);
 
   const stopVolumeTracking = useCallback(() => {
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
@@ -154,7 +157,7 @@ const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, on
         onVolumeChange?.(Math.min(1, rms * 1.5));
         if (rms > VOICE_RMS_THRESHOLD) {
           lastVoiceAtRef.current = Date.now();
-          if (!hasSpokenRef.current) hasSpokenRef.current = true;
+          if (!hasSpokenRef.current) { hasSpokenRef.current = true; onSpeechStartRef.current?.(); }
         }
         animFrameRef.current = requestAnimationFrame(update);
       };
@@ -243,6 +246,7 @@ const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, on
       const combined = (finalTranscriptRef.current + (interim ? ' ' + interim : '')).trim();
       onLiveTranscript?.(combined);
       if (final || interim.trim()) {
+        if (!hasSpokenRef.current) onSpeechStartRef.current?.();
         hasSpokenRef.current = true;
         lastTranscriptAtRef.current = Date.now();
       }
@@ -482,6 +486,7 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
   const [isLoading, setIsLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [handsFree, setHandsFree] = useState(false);
+  const [autoSendMode, setAutoSendMode] = useState(true); // true = auto-send on pause, false = review/edit before send
   const [shouldAutoListen, setShouldAutoListen] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>('');
@@ -825,12 +830,22 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
           </button>
         )}
         <button
+          onClick={() => setAutoSendMode(m => !m)}
+          className={cn(
+            'flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all',
+            autoSendMode ? 'bg-primary/15 text-primary' : 'bg-muted/50 text-muted-foreground'
+          )}
+          title={autoSendMode ? 'Voice messages send automatically when you pause' : 'Review & edit voice messages before sending'}
+        >
+          {autoSendMode ? 'Auto-send' : 'Review first'}
+        </button>
+        <button
           onClick={() => { setHandsFree(h => !h); if (!handsFree) setShouldAutoListen(true); }}
           className={cn(
             'flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all',
             handsFree ? 'bg-accent/15 text-accent' : 'bg-muted/50 text-muted-foreground'
           )}
-          title="Hands-free mode"
+          title="Hands-free conversational mode (interrupt Delores anytime)"
         >
           <Headphones className="w-3 h-3" />
           Hands-free
@@ -1011,27 +1026,48 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
                 autoFocus
                 className="w-full bg-background/60 border border-border/40 rounded-lg p-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 resize-none"
               />
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => { setPendingTranscript(null); setLiveTranscript(''); }}
-                  className="px-3 py-1 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
-                >
-                  Discard
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const t = pendingTranscript.trim();
-                    setPendingTranscript(null);
-                    setLiveTranscript('');
-                    if (t) sendVoiceMessage(t);
-                  }}
-                  disabled={!pendingTranscript.trim()}
-                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-accent text-accent-foreground hover:bg-accent/90 disabled:opacity-50 transition-colors"
-                >
-                  Send
-                </button>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setPendingTranscript(liveTranscript || pendingTranscript)}
+                    disabled={!liveTranscript}
+                    className="px-2 py-1 rounded-lg text-[10px] font-medium text-primary hover:bg-primary/10 disabled:opacity-40 transition-colors"
+                    title="Replace with the latest captured speech"
+                  >
+                    Use latest
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPendingTranscript('')}
+                    className="px-2 py-1 rounded-lg text-[10px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors"
+                    title="Clear the text"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { setPendingTranscript(null); setLiveTranscript(''); }}
+                    className="px-3 py-1 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+                  >
+                    Discard
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const t = pendingTranscript.trim();
+                      setPendingTranscript(null);
+                      setLiveTranscript('');
+                      if (t) sendVoiceMessage(t);
+                    }}
+                    disabled={!pendingTranscript.trim()}
+                    className="px-3 py-1 rounded-lg text-xs font-semibold bg-accent text-accent-foreground hover:bg-accent/90 disabled:opacity-50 transition-colors"
+                  >
+                    Send
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -1049,22 +1085,22 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
             <InlineMicButton
               onTranscript={(text) => {
                 setLiveTranscript('');
-                if (handsFree) {
-                  // Hands-free: skip the confirm step for an uninterrupted loop
+                if (handsFree || autoSendMode) {
                   sendVoiceMessage(text);
                 } else {
                   setPendingTranscript(text);
                 }
               }}
               onLiveTranscript={setLiveTranscript}
+              onSpeechStart={() => { if (speaking) stop(); }}
               onListeningChange={(l) => {
                 setIsListening(l);
                 onListeningChange?.(l);
                 if (l) { setLiveTranscript(''); setPendingTranscript(null); }
               }}
               onVolumeChange={setVoiceVolume}
-              autoStart={shouldAutoListen && handsFree && !speaking && !isLoading}
-              disabled={speaking || isLoading}
+              autoStart={shouldAutoListen && handsFree && !isLoading}
+              disabled={isLoading || (speaking && !handsFree)}
             />
           </div>
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading}
