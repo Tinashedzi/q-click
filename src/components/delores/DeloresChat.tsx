@@ -157,7 +157,7 @@ const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, on
         onVolumeChange?.(Math.min(1, rms * 1.5));
         if (rms > VOICE_RMS_THRESHOLD) {
           lastVoiceAtRef.current = Date.now();
-          if (!hasSpokenRef.current) { hasSpokenRef.current = true; onSpeechStart?.(); }
+          if (!hasSpokenRef.current) { hasSpokenRef.current = true; onSpeechStartRef.current?.(); }
         }
         animFrameRef.current = requestAnimationFrame(update);
       };
