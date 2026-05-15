@@ -1026,27 +1026,48 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
                 autoFocus
                 className="w-full bg-background/60 border border-border/40 rounded-lg p-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/30 resize-none"
               />
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => { setPendingTranscript(null); setLiveTranscript(''); }}
-                  className="px-3 py-1 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
-                >
-                  Discard
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const t = pendingTranscript.trim();
-                    setPendingTranscript(null);
-                    setLiveTranscript('');
-                    if (t) sendVoiceMessage(t);
-                  }}
-                  disabled={!pendingTranscript.trim()}
-                  className="px-3 py-1 rounded-lg text-xs font-semibold bg-accent text-accent-foreground hover:bg-accent/90 disabled:opacity-50 transition-colors"
-                >
-                  Send
-                </button>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setPendingTranscript(liveTranscript || pendingTranscript)}
+                    disabled={!liveTranscript}
+                    className="px-2 py-1 rounded-lg text-[10px] font-medium text-primary hover:bg-primary/10 disabled:opacity-40 transition-colors"
+                    title="Replace with the latest captured speech"
+                  >
+                    Use latest
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPendingTranscript('')}
+                    className="px-2 py-1 rounded-lg text-[10px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors"
+                    title="Clear the text"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { setPendingTranscript(null); setLiveTranscript(''); }}
+                    className="px-3 py-1 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+                  >
+                    Discard
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const t = pendingTranscript.trim();
+                      setPendingTranscript(null);
+                      setLiveTranscript('');
+                      if (t) sendVoiceMessage(t);
+                    }}
+                    disabled={!pendingTranscript.trim()}
+                    className="px-3 py-1 rounded-lg text-xs font-semibold bg-accent text-accent-foreground hover:bg-accent/90 disabled:opacity-50 transition-colors"
+                  >
+                    Send
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
