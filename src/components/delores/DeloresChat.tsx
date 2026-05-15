@@ -115,6 +115,8 @@ const InlineMicButton = ({ onTranscript, onLiveTranscript, onListeningChange, on
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const SILENCE_MS = pauseThreshold ?? SPEECH_END_SILENCE_MS;
+  const onSpeechStartRef = useRef(onSpeechStart);
+  useEffect(() => { onSpeechStartRef.current = onSpeechStart; }, [onSpeechStart]);
 
   const stopVolumeTracking = useCallback(() => {
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
