@@ -830,12 +830,22 @@ const DeloresChat = ({ moodLevel, onMoodDetected, onListeningChange }: DeloresCh
           </button>
         )}
         <button
+          onClick={() => setAutoSendMode(m => !m)}
+          className={cn(
+            'flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all',
+            autoSendMode ? 'bg-primary/15 text-primary' : 'bg-muted/50 text-muted-foreground'
+          )}
+          title={autoSendMode ? 'Voice messages send automatically when you pause' : 'Review & edit voice messages before sending'}
+        >
+          {autoSendMode ? 'Auto-send' : 'Review first'}
+        </button>
+        <button
           onClick={() => { setHandsFree(h => !h); if (!handsFree) setShouldAutoListen(true); }}
           className={cn(
             'flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-all',
             handsFree ? 'bg-accent/15 text-accent' : 'bg-muted/50 text-muted-foreground'
           )}
-          title="Hands-free mode"
+          title="Hands-free conversational mode (interrupt Delores anytime)"
         >
           <Headphones className="w-3 h-3" />
           Hands-free
