@@ -292,7 +292,7 @@ const DeloresVoiceChat = ({ onListeningChange }: DeloresVoiceChatProps) => {
         {/* Voice Operations Deck */}
         <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border/30">
           <div className="flex items-center gap-2 min-w-0">
-            <DeloresAvatar speaking={speaking} listening={listening} size="sm" />
+            <DeloresAvatar moodLevel={null} isSpeaking={speaking} isListening={listening} size="sm" />
             <AnimatePresence>
               {currentPlan && (
                 <motion.div
