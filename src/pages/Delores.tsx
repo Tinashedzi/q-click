@@ -256,6 +256,20 @@ const Delores = () => {
               </div>
             </motion.div>
 
+          ) : activeView === 'agi' ? (
+            <motion.div
+              key="agi"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
+              transition={{ duration: 0.35, ease }}
+              className="flex-1 px-5 pb-24"
+            >
+              <div className="max-w-6xl mx-auto h-full">
+                <DeloresSocraticMentorV5 />
+              </div>
+            </motion.div>
+
           ) : (
             <motion.div
               key={activeView}
