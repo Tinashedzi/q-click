@@ -12,6 +12,7 @@ import JournalEntry from '@/components/delores/JournalEntry';
 import MeditationPlayer from '@/components/delores/MeditationPlayer';
 import DelorisRadio from '@/components/delores/DelorisRadio';
 import MemoryDashboard from '@/components/delores/MemoryDashboard';
+import DeloresSocraticMentorV5 from '@/components/delores/DeloresSocraticMentorV5';
 import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -20,6 +21,7 @@ import BottomNav from '@/components/BottomNav';
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const activities = [
+  { title: 'Delores AGI Mentor', subtitle: 'Socratic voice mentor with J-Space core', progress: 0, unlocked: true, action: 'agi' },
   { title: 'Deep Breathing', subtitle: 'Meditation & focus time', progress: 35, unlocked: true, action: 'meditation' },
   { title: 'Managing Stress', subtitle: 'Calm your mind', progress: 60, unlocked: true, action: 'mood' },
   { title: 'Mindful Movement Flow', subtitle: 'Gentle body movements', progress: 45, unlocked: true, action: 'matrix' },
