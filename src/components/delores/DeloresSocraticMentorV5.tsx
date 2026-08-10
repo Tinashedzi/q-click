@@ -412,7 +412,7 @@ const DeloresSocraticMentorV5 = () => {
         </AnimatePresence>
       </div>
 
-      <CreditExhaustedModal open={showExhausted} onOpenChange={setShowExhausted} />
+      <CreditExhaustedModal open={showExhausted} onClose={() => setShowExhausted(false)} />
     </div>
   );
 };
